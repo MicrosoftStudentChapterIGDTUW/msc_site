@@ -1,0 +1,150 @@
+import React, { useRef, useEffect, useState } from 'react';
+import { Menu, Zap } from 'lucide-react';
+
+// --- MOCK DATA ---
+const navItems = ['ABOUT US', 'EVENTS', 'BLOGS', 'TEAM', 'CONTACT US', 'FAQ'];
+
+const galleryItems = [
+  {
+    // Represents the "Audience Overflow" image
+    title: 'Engaging Sessions',
+    description: 'A dedicated audience attends the latest workshop in the main auditorium.',
+    image: 'https://placehold.co/400x250/111827/ffffff?text=AUDITORIUM+SESSION',
+  },
+  {
+    // Represents the "Core Team" image
+    title: 'Core Ambassador Team',
+    description: 'The Microsoft Learn Student Ambassador team ready to guide the next generation.',
+    image: 'https://placehold.co/400x250/1f2937/ffffff?text=CORE+TEAM+GROUP',
+  },
+  {
+    // Represents the "Hackathon Success" image
+    title: 'Hack-It-Up 2025',
+    description: 'Celebrating the success of our flagship hackathon event.',
+    image: 'https://placehold.co/400x250/0f172a/ffffff?text=HACK-IT-UP+EVENT',
+  },
+];
+// --- END MOCK DATA ---
+
+// Helper component for the Navigation Bar (Exact Visual Match)
+const Navbar: React.FC = () => {
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4">
+      {/* Use a dark, highly transparent background for the area behind the logo and menu pill */}
+      <div className="max-w-7xl mx-auto flex justify-between items-center h-16">
+        {/* Logo and Shield (Left Aligned) */}
+        <div className="flex items-center space-x-2 backdrop-blur-sm bg-black/40 rounded-lg p-2">
+          {/* Logo container matching the screenshot's shape and style */}
+          <div className="w-12 h-12 flex items-center justify-center bg-blue-700/70 rounded-lg border-2 border-blue-400 shadow-lg">
+            {/* The shield icon is the Microsoft Learn logo placeholder */}
+            <Zap className="w-7 h-7 text-yellow-300" />
+          </div>
+          <span className="text-xs font-medium text-white tracking-widest hidden sm:block">
+            Microsoft Learn <br/> Student Ambassador
+          </span>
+        </div>
+
+        {/* Desktop Navigation (Centered Rounded Pill - Exact Match) */}
+        {/* The key is the rounded-full border and slightly frosted appearance */}
+        <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center justify-center p-2 rounded-full border border-gray-700/50 bg-black/50 backdrop-blur-sm shadow-2xl">
+          <ul className="flex space-x-6 text-sm font-medium text-white/90">
+            {navItems.map((item) => (
+              <li
+                key={item}
+                className="cursor-pointer hover:text-blue-400 transition duration-300 px-3 py-1 relative text-center whitespace-nowrap"
+              >
+                {item}
+                {/* Custom dot separator for aesthetic matching */}
+                {item !== navItems[navItems.length - 1] && (
+                    <span className="absolute right-[-14px] top-1/2 -translate-y-1/2 text-white/50 text-xs font-extrabold">
+                        •
+                    </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Mobile Menu Icon (Right Aligned - Placeholder) */}
+        <div className="lg:hidden text-white p-2 backdrop-blur-sm bg-black/40 rounded-lg">
+          <Menu className="w-6 h-6 cursor-pointer" />
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+// Main Component
+export default function AboutUsPage() {
+  
+  return (
+    <div
+      className="min-h-screen bg-gray-900 text-white font-inter"
+      style={{ 
+        // Background gradient exactly matching the screenshot's depth
+        background: 'linear-gradient(180deg, #0d1222 0%, #000000 100%)',
+      }}
+    >
+      {/* Tailwind and Font loading scripts (necessary for single-file preview environment) */}
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+      
+      <Navbar />
+
+      <main className="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+        {/* Title Section */}
+        <div className="text-center mb-16 pt-16">
+          <h1 className="text-7xl md:text-[6.5rem] font-black mb-4 tracking-tighter leading-none">
+            ABOUT US
+          </h1>
+          <p className="text-lg md:text-2xl text-gray-300 max-w-4xl mx-auto font-medium">
+            We are here, to be the perfect guidance you need to ace the engineering journey you are on!
+          </p>
+        </div>
+
+        {/* Static Gallery Section - Horizontal Layout Match */}
+        <section className="relative w-full py-8 md:py-16">
+          {/* Main wrapper matching the rounded, dark outline of the gallery section */}
+          <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-6 space-y-6 lg:space-y-0 p-4 md:p-8 
+                        bg-black/20 border border-gray-700/50 rounded-[2.5rem] shadow-2xl 
+                        shadow-blue-900/50">
+            {galleryItems.map((item, index) => (
+              <div
+                key={index}
+                // Cards are now equal width and stack correctly on small screens
+                className="w-full lg:w-1/3 flex-shrink-0 cursor-pointer overflow-hidden transition duration-300 hover:scale-[1.01]"
+              >
+                <div className="overflow-hidden rounded-[2rem]">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    // h-[250px] ensures consistent height and horizontal layout match
+                    className="w-full h-[250px] object-cover rounded-[2rem]" 
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = 'https://placehold.co/400x250/0f172a/ffffff?text=Image+Missing';
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Content Text Section */}
+        <div className="pt-8"> 
+          <div className="max-w-6xl mx-auto">
+            <p className="text-xl md:text-2xl leading-relaxed text-gray-200">
+              We are the <span className="text-blue-400 font-extrabold">MICROSOFT LEARN STUDENT AMBASSADOR STUDENT CHAPTER</span>, your one stop spot for all the amazing sessions and events. This is where you can grow by learning from the mistakes, experiences, success and failure of the experts, your seniors, and peers.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer Placeholder */}
+      <footer className="py-6 mt-16 text-center text-gray-500 text-sm">
+        {/* Footer text is kept minimal as it's not explicitly in the visible area of the screenshot */}
+      </footer>
+    </div>
+  );
+}
