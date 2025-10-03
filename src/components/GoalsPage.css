@@ -1,0 +1,209 @@
+.goals-page {
+  min-height: 100vh;
+  background: transparent;
+  position: relative;
+  padding-top: 20px; /* Reduced padding since navbar is now sticky */
+}
+
+.goals-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  min-height: calc(100vh - 140px);
+}
+
+.goals-header {
+  flex: 1;
+}
+
+.goals-title {
+  font-size: 4rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.goals-visualization {
+  flex: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 500px;
+}
+
+.dartboard {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 50px;
+}
+
+.dartboard-rings {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.ring.outer {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 120, 212, 0.1);
+}
+
+.ring.middle {
+  width: 70%;
+  height: 70%;
+  top: 15%;
+  left: 15%;
+  background: rgba(0, 120, 212, 0.2);
+}
+
+.ring.inner {
+  width: 40%;
+  height: 40%;
+  top: 30%;
+  left: 30%;
+  background: rgba(0, 120, 212, 0.3);
+}
+
+.ring.center {
+  width: 20%;
+  height: 20%;
+  top: 40%;
+  left: 40%;
+  background: white;
+  border: 2px solid rgba(0, 120, 212, 0.5);
+}
+
+.dart-axis {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 300px;
+  background: linear-gradient(to top, white, rgba(0, 120, 212, 0.8));
+  border-radius: 2px;
+  box-shadow: 0 0 20px rgba(0, 120, 212, 0.5);
+}
+
+.goal-banners {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.goal-banner {
+  position: relative;
+  padding: 20px 30px;
+  background: rgba(0, 120, 212, 0.9);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+  max-width: 400px;
+  transition: all 0.3s ease;
+}
+
+.goal-banner:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 48px rgba(0, 120, 212, 0.4);
+}
+
+.goal-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border-radius: 12px;
+  z-index: -1;
+}
+
+.goal-right {
+  align-self: flex-end;
+  margin-left: 100px;
+}
+
+.goal-left {
+  align-self: flex-start;
+  margin-right: 100px;
+}
+
+.banner-content {
+  color: white;
+}
+
+.banner-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.banner-description {
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+/* Glossy effects for banners */
+.goal-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.8s ease;
+  border-radius: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.goal-banner:hover::after {
+  left: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .goals-content {
+    flex-direction: column;
+    gap: 40px;
+    text-align: center;
+  }
+  
+  .goals-visualization {
+    height: 400px;
+  }
+  
+  .goal-banner {
+    max-width: 350px;
+  }
+}

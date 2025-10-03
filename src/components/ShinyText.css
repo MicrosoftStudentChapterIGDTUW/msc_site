@@ -1,0 +1,20 @@
+.shiny-text {
+  display: inline-block;
+  animation: shine 4s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 100%;
+  }
+  50% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 100%;
+  }
+}
+
+.shiny-text.disabled {
+  animation: none;
+}
