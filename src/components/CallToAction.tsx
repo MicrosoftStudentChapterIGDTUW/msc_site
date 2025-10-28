@@ -2,6 +2,7 @@
 
 import React from 'react';
 import StarBorder from './StarBorder';
+import JourneyText from './JourneyText';
 
 const CallToAction: React.FC = () => {
   return (
@@ -9,14 +10,16 @@ const CallToAction: React.FC = () => {
       <StarBorder
         as="button"
         className="cta-button"
-        color="white"
+        color="#60a5fa"
         speed="5s"
         thickness={1}
       >
         CALL TO ACTION
       </StarBorder>
+      <JourneyText />
     </div>
   );
 };
 
 export default CallToAction;
+

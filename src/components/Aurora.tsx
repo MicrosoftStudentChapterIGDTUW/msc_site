@@ -1,9 +1,18 @@
 'use client';
 
+import React from 'react';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 
 import './Aurora.css';
+
+interface AuroraProps {
+  colorStops?: string[];
+  amplitude?: number;
+  speed?: number;
+  time?: number;
+  blend?: number;
+}
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -111,12 +120,12 @@ void main() {
 }
 `;
 
-export default function Aurora(props) {
+const Aurora: React.FC<AuroraProps> = (props) => {
   const { colorStops = ['#5227FF', '#7cff67', '#5227FF'], amplitude = 1.0, blend = 0.5 } = props;
   const propsRef = useRef(props);
   propsRef.current = props;
 
-  const ctnDom = useRef(null);
+  const ctnDom = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctn = ctnDom.current;
@@ -133,7 +142,7 @@ export default function Aurora(props) {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.canvas.style.backgroundColor = 'transparent';
 
-    let program;
+    let program: Program | undefined;
 
     function resize() {
       if (!ctn) return;
@@ -141,7 +150,7 @@ export default function Aurora(props) {
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
       if (program) {
-        program.uniforms.uResolution.value = [width, height];
+        (program.uniforms.uResolution as any).value = [width, height];
       }
     }
     window.addEventListener('resize', resize);
@@ -172,14 +181,14 @@ export default function Aurora(props) {
     ctn.appendChild(gl.canvas);
 
     let animateId = 0;
-    const update = t => {
+    const update = (t: number) => {
       animateId = requestAnimationFrame(update);
       const { time = t * 0.01, speed = 1.0 } = propsRef.current;
-      program.uniforms.uTime.value = time * speed * 0.1;
-      program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
-      program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
+      (program!.uniforms.uTime as any).value = time * speed * 0.1;
+      (program!.uniforms.uAmplitude as any).value = propsRef.current.amplitude ?? 1.0;
+      (program!.uniforms.uBlend as any).value = propsRef.current.blend ?? blend;
       const stops = propsRef.current.colorStops ?? colorStops;
-      program.uniforms.uColorStops.value = stops.map(hex => {
+      (program!.uniforms.uColorStops as any).value = stops.map(hex => {
         const c = new Color(hex);
         return [c.r, c.g, c.b];
       });
@@ -201,4 +210,7 @@ export default function Aurora(props) {
   }, [amplitude]);
 
   return <div ref={ctnDom} className="aurora-container" />;
-}
+};
+
+export default Aurora;
+

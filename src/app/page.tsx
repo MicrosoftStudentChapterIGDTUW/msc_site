@@ -1,28 +1,44 @@
 'use client';
 
-import React, { useRef } from 'react';
 import MicrosoftLogo from '@/components/MicrosoftLogo';
 import ShinyText from '@/components/ShinyText';
 import BlurText from '@/components/BlurText';
-import GroupPhoto from '@/components/GroupPhoto';
+import CircularGallery from '@/components/CircularGallery';
 import Aurora from '@/components/Aurora';
 import CallToAction from '@/components/CallToAction';
 import JourneyText from '@/components/JourneyText';
-import MenuButton from '@/components/MenuButton';
 import PillNav from '@/components/PillNav';
 import GoalsPage from '@/components/GoalsPage';
-import VariableProximity from '@/components/VariableProximity';
+import AboutUs from '@/components/AboutUs';
+import RecentEvents from '@/components/RecentEvents';
+import FAQ from '@/components/FAQ';
+import StillHaveQuestions from '@/components/StillHaveQuestions';
+import Footer from '@/components/Footer';
+import { useEffect } from 'react';
 
 export default function Home() {
   const handleAnimationComplete = () => {
     console.log('IGDTUW Animation completed!');
   };
-  const titleContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (anchor && anchor.getAttribute('href') === '#top') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    window.addEventListener('click', handleAnchorClick);
+    return () => window.removeEventListener('click', handleAnchorClick);
+  }, []);
 
   return (
     <>
       {/* Global Background with SVG - now sticky */}
-      <div className="background-with-svg"></div>
+      <div className="background-with-svg" id="top"></div>
       
       {/* Global Aurora Background - now sticky */}
       <Aurora
@@ -37,7 +53,7 @@ export default function Home() {
         logo="/logo.png"
         logoAlt="MSC Logo"
         items={[
-          { label: 'Home', href: '/' },
+          { label: 'Home', href: '#top' },
           { label: 'About us', href: '#about' },
           { label: 'Events', href: '#events' },
           { label: 'Blogs', href: '#blogs' },
@@ -54,36 +70,27 @@ export default function Home() {
       />
 
       <div className="font-sans min-h-screen relative overflow-hidden">
-        {/* Menu Button */}
-        <MenuButton />
-
         {/* Microsoft Learn Student Ambassador Logo */}
         <MicrosoftLogo />
 
         {/* Main Title */}
-        <div className="main-title" ref={titleContainerRef}>
-          <VariableProximity
-            label={'MICROSOFT STUDENT CHAPTER'}
-            className={'shiny-title'}
-            fromFontVariationSettings="'wght' 400, 'opsz' 9"
-            toFontVariationSettings="'wght' 1000, 'opsz' 40"
-            containerRef={titleContainerRef}
-            radius={130}
-            falloff={'linear'}
+        <div className="main-title">
+          <ShinyText 
+            text="MICROSOFT STUDENT CHAPTER" 
+            speed={4}
+            className="shiny-title"
           />
-          <VariableProximity
-            label={'IGDTUW'}
-            className={'subtitle'}
-            fromFontVariationSettings="'wght' 400, 'opsz' 9"
-            toFontVariationSettings="'wght' 800, 'opsz' 30"
-            containerRef={titleContainerRef}
-            radius={110}
-            falloff={'linear'}
+          <ShinyText
+            text="IGDTUW"
+            speed={3}
+            className="subtitle"
           />
         </div>
 
-        {/* Group Photo */}
-        <GroupPhoto />
+        {/* Circular Gallery */}
+        <div style={{ height: '600px', position: 'relative', width: '100%' }}>
+          <CircularGallery bend={0} textColor="#ffffff" borderRadius={0.05} scrollEase={0.02} />
+        </div>
 
         {/* Call to Action Button */}
         <CallToAction />
@@ -96,6 +103,21 @@ export default function Home() {
 
       {/* Goals Page - appears when scrolling down */}
       <GoalsPage />
+
+      {/* About Us Section - appears after scrolling past goals */}
+      <AboutUs />
+
+      {/* FAQ Section - appears after About Us */}
+      <FAQ />
+
+      {/* Still Have Questions Section - appears after FAQ */}
+      <StillHaveQuestions />
+
+      {/* Recent Events Section - appears after Still Have Questions */}
+      <RecentEvents />
+
+      {/* Footer */}
+      <Footer />
     </>
   );
 }

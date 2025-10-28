@@ -24,6 +24,132 @@ body {
   background: transparent;
   color: #ffffff;
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode overrides */
+[data-theme='light'] {
+  --background-light: #ffffff;
+  --text-light: #1d1d1f;
+  --text-secondary-light: #6e6e73;
+  --box-bg-light: #f5f7fa;
+  --box-border-light: #d1d5db;
+}
+
+[data-theme='light'] body {
+  color: #1d1d1f;
+}
+
+[data-theme='light'] .background-with-svg {
+  background: #ffffff !important;
+}
+
+[data-theme='light'] .background-with-svg::after,
+[data-theme='light'] .background-with-svg::before {
+  display: none !important;
+}
+
+[data-theme='light'] .aurora-container {
+  opacity: 0 !important;
+}
+
+/* Light mode text colors */
+[data-theme='light'] body {
+  color: #1d1d1f;
+}
+
+/* Blue boxes content should be white */
+[data-theme='light'] .faq-question,
+[data-theme='light'] .faq-answer,
+[data-theme='light'] .event-card-title,
+[data-theme='light'] .event-card-description {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .footer * {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .pill-nav,
+[data-theme='light'] .pill-item,
+[data-theme='light'] .pill-item a {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .inner-content {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .journey-text-container,
+[data-theme='light'] .journey-prefix,
+[data-theme='light'] .journey-typing {
+  color: #1d1d1f;
+}
+
+[data-theme='light'] .contact-us-title,
+[data-theme='light'] .contact-us-subtitle,
+[data-theme='light'] .still-have-questions-title,
+[data-theme='light'] .still-have-questions-subtitle {
+  color: #ffffff !important;
+}
+
+/* Regular text - mix of blue and black */
+[data-theme='light'] .main-title .shiny-title {
+  color: #0066cc;
+}
+
+[data-theme='light'] .main-title .subtitle,
+[data-theme='light'] .goals-page-title,
+[data-theme='light'] .about-title,
+[data-theme='light'] .faq-title,
+[data-theme='light'] .recent-events-title {
+  color: #1d1d1f;
+}
+
+[data-theme='light'] .contact-us-title,
+[data-theme='light'] .contact-us-subtitle {
+  color: #1d1d1f;
+}
+
+/* Other text in black */
+[data-theme='light'] .about-subtitle,
+[data-theme='light'] .about-description,
+[data-theme='light'] .event-card-title:not(.event-card-wrapper .event-card-title),
+[data-theme='light'] .event-card-description:not(.event-card-wrapper .event-card-description) {
+  color: #1d1d1f;
+}
+
+/* Light mode box colors - keep them blue */
+[data-theme='light'] .faq-accordion {
+  background: rgba(96, 165, 250, 0.15) !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+}
+
+[data-theme='light'] .event-card-wrapper,
+[data-theme='light'] .still-have-questions-content {
+  background: rgba(96, 165, 250, 0.15) !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+}
+
+[data-theme='light'] .footer {
+  background: rgba(0, 51, 102, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+[data-theme='light'] .footer-social-icon {
+  background: rgba(96, 165, 250, 0.2);
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+[data-theme='light'] .pill-nav,
+[data-theme='light'] .pill-item {
+  background: rgba(96, 165, 250, 0.2) !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+}
+
+[data-theme='light'] .inner-content {
+  background: #0066cc !important;
+  border-color: #0066cc !important;
 }
 
 /* Background with SVG behind Aurora */
@@ -143,6 +269,9 @@ body {
   text-align: center;
   padding: 20px 40px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .main-title::before { content: none; }
@@ -154,15 +283,8 @@ body {
   letter-spacing: 0.18em; /* slightly more spread */
   color: #4cc9ff;
   white-space: nowrap;
-  /* remove stroke and glow */
-  -webkit-text-stroke: 0 rgba(0,0,0,0);
-  text-shadow: none;
   margin: 0;
   line-height: 1;
-  background: none;
-  -webkit-background-clip: initial;
-  background-clip: initial;
-  -webkit-text-fill-color: currentColor;
   text-align: center;
 }
 
@@ -176,9 +298,7 @@ body {
   margin-top: 60px; /* Adjusted spacing */
   margin: 0;
   line-height: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  display: block;
 }
 
 /* Group Photo Styling */
@@ -216,7 +336,7 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 540px; /* keep base position */
+  top: 543px; /* keep base position */
   z-index: 20;
   display: flex;
   justify-content: center;

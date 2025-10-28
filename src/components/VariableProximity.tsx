@@ -136,20 +136,22 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
       );
 
       if (distance >= radius) {
-        letterRef.style.fontVariationSettings = fromFontVariationSettings;
+        // Reset to default when far
+        letterRef.style.transform = 'scale(1)';
+        letterRef.style.opacity = '1';
+        letterRef.style.fontWeight = '400';
         return;
       }
 
       const falloffValue = calculateFalloff(distance);
-      const newSettings = parsedSettings
-        .map(({ axis, fromValue, toValue }) => {
-          const interpolatedValue = fromValue + (toValue - fromValue) * falloffValue;
-          return `'${axis}' ${interpolatedValue}`;
-        })
-        .join(', ');
+      // Apply scale and font-weight effect based on proximity
+      const scale = 1 + (falloffValue * 0.15); // Scale up to 15% when near
+      const opacity = 0.6 + (falloffValue * 0.4); // Brighten when near
+      const fontWeight = 400 + (falloffValue * 200); // Increase weight up to 600
 
-      interpolatedSettingsRef.current[index] = newSettings;
-      letterRef.style.fontVariationSettings = newSettings;
+      letterRef.style.transform = `scale(${scale})`;
+      letterRef.style.opacity = `${opacity}`;
+      letterRef.style.fontWeight = `${fontWeight}`;
     });
   });
 
@@ -176,7 +178,7 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
                 }}
                 style={{
                   display: 'inline-block',
-                  fontVariationSettings: interpolatedSettingsRef.current[currentLetterIndex]
+                  transition: 'all 0.1s ease-out'
                 }}
                 aria-hidden="true"
               >

@@ -1,0 +1,130 @@
+.faq-section {
+  min-height: 100vh;
+  padding: 100px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-content {
+  max-width: 1000px;
+  width: 100%;
+}
+
+.faq-title {
+  font-family: var(--font-anton), sans-serif;
+  font-size: 3.5rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: white;
+  text-align: center;
+  margin-bottom: 60px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.faq-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 4px;
+  background: #60a5fa;
+  border-radius: 2px;
+}
+
+.faq-accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq-accordion {
+  background: rgba(96, 165, 250, 0.15) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 16px !important;
+  box-shadow: none;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faq-accordion:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 8px 32px rgba(96, 165, 250, 0.3);
+}
+
+.faq-accordion::before {
+  display: none; /* Remove MUI's default before element */
+}
+
+.faq-summary {
+  padding: 24px 20px !important;
+}
+
+.faq-summary .MuiAccordionSummary-content {
+  margin: 0 !important;
+  align-items: center;
+}
+
+.faq-question {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.faq-details {
+  padding: 0 20px 24px 20px !important;
+  background: rgba(96, 165, 250, 0.1) !important;
+}
+
+.faq-answer {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.expand-icon {
+  color: white !important;
+  font-size: 2rem !important;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .faq-title {
+    font-size: 3.5rem;
+    letter-spacing: 0.18em;
+  }
+
+  .faq-question {
+    font-size: 1.1rem;
+  }
+
+  .faq-answer {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .faq-section {
+    padding: 80px 20px;
+  }
+
+  .faq-title {
+    font-size: 2.5rem;
+  }
+
+  .faq-question {
+    font-size: 1rem;
+  }
+
+  .faq-answer {
+    font-size: 0.9rem;
+  }
+}
+

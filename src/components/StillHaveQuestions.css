@@ -1,0 +1,114 @@
+.still-have-questions-section {
+  min-height: auto;
+  padding: 60px 40px 60px;
+  margin-top: -60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.still-have-questions-content {
+  max-width: 650px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: rgba(96, 165, 250, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 24px;
+  padding: 45px 35px;
+}
+
+.still-have-questions-logo {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.still-have-questions-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(96, 165, 250, 0.3));
+}
+
+.still-have-questions-title {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.still-have-questions-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 600px;
+  margin: 0;
+  line-height: 1.5;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.still-have-questions-button {
+  background: #60a5fa;
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.still-have-questions-button:hover {
+  background: #3b82f6;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .still-have-questions-title {
+    font-size: 2.5rem;
+  }
+
+  .still-have-questions-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .still-have-questions-section {
+    padding: 60px 20px;
+    min-height: 60vh;
+  }
+
+  .still-have-questions-title {
+    font-size: 2rem;
+  }
+
+  .still-have-questions-subtitle {
+    font-size: 1rem;
+  }
+
+  .still-have-questions-button {
+    padding: 16px 40px;
+    font-size: 1.1rem;
+  }
+
+  .still-have-questions-logo {
+    width: 80px;
+    height: 80px;
+  }
+}
+

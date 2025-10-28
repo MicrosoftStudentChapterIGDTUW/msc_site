@@ -1,8 +1,8 @@
 .pill-nav-container {
   position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
 }
 
@@ -13,22 +13,21 @@
   --pill-gap: 6px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  padding: 5px 20px;
+  width: 100%;
+  background: rgba(0, 51, 102, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
 }
 
 .pill-logo {
-  width: var(--nav-h);
-  height: var(--nav-h);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  width: 40px;
+  height: auto;
+  display: inline-block;
 }
 
 .pill-logo img {
@@ -43,11 +42,12 @@
   display: flex;
   align-items: center;
   height: var(--nav-h);
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  border: none;
+  padding: 0;
 }
 
 .pill-list {
@@ -88,20 +88,24 @@
 .pill .hover-circle {
   position: absolute;
   left: 50%;
-  bottom: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: var(--base, #0066cc);
-  z-index: 1;
+  z-index: 0;
   display: block;
   pointer-events: none;
   will-change: transform;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .pill .label-stack {
   position: relative;
   display: inline-block;
   line-height: 1;
-  z-index: 2;
+  z-index: 3;
 }
 
 .pill .pill-label {
@@ -117,7 +121,7 @@
   left: 0;
   top: 0;
   color: var(--hover-text, #ffffff);
-  z-index: 3;
+  z-index: 4;
   display: inline-block;
   will-change: transform, opacity;
 }

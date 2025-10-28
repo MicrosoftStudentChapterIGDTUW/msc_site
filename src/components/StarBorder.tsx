@@ -1,24 +1,34 @@
-'use client';
-
+import React from 'react';
 import './StarBorder.css';
 
-const StarBorder = ({
-  as: Component = 'button',
+type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
+  as?: T;
+  className?: string;
+  children?: React.ReactNode;
+  color?: string;
+  speed?: React.CSSProperties['animationDuration'];
+  thickness?: number;
+};
+
+const StarBorder = <T extends React.ElementType = 'button'>({
+  as,
   className = '',
   color = 'white',
   speed = '6s',
   thickness = 1,
   children,
   ...rest
-}) => {
+}: StarBorderProps<T>) => {
+  const Component = as || 'button';
+
   return (
     <Component
       className={`star-border-container ${className}`}
+      {...(rest as any)}
       style={{
         padding: `${thickness}px 0`,
-        ...rest.style
+        ...(rest as any).style
       }}
-      {...rest}
     >
       <div
         className="border-gradient-bottom"
@@ -40,3 +50,4 @@ const StarBorder = ({
 };
 
 export default StarBorder;
+

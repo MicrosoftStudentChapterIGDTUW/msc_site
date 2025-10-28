@@ -1,6 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import { motion } from 'motion/react';
+import ShinyText from './ShinyText';
 import './GoalsPage.css';
 
 const GoalsPage: React.FC = () => {
@@ -23,35 +26,62 @@ const GoalsPage: React.FC = () => {
   ];
 
   return (
-    <div className="goals-page">
-      <div className="goals-content">
-        <div className="goals-header">
-          <h1 className="goals-title">OUR GOALS</h1>
-        </div>
-        
-        <div className="goals-visualization">
-          <div className="dartboard">
-            <div className="dartboard-rings">
-              <div className="ring outer"></div>
-              <div className="ring middle"></div>
-              <div className="ring inner"></div>
-              <div className="ring center"></div>
-            </div>
-            <div className="dart-axis"></div>
-          </div>
-          
-          <div className="goal-banners">
-            {goals.map((goal, index) => (
-              <div key={index} className={`goal-banner goal-${goal.direction}`}>
-                <div className="banner-content">
-                  <h3 className="banner-title">{goal.title}</h3>
-                  <p className="banner-description">{goal.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="goals-page" id="goals">
+      {/* Arrow SVG - Static in center */}
+      <div className="goals-arrow-container">
+        <img src="/arrow.svg" alt="Goals Arrow" className="goals-arrow" />
       </div>
+
+      {/* OUR GOALS Title - Drops with arrow, then appears */}
+      <motion.div
+        className="goals-title-container"
+        initial={{ opacity: 0, y: -100 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: true }}
+      >
+        <ShinyText 
+          text="OUR GOALS" 
+          speed={3}
+          className="goals-page-title"
+        />
+      </motion.div>
+
+      {/* Goal 1 - First goal animation */}
+      <motion.div
+        className="goal-1-container"
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
+        transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: true }}
+      >
+        <img src="/Goal1.svg" alt="Goal 1" className="goal-svg" />
+      </motion.div>
+
+      {/* Goal 3 - Second goal animation */}
+      <motion.div
+        className="goal-3-container"
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
+        transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: true }}
+      >
+        <img src="/goal3.svg" alt="Goal 3" className="goal-svg" />
+      </motion.div>
+
+      {/* Goal 2 - Third goal animation */}
+      <motion.div
+        className="goal-2-container"
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
+        transition={{ duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: true }}
+      >
+        <img src="/Goal2.svg" alt="Goal 2" className="goal-svg" />
+      </motion.div>
     </div>
   );
 };
