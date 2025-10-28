@@ -43,13 +43,10 @@ const RecentEvents: React.FC = () => {
               captionText={event.title}
               containerHeight="450px"
               containerWidth="350px"
-              imageHeight="250px"
-              imageWidth="100%"
               scaleOnHover={1.05}
               rotateAmplitude={12}
               showMobileWarning={false}
               showTooltip={false}
-              displayOverlayContent={false}
             >
               <div className="event-card-content">
                 <h3 className="event-card-title">{event.title}</h3>
