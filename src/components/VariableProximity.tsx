@@ -73,28 +73,6 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
   const mousePositionRef = useMousePositionRef(containerRef);
   const lastPositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
-  const parsedSettings = useMemo(() => {
-    const parseSettings = (settingsStr: string) =>
-      new Map(
-        settingsStr
-          .split(',')
-          .map(s => s.trim())
-          .map(s => {
-            const [name, value] = s.split(' ');
-            return [name.replace(/['"]/g, ''), parseFloat(value)];
-          })
-      );
-
-    const fromSettings = parseSettings(fromFontVariationSettings);
-    const toSettings = parseSettings(toFontVariationSettings);
-
-    return Array.from(fromSettings.entries()).map(([axis, fromValue]) => ({
-      axis,
-      fromValue,
-      toValue: toSettings.get(axis) ?? fromValue
-    }));
-  }, [fromFontVariationSettings, toFontVariationSettings]);
-
   const calculateDistance = (x1: number, y1: number, x2: number, y2: number) =>
     Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
