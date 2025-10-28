@@ -70,7 +70,6 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
   } = props;
 
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const interpolatedSettingsRef = useRef<string[]>([]);
   const mousePositionRef = useMousePositionRef(containerRef);
   const lastPositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
@@ -121,7 +120,7 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
     lastPositionRef.current = { x, y };
     const containerRect = containerRef.current.getBoundingClientRect();
 
-    letterRefs.current.forEach((letterRef, index) => {
+    letterRefs.current.forEach((letterRef) => {
       if (!letterRef) return;
 
       const rect = letterRef.getBoundingClientRect();

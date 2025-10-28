@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 import './TiltedCard.css';
@@ -30,14 +31,10 @@ export default function TiltedCard({
   captionText = '',
   containerHeight = '300px',
   containerWidth = '100%',
-  imageHeight = '300px',
-  imageWidth = '300px',
   scaleOnHover = 1.1,
   rotateAmplitude = 14,
   showMobileWarning = false,
   showTooltip = true,
-  overlayContent = null,
-  displayOverlayContent = false,
   children
 }: TiltedCardProps & { children?: React.ReactNode }) {
   const ref = useRef<HTMLElement>(null);
@@ -110,13 +107,15 @@ export default function TiltedCard({
       )}
 
       <div className="tilted-card-inner">
-        <img
+        <Image
           src={imageSrc}
           alt={altText}
           className="tilted-card-img"
+          width={500}
+          height={500}
           style={{
             width: '100%',
-            height: imageHeight,
+            height: '100%',
             objectFit: 'cover'
           }}
         />

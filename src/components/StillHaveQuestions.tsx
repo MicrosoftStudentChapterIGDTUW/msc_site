@@ -10,7 +10,7 @@ const StillHaveQuestions: React.FC = () => {
       <div className="still-have-questions-content">
         <h2 className="still-have-questions-title">Still have questions?</h2>
         <p className="still-have-questions-subtitle">
-          Can't find the answer you're looking for? Please reach out to our friendly team.
+          Can&apos;t find the answer you&apos;re looking for? Please reach out to our friendly team.
         </p>
 
         <motion.button
