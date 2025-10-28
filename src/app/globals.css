@@ -23,7 +23,7 @@
 body {
   background: transparent;
   color: #ffffff;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
 /* Background with SVG behind Aurora */
@@ -111,8 +111,8 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: -40px;
-  width: 150px;
+  top: 40px;
+  width: 165px;
   height: 300px;
   z-index: 20;
 }
@@ -120,7 +120,7 @@ body {
 .microsoft-logo .logo-image {
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
   transition: all 0.3s ease;
-  width: 150px;
+  width: 165px;
   height: 300px;
   object-fit: contain;
 }
@@ -138,45 +138,42 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 180px; /* A lil below */
+  top: 255px; /* Shift texts up without changing other sections */
   z-index: 20;
   text-align: center;
   padding: 20px 40px;
+  position: relative;
 }
+
+.main-title::before { content: none; }
 
 .main-title .shiny-title {
   font-family: var(--font-anton), sans-serif;
-  font-size: 5rem;
+  font-size: 3.8rem;
   font-weight: 400;
-  letter-spacing: 0.08em;
-  color: #0066cc;
+  letter-spacing: 0.18em; /* slightly more spread */
+  color: #4cc9ff;
   white-space: nowrap;
-  text-shadow: 
-    0 0 5px rgba(0, 102, 204, 0.5),
-    0 0 10px rgba(0, 102, 204, 0.3);
+  /* remove stroke and glow */
+  -webkit-text-stroke: 0 rgba(0,0,0,0);
+  text-shadow: none;
   margin: 0;
   line-height: 1;
-  background: linear-gradient(
-    90deg,
-    #0066cc 0%,
-    #ffffff 50%,
-    #0066cc 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
   text-align: center;
 }
 
 .main-title .subtitle {
   font-family: var(--font-lexend-zetta), sans-serif;
-  font-size: 2.25rem; /* Bigger */
+  font-size: 1.75rem;
   font-weight: 700; /* Bold */
-  letter-spacing: 1.2em; /* Lessen the spacing */
+  letter-spacing: 1.0em; /* Tighter */
   color: #ffffff;
   text-align: center;
-  margin-top: 95px; /* A lil more down */
+  margin-top: 60px; /* Adjusted spacing */
   margin: 0;
   line-height: 1;
   width: 100%;
@@ -189,7 +186,7 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 330px; /* Moved up a bit */
+  top: 380px; /* Pushed further down */
   z-index: 20;
   width: 1728px;
   height: 137px;
@@ -219,7 +216,7 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 510px; /* Moved down further */
+  top: 540px; /* keep base position */
   z-index: 20;
   display: flex;
   justify-content: center;
@@ -230,14 +227,13 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 580px;
+  top: 615px; /* Slightly higher */
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "TT Nooks", sans-serif;
-  font-size: 2.5rem;
-  font-weight: 600;
+  font-size: 1.8rem; /* Reduced */
+  font-weight: 600; /* match CTA visual weight */
   color: #ffffff;
   white-space: nowrap;
 }
@@ -250,7 +246,8 @@ body {
 
 .journey-typing-wrapper {
   display: inline-block;
-  min-width: 200px;
+  min-width: 140px;
+  width: fit-content;
   text-align: left;
 }
 
