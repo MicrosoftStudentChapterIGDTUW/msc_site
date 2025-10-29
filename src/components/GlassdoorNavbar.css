@@ -1,0 +1,85 @@
+.sticky-navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 986px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.43);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.31);
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 0 40px;
+  height: 100%;
+  position: relative;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.logo-image:hover {
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+  transform: scale(1.02);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.nav-separator {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.nav-link:last-child .nav-separator {
+  display: none;
+}
+
+/* Clean design - no sliding animations */

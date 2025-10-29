@@ -1,0 +1,87 @@
+.goals-page {
+  min-height: 100vh;
+  background: transparent;
+  position: relative;
+}
+
+/* OUR GOALS Title - Top Left */
+.goals-title-container {
+  position: absolute;
+  top: 80px;
+  left: 80px;
+  z-index: 10;
+}
+
+.goals-page-title {
+  font-family: var(--font-anton), sans-serif;
+  font-size: 5rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: white;
+  white-space: nowrap;
+  margin: 0;
+  line-height: 1;
+}
+
+.goal-1-container {
+  position: absolute;
+  left: 770px;
+  top: 210px;
+}
+
+.goal-2-container {
+  position: absolute;
+  left: 770px;
+  top: 435px;
+}
+
+.goal-3-container {
+  position: absolute;
+  left: 266px;
+  top: 320px;
+}
+
+.goal-svg {
+  width: 500px;
+  height: auto;
+  max-width: 500px;
+  transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.goal-1-container:hover .goal-svg,
+.goal-2-container:hover .goal-svg,
+.goal-3-container:hover .goal-svg {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+}
+
+/* Arrow Container - Moved right and down */
+.goals-arrow-container {
+  position: absolute;
+  left: calc(55% + 2px);
+  top: calc(60%);
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 400px;
+}
+
+.goals-arrow {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  opacity: 0.9;
+}
+
+/* Responsive adjustments for Goal1 positioning */
+@media (max-width: 1200px) {
+  .goal-1-container {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .goal-1-container {
+    left: 20px;
+    top: 200px;
+  }
+}

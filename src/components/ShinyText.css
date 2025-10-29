@@ -1,0 +1,41 @@
+.shiny-text {
+  display: inline-block;
+  position: relative;
+}
+
+.shiny-text-base {
+  display: inline-block;
+}
+
+.shiny-text-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine linear infinite;
+  color: transparent;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: -100%;
+  }
+}
+
+.shiny-text.disabled {
+  animation: none;
+}
