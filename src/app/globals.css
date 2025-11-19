@@ -376,3 +376,31 @@ body {
 }
 
 /* Sticky Navbar - no container needed */
+
+/* Base: no glow until hover */
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.85),   /* bright white highlight */
+    rgba(76, 201, 255, 0.75),    /* neon cyan */
+    rgba(170, 191, 255, 0.50),   /* soft blue edge */
+    transparent 70%
+  );
+
+  filter: blur(60px);
+  opacity: 0;
+  transform: scale(1.2);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: -1;
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+  transform: scale(1.1);
+}
