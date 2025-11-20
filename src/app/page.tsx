@@ -57,7 +57,7 @@ export default function Home() {
           { label: 'About us', href: '#about' },
           { label: 'Events', href: '#events' },
           { label: 'Blogs', href: '#blogs' },
-          { label: 'Team', href: '#team' },
+          { label: 'Team', href: '/team' },
           { label: 'Contact us', href: '#contact' },
           { label: 'FAQ', href: '#faq' },
         ]}
