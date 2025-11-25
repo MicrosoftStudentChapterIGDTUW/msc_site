@@ -11,6 +11,7 @@ import PillNav from '@/components/PillNav';
 import GoalsPage from '@/components/GoalsPage';
 import AboutUs from '@/components/AboutUs';
 import RecentEvents from '@/components/RecentEvents';
+import SponsorsPage from '@/app/sponsors/page';
 import FAQ from '@/components/FAQ';
 import StillHaveQuestions from '@/components/StillHaveQuestions';
 import Footer from '@/components/Footer';
