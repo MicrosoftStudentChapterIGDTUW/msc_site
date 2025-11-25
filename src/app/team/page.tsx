@@ -1,7 +1,7 @@
 "use client";
 
-import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
+import Aurora from "@/components/Aurora";
 import Tilt from "./Tilt";
 import { Anton } from "next/font/google";
 import Footer from "@/components/Footer";
@@ -142,7 +142,7 @@ export default function TeamPage() {
             { label: "Events", href: "/#events" },
             { label: "Blogs", href: "/#blogs" },
             { label: "Team", href: "/team" },
-            { label: "Contact us", href: "/#contact" },
+            { label: "Contact us", href: "/contact" },
             { label: "FAQ", href: "/#faq" },
           ]}
           activeHref="/team"

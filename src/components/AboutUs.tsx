@@ -43,17 +43,29 @@ const AboutUs: React.FC = () => {
             initial={{ opacity: 0, y: -100 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
           >
             ABOUT US
           </motion.h1>
-          <p className="about-subtitle">
+          <motion.p 
+            className="about-subtitle"
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: false }}
+          >
             We empower women technologists through collaboration, creativity, and innovation.
-          </p>
+          </motion.p>
         </div>
 
         {/* Sliding Gallery */}
-        <section className="about-gallery">
+        <motion.section 
+          className="about-gallery"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false }}
+        >
           <Slider {...settings}>
             {galleryItems.map((item, index) => (
               <div key={index} className="px-3">
@@ -76,17 +88,23 @@ const AboutUs: React.FC = () => {
               </div>
             ))}
           </Slider>
-        </section>
+        </motion.section>
 
         {/* Description Section */}
-        <div className="about-description">
+        <motion.div 
+          className="about-description"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false }}
+        >
           We are the{' '}
           <span className="text-blue-400 font-extrabold">
             MICROSOFT LEARN STUDENT AMBASSADOR STUDENT CHAPTER
           </span>
           , your one-stop spot for sessions, hackathons, and mentorship. Learn from experts,
           seniors, and peers as you grow into tomorrow's tech leaders.
-        </div>
+        </motion.div>
       </div>
     </section>
   );

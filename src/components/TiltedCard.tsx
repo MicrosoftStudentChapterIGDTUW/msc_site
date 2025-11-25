@@ -84,16 +84,17 @@ export default function TiltedCard({
   }
 
   return (
-    <motion.figure
-      ref={ref}
+    <motion.div
+      ref={ref as any}
       className="tilted-card-figure"
       style={{
-        height: containerHeight,
         width: containerWidth,
         rotateX,
         rotateY,
-        scale
-      }}
+        scale,
+        display: 'flex',
+        flexDirection: 'column'
+      } as any}
       onMouseMove={handleMouse}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -103,21 +104,27 @@ export default function TiltedCard({
       )}
 
       <div className="tilted-card-inner">
-        <Image
-          src={imageSrc}
-          alt={altText}
-          className="tilted-card-img"
-          width={500}
-          height={500}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover'
-          }}
-        />
-        
-        {children}
+        <div className="tilted-card-image-container">
+          <Image
+            src={imageSrc}
+            alt={altText}
+            className="tilted-card-img"
+            width={500}
+            height={500}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
       </div>
+      
+      {children && (
+        <div className="tilted-card-content-container">
+          {children}
+        </div>
+      )}
 
       {showTooltip && (
         <motion.figcaption
@@ -132,7 +139,7 @@ export default function TiltedCard({
           {captionText}
         </motion.figcaption>
       )}
-    </motion.figure>
+    </motion.div>
   );
 }
 
