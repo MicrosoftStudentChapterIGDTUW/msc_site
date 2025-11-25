@@ -4,7 +4,13 @@ import React from "react";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
 import { motion } from "motion/react";
-import { FloatingDock } from "react-bits";
+import dynamic from "next/dynamic";
+
+const FloatingDock = dynamic(() =>
+  import("react-bits").then(mod => mod.FloatingDock),
+  { ssr: false }
+);
+
 import "./Sponsors.css";
 
 export default function SponsorsPage() {
