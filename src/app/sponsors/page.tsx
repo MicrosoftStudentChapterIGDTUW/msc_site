@@ -4,13 +4,6 @@ import React from "react";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
-
-const FloatingDock = dynamic(() =>
-  import("react-bits").then(mod => mod.FloatingDock),
-  { ssr: false }
-);
-
 import "./Sponsors.css";
 
 export default function SponsorsPage() {
@@ -60,7 +53,7 @@ export default function SponsorsPage() {
         ]}
         activeHref="/sponsors"
         baseColor="transparent"
-        pillColor="#274BFF"   // brighter blue for nicer UI
+        pillColor="#274BFF"
         hoveredPillTextColor="#ffffff"
         pillTextColor="#ffffff"
       />
@@ -97,9 +90,10 @@ export default function SponsorsPage() {
             whileHover={{ y: -12, scale: 1.05 }}
             transition={{ type: "spring", stiffness: 120, damping: 10 }}
           >
-            <FloatingDock className="sponsor-floating">
+            {/* Custom Floating Glow Wrapper */}
+            <div className="floating-wrapper">
               <img src={s.logo} alt={s.name} className="sponsor-logo" />
-            </FloatingDock>
+            </div>
 
             <h3 className="sponsor-name">{s.name}</h3>
             <p className="sponsor-description">{s.description}</p>
