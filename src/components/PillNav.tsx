@@ -281,7 +281,7 @@ const PillNav: React.FC<PillNavProps> = ({
               <img src={logo} alt={logoAlt} ref={logoImgRef} />
             </Link>
 
-            <div className="pill-nav-items bg-black/10 backdrop-blur-md border border-white/10" ref={navItemsRef}>
+            <div className="pill-nav-items bg-black/10 backdrop-blur-md" style={{ border: '1px solid rgba(96, 165, 250, 0.3)' }} ref={navItemsRef}>
           <ul className="pill-list" role="menubar">
             {items.map((item, i) => (
               <li key={item.href} role="none">

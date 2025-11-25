@@ -78,8 +78,9 @@
 }
 
 .faq-details {
-  padding: 0 20px 24px 20px !important;
+  padding: 20px 20px 24px 20px !important;
   background: rgba(96, 165, 250, 0.1) !important;
+  margin-top: 8px;
 }
 
 .faq-answer {

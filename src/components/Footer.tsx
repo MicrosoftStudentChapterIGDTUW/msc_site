@@ -3,12 +3,30 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import './Footer.css';
 
 const Footer: React.FC = () => {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+
+  const handleSectionClick = (e: React.MouseEvent<HTMLAnchorElement>, section: string) => {
+    if (isHomePage) {
+      e.preventDefault();
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    // If not on home page, let the Link component handle navigation
+  };
+
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isHomePage) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // If not on home page, let the Link component handle navigation
   };
 
   return (
@@ -29,11 +47,41 @@ const Footer: React.FC = () => {
         <div className="footer-links">
           <h3 className="footer-title">Links</h3>
           <ul className="footer-list">
-            <li><a href="#" onClick={handleHomeClick}>Home</a></li>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#goals">Our Goals</a></li>
+            <li>
+              {isHomePage ? (
+                <a href="#top" onClick={handleHomeClick}>Home</a>
+              ) : (
+                <Link href="/#top">Home</Link>
+              )}
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#about" onClick={(e) => handleSectionClick(e, 'about')}>About Us</a>
+              ) : (
+                <Link href="/#about">About Us</Link>
+              )}
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#events" onClick={(e) => handleSectionClick(e, 'events')}>Events</a>
+              ) : (
+                <Link href="/#events">Events</Link>
+              )}
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#faq" onClick={(e) => handleSectionClick(e, 'faq')}>FAQ</a>
+              ) : (
+                <Link href="/#faq">FAQ</Link>
+              )}
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#goals" onClick={(e) => handleSectionClick(e, 'goals')}>Our Goals</a>
+              ) : (
+                <Link href="/#goals">Our Goals</Link>
+              )}
+            </li>
             <li><Link href="/contact">Contact Us</Link></li>
           </ul>
         </div>
