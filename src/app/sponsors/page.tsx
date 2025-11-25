@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import Aurora from "@/components/Aurora";
-import PillNav from "@/components/PillNav";
 import { motion } from "motion/react";
 import "./Sponsors.css";
 
@@ -25,40 +23,8 @@ export default function SponsorsPage() {
   ];
 
   return (
-    <>
-      {/* Background */}
-      <div className="background-with-svg" id="top"></div>
-
-      {/* Aurora */}
-      <Aurora
-        colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
-        blend={1}
-        amplitude={1.0}
-        speed={1}
-      />
-
-      {/* Navbar */}
-      <PillNav
-        logo="/logo.png"
-        logoAlt="MSC Logo"
-        items={[
-          { label: "Home", href: "/" },
-          { label: "About us", href: "/#about" },
-          { label: "Events", href: "/#events" },
-          { label: "Blogs", href: "/#blogs" },
-          { label: "Team", href: "/#team" },
-          { label: "Sponsors", href: "/sponsors" },
-          { label: "Contact us", href: "/#contact" },
-          { label: "FAQ", href: "/#faq" },
-        ]}
-        activeHref="/sponsors"
-        baseColor="transparent"
-        pillColor="#274BFF"
-        hoveredPillTextColor="#ffffff"
-        pillTextColor="#ffffff"
-      />
-
-      {/* Intro Section */}
+    <div className="sponsors-page-wrapper">
+      {/* HEADER */}
       <section className="sponsors-header">
         <motion.h1
           initial={{ opacity: 0, y: -60 }}
@@ -74,12 +40,12 @@ export default function SponsorsPage() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          Organizations that believe in the vision of MSC and support
-          opportunities, innovation, and growth for IGDTUW students.
+          Organizations that believe in the vision of MSC and empower IGDTUW students
+          through innovation, mentorship, and real-world opportunities.
         </motion.p>
       </section>
 
-      {/* Sponsor Cards */}
+      {/* CARDS */}
       <div className="sponsors-grid">
         {sponsors.map((s) => (
           <motion.div
@@ -90,7 +56,6 @@ export default function SponsorsPage() {
             whileHover={{ y: -12, scale: 1.05 }}
             transition={{ type: "spring", stiffness: 120, damping: 10 }}
           >
-            {/* Custom Floating Glow Wrapper */}
             <div className="floating-wrapper">
               <img src={s.logo} alt={s.name} className="sponsor-logo" />
             </div>
@@ -100,6 +65,6 @@ export default function SponsorsPage() {
           </motion.div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
