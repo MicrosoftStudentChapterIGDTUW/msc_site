@@ -7,13 +7,20 @@ import './StillHaveQuestions.css';
 
 const StillHaveQuestions: React.FC = () => {
   return (
-    <section className="still-have-questions-section" id="contact">
+    <motion.section 
+      className="still-have-questions-section" 
+      id="contact"
+      initial={{ opacity: 0, y: 80 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: false }}
+    >
       <motion.div 
         className="still-have-questions-content"
-        initial={{ opacity: 0, y: -80 }}
+        initial={{ opacity: 0, y: -30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false }}
       >
         <h2 className="still-have-questions-title">
           Still have questions?
@@ -33,7 +40,7 @@ const StillHaveQuestions: React.FC = () => {
           </motion.button>
         </Link>
       </motion.div>
-    </section>
+    </motion.section>
   );
 };
 

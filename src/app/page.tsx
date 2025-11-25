@@ -62,13 +62,16 @@ export default function Home() {
           const element = document.getElementById(hash);
           if (element) {
             isScrolling = true;
-            requestAnimationFrame(() => {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              setTimeout(() => { isScrolling = false; }, 1000);
-            });
+            // Wait a bit longer for page to fully load when coming from other pages
+            setTimeout(() => {
+              requestAnimationFrame(() => {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => { isScrolling = false; }, 1000);
+              });
+            }, 200);
           }
         }
-      }, 50);
+      }, 100);
     };
 
     // Handle hash on mount (when coming from other pages)
@@ -144,7 +147,7 @@ export default function Home() {
         </div>
 
         {/* Call to Action Button */}
-        <CallToAction />
+        {/* <CallToAction /> */}
 
         {/* Journey Text */}
         <JourneyText />
