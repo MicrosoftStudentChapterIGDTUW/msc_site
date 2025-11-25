@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { gsap } from 'gsap';
 import './PillNav.css';
 
@@ -38,7 +39,11 @@ const PillNav: React.FC<PillNavProps> = ({
   pillTextColor,
   initialLoadAnimation = true
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const resolvedPillTextColor = pillTextColor ?? baseColor;
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const circleRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const tlRefs = useRef<Array<gsap.core.Timeline | null>>([]);
   const activeTweenRefs = useRef<Array<gsap.core.Tween | null>>([]);
@@ -47,7 +52,25 @@ const PillNav: React.FC<PillNavProps> = ({
   const navItemsRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<HTMLAnchorElement | HTMLElement | null>(null);
 
+  // Scroll effect for darkening navbar and top fade
   useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+      setScrollY(scrollPosition);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initial scroll position
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    
     const layout = () => {
       circleRefs.current.forEach(circle => {
         if (!circle?.parentElement) return;
@@ -99,14 +122,21 @@ const PillNav: React.FC<PillNavProps> = ({
 
     layout();
 
-    const onResize = () => layout();
-    window.addEventListener('resize', onResize);
+    const onResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(layout, 150);
+    };
+    window.addEventListener('resize', onResize, { passive: true });
 
     if ((document as any).fonts?.ready) {
       (document as any).fonts.ready.then(layout).catch(() => {});
     }
 
-    if (initialLoadAnimation) {
+    // Only run initial animation on first page load, not on navigation
+    const hasAnimated = sessionStorage.getItem('pillNavAnimated');
+    const shouldAnimate = initialLoadAnimation && !hasAnimated;
+
+    if (shouldAnimate) {
       const logo = logoRef.current;
       const navItems = navItemsRef.current;
 
@@ -127,12 +157,29 @@ const PillNav: React.FC<PillNavProps> = ({
           ease
         });
       }
+
+      // Mark as animated so it doesn't run again during navigation
+      sessionStorage.setItem('pillNavAnimated', 'true');
+    } else {
+      // If animation already ran, ensure elements are visible immediately
+      const logo = logoRef.current;
+      const navItems = navItemsRef.current;
+      
+      if (logo) {
+        gsap.set(logo, { scale: 1 });
+      }
+      if (navItems) {
+        gsap.set(navItems, { width: 'auto', overflow: 'visible' });
+      }
     }
 
-    return () => window.removeEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      clearTimeout(resizeTimeout);
+    };
   }, [items, ease, initialLoadAnimation]);
 
-  const handleEnter = (i: number) => {
+  const handleEnter = useCallback((i: number) => {
     const tl = tlRefs.current[i];
     if (!tl) return;
     activeTweenRefs.current[i]?.kill();
@@ -141,9 +188,9 @@ const PillNav: React.FC<PillNavProps> = ({
       ease,
       overwrite: 'auto'
     });
-  };
+  }, [ease]);
 
-  const handleLeave = (i: number) => {
+  const handleLeave = useCallback((i: number) => {
     const tl = tlRefs.current[i];
     if (!tl) return;
     activeTweenRefs.current[i]?.kill();
@@ -152,17 +199,48 @@ const PillNav: React.FC<PillNavProps> = ({
       ease,
       overwrite: 'auto'
     });
-  };
+  }, [ease]);
 
-  const isExternalLink = (href: string) =>
+  const isExternalLink = useCallback((href: string) =>
     href.startsWith('http://') ||
     href.startsWith('https://') ||
     href.startsWith('//') ||
     href.startsWith('mailto:') ||
     href.startsWith('tel:') ||
-    href.startsWith('#');
+    href.startsWith('#'), []);
 
-  const isRouterLink = (href?: string) => href && !isExternalLink(href);
+  const isRouterLink = useCallback((href?: string) => href && !isExternalLink(href), [isExternalLink]);
+
+  const handleHashClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      if (pathname !== '/') {
+        e.preventDefault();
+        router.push(`/${href}`);
+      } else {
+        e.preventDefault();
+        const hash = href.substring(1);
+        const element = document.getElementById(hash);
+        if (element) {
+          requestAnimationFrame(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+      }
+    }
+  }, [pathname, router]);
+
+  const handleLogoHover = useCallback(() => {
+    const img = logoImgRef.current;
+    if (!img) return;
+    logoTweenRef.current?.kill();
+    gsap.set(img, { rotate: 0 });
+    logoTweenRef.current = gsap.to(img, {
+      rotate: 360,
+      duration: 0.2,
+      ease,
+      overwrite: 'auto'
+    });
+  }, [ease]);
 
   const cssVars = {
     ['--base']: baseColor,
@@ -171,33 +249,39 @@ const PillNav: React.FC<PillNavProps> = ({
     ['--pill-text']: resolvedPillTextColor
   } as React.CSSProperties;
 
-  return (
-    <div className="pill-nav-container">
-      <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
-        <Link
-          className="pill-logo"
-          href="/"
-          aria-label="Home"
-          ref={el => {
-            logoRef.current = el as any;
-          }}
-          onMouseEnter={() => {
-            const img = logoImgRef.current;
-            if (!img) return;
-            logoTweenRef.current?.kill();
-            gsap.set(img, { rotate: 0 });
-            logoTweenRef.current = gsap.to(img, {
-              rotate: 360,
-              duration: 0.2,
-              ease,
-              overwrite: 'auto'
-            });
-          }}
-        >
-          <img src={logo} alt={logoAlt} ref={logoImgRef} />
-        </Link>
+  // Calculate fade opacity based on scroll (0 to 0.9 max)
+  const fadeOpacity = Math.min(scrollY / 100, 0.9);
 
-        <div className="pill-nav-items" ref={navItemsRef}>
+  return (
+    <>
+      {/* Scroll-based black fade at top - BELOW navbar, ABOVE content and Aurora */}
+      <div 
+        className="fixed top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: '180px',
+          background: `linear-gradient(to bottom, rgba(0, 0, 0, ${fadeOpacity * 1.0}) 0%, rgba(0, 0, 0, ${fadeOpacity * 0.7}) 25%, rgba(0, 0, 0, ${fadeOpacity * 0.4}) 50%, rgba(0, 0, 0, ${fadeOpacity * 0.15}) 75%, transparent 100%)`,
+          transition: 'opacity 0.3s ease',
+          zIndex: 998
+        }}
+      />
+      
+      <div className={`pill-nav-container ${isScrolled ? 'scrolled' : ''}`}>
+        <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
+        <div className="pill-nav-content mx-auto max-w-7xl w-full flex items-center justify-center">
+          <div className="pill-nav-wrapper flex items-center gap-4">
+            <Link
+              className="pill-logo"
+              href="/"
+              aria-label="Home"
+              ref={el => {
+                logoRef.current = el as any;
+              }}
+              onMouseEnter={handleLogoHover}
+            >
+              <img src={logo} alt={logoAlt} ref={logoImgRef} />
+            </Link>
+
+            <div className="pill-nav-items bg-black/10 backdrop-blur-md border border-white/10" ref={navItemsRef}>
           <ul className="pill-list" role="menubar">
             {items.map((item, i) => (
               <li key={item.href} role="none">
@@ -205,6 +289,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   <Link
                     role="menuitem"
                     href={item.href}
+                    prefetch={true}
                     className={`pill${activeHref === item.href ? ' is-active' : ''}`}
                     aria-label={item.ariaLabel || item.label}
                     onMouseEnter={() => handleEnter(i)}
@@ -232,6 +317,7 @@ const PillNav: React.FC<PillNavProps> = ({
                     aria-label={item.ariaLabel || item.label}
                     onMouseEnter={() => handleEnter(i)}
                     onMouseLeave={() => handleLeave(i)}
+                    onClick={(e) => handleHashClick(e, item.href)}
                   >
                     <span
                       className="hover-circle"
@@ -251,9 +337,12 @@ const PillNav: React.FC<PillNavProps> = ({
               </li>
             ))}
           </ul>
+            </div>
+          </div>
         </div>
       </nav>
     </div>
+    </>
   );
 };
 

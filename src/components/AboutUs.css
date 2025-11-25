@@ -1,6 +1,7 @@
 .about-us-section {
   min-height: 100vh;
   padding: 100px 40px 100px;
+  margin-top: 50px;
   display: flex;
   align-items: center;
   justify-content: center;

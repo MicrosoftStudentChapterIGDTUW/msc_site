@@ -2,13 +2,15 @@
   min-height: 100vh;
   background: transparent;
   position: relative;
+  margin-top: 40px;
+  padding-top: 20px;
 }
 
 /* OUR GOALS Title - Top Left */
 .goals-title-container {
   position: absolute;
   top: 80px;
-  left: 80px;
+  left: 120px;
   z-index: 10;
 }
 

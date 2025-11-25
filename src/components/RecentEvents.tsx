@@ -16,7 +16,7 @@ const RecentEvents: React.FC = () => {
     {
       id: 2,
       title: 'HACK-IT-UP 2025',
-      description: 'Igdtuw-hackathon • the hackathon for 25.',
+      description: 'IGDTUW-Hackathon - The hackathon for 2025.',
       image: '/images/gallery-hackitup.jpg',
     },
   ];
@@ -29,30 +29,37 @@ const RecentEvents: React.FC = () => {
           initial={{ opacity: 0, y: -100 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
         >
           RECENT EVENTS
         </motion.h2>
 
         <div className="recent-events-grid">
           {events.map((event, index) => (
-            <TiltedCard
+            <motion.div
               key={event.id}
-              imageSrc={event.image}
-              altText={event.title}
-              captionText={event.title}
-              containerHeight="450px"
-              containerWidth="350px"
-              scaleOnHover={1.05}
-              rotateAmplitude={12}
-              showMobileWarning={false}
-              showTooltip={false}
+              initial={{ opacity: 0, y: -80 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.2, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: false }}
             >
-              <div className="event-card-content">
-                <h3 className="event-card-title">{event.title}</h3>
-                <p className="event-card-description">{event.description}</p>
-              </div>
-            </TiltedCard>
+              <TiltedCard
+                imageSrc={event.image}
+                altText={event.title}
+                captionText={event.title}
+                containerHeight="450px"
+                containerWidth="350px"
+                scaleOnHover={1.05}
+                rotateAmplitude={12}
+                showMobileWarning={false}
+                showTooltip={false}
+              >
+                <div className="event-card-content">
+                  <h3 className="event-card-title">{event.title}</h3>
+                  <p className="event-card-description">{event.description}</p>
+                </div>
+              </TiltedCard>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -12,9 +12,9 @@ const JourneyText: React.FC = () => {
           texts={["knowledge", "success", "skills"]}
           mainClassName="px-2 sm:px-2 md:px-2 bg-[#0066cc] text-white overflow-hidden py-0.5 sm:py-0.5 md:py-1 justify-center rounded-md leading-tight"
           staggerFrom={"last"}
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "-120%" }}
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{ y: "0%", opacity: 1 }}
+          exit={{ y: "-120%", opacity: 0 }}
           staggerDuration={0.025}
           splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
           transition={{ type: "spring", damping: 30, stiffness: 400 }}

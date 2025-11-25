@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -33,7 +34,7 @@ const Footer: React.FC = () => {
             <li><a href="#events">Events</a></li>
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#goals">Our Goals</a></li>
-            <li><a href="#">Contact Us</a></li>
+            <li><Link href="/contact">Contact Us</Link></li>
           </ul>
         </div>
 

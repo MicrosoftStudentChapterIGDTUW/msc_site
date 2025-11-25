@@ -22,17 +22,68 @@ export default function Home() {
   };
 
   useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+    let isScrolling = false;
+
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
-      if (anchor && anchor.getAttribute('href') === '#top') {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (anchor) {
+        const href = anchor.getAttribute('href');
+        if (href === '#top') {
+          e.preventDefault();
+          if (!isScrolling) {
+            isScrolling = true;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => { isScrolling = false; }, 1000);
+          }
+        } else if (href?.startsWith('#')) {
+          const hash = href.substring(1);
+          const element = document.getElementById(hash);
+          if (element && !isScrolling) {
+            e.preventDefault();
+            isScrolling = true;
+            requestAnimationFrame(() => {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              setTimeout(() => { isScrolling = false; }, 1000);
+            });
+          }
+        }
       }
     };
 
-    window.addEventListener('click', handleAnchorClick);
-    return () => window.removeEventListener('click', handleAnchorClick);
+    const handleHashScroll = () => {
+      if (isScrolling) return;
+      
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (window.location.hash) {
+          const hash = window.location.hash.substring(1);
+          const element = document.getElementById(hash);
+          if (element) {
+            isScrolling = true;
+            requestAnimationFrame(() => {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              setTimeout(() => { isScrolling = false; }, 1000);
+            });
+          }
+        }
+      }, 50);
+    };
+
+    // Handle hash on mount (when coming from other pages)
+    if (window.location.hash) {
+      handleHashScroll();
+    }
+
+    window.addEventListener('click', handleAnchorClick, { passive: false });
+    window.addEventListener('hashchange', handleHashScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('click', handleAnchorClick);
+      window.removeEventListener('hashchange', handleHashScroll);
+      clearTimeout(scrollTimeout);
+    };
   }, []);
 
   return (
@@ -43,8 +94,8 @@ export default function Home() {
       {/* Global Aurora Background - now sticky */}
       <Aurora
         colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
-        blend={1}
-        amplitude={1.0}
+        blend={0.9}
+        amplitude={0.9}
         speed={1}
       />
 
@@ -58,7 +109,7 @@ export default function Home() {
           { label: 'Events', href: '#events' },
           { label: 'Blogs', href: '#blogs' },
           { label: 'Team', href: '/team' },
-          { label: 'Contact us', href: '#contact' },
+          { label: 'Contact us', href: '/contact' },
           { label: 'FAQ', href: '#faq' },
         ]}
         activeHref="/"
