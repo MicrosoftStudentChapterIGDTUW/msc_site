@@ -35,14 +35,14 @@ const RecentEvents: React.FC = () => {
         </motion.h2>
 
         <div className="recent-events-grid">
-          {events.map((event, index) => (
+          {events.map((event) => (
             <TiltedCard
               key={event.id}
               imageSrc={event.image}
               altText={event.title}
               captionText={event.title}
-              containerHeight="450px"
-              containerWidth="350px"
+              containerHeight="520px"    // BIGGER
+              containerWidth="400px"     // BIGGER
               scaleOnHover={1.05}
               rotateAmplitude={12}
               showMobileWarning={false}
@@ -61,4 +61,3 @@ const RecentEvents: React.FC = () => {
 };
 
 export default RecentEvents;
-
