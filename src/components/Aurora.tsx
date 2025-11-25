@@ -68,6 +68,7 @@ float snoise(vec2 v){
   vec3 h = abs(x) - 0.5;
   vec3 ox = floor(x + 0.5);
   vec3 a0 = x - ox;
+
   m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
 
   vec3 g;
@@ -109,7 +110,7 @@ void main() {
   float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
   height = exp(height);
   height = (uv.y * 2.0 - height + 0.2);
-  float intensity = 0.6 * height;
+  float intensity = 0.5 * height;
   
   float midPoint = 0.20;
   float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
@@ -131,21 +132,39 @@ const Aurora: React.FC<AuroraProps> = (props) => {
     const ctn = ctnDom.current;
     if (!ctn) return;
 
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: true
-    });
-    const gl = renderer.gl;
+    let renderer: Renderer | null = null;
+    let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
+
+    try {
+      renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: true
+      });
+      gl = renderer.gl;
+      
+      if (!gl) {
+        console.warn('WebGL context not available, Aurora effect disabled');
+        return;
+      }
+    } catch (error) {
+      console.warn('Failed to create WebGL context, Aurora effect disabled:', error);
+      return;
+    }
+
+    if (!renderer || !gl) return;
+
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.canvas.style.backgroundColor = 'transparent';
+    if (gl.canvas instanceof HTMLCanvasElement) {
+      gl.canvas.style.backgroundColor = 'transparent';
+    }
 
     let program: Program | undefined;
 
     function resize() {
-      if (!ctn) return;
+      if (!ctn || !renderer) return;
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
@@ -155,7 +174,7 @@ const Aurora: React.FC<AuroraProps> = (props) => {
     }
     window.addEventListener('resize', resize);
 
-    const geometry = new Triangle(gl);
+    const geometry = new Triangle(gl as any);
     if (geometry.attributes.uv) {
       delete geometry.attributes.uv;
     }
@@ -165,7 +184,7 @@ const Aurora: React.FC<AuroraProps> = (props) => {
       return [c.r, c.g, c.b];
     });
 
-    program = new Program(gl, {
+    program = new Program(gl as any, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
@@ -177,18 +196,21 @@ const Aurora: React.FC<AuroraProps> = (props) => {
       }
     });
 
-    const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
+    const mesh = new Mesh(gl as any, { geometry, program });
+    if (gl.canvas instanceof HTMLCanvasElement) {
+      ctn.appendChild(gl.canvas);
+    }
 
     let animateId = 0;
     const update = (t: number) => {
+      if (!renderer || !program) return;
       animateId = requestAnimationFrame(update);
       const { time = t * 0.01, speed = 1.0 } = propsRef.current;
-      (program!.uniforms.uTime as any).value = time * speed * 0.1;
-      (program!.uniforms.uAmplitude as any).value = propsRef.current.amplitude ?? 1.0;
-      (program!.uniforms.uBlend as any).value = propsRef.current.blend ?? blend;
+      (program.uniforms.uTime as any).value = time * speed * 0.1;
+      (program.uniforms.uAmplitude as any).value = propsRef.current.amplitude ?? 1.0;
+      (program.uniforms.uBlend as any).value = propsRef.current.blend ?? blend;
       const stops = propsRef.current.colorStops ?? colorStops;
-      (program!.uniforms.uColorStops as any).value = stops.map(hex => {
+      (program.uniforms.uColorStops as any).value = stops.map(hex => {
         const c = new Color(hex);
         return [c.r, c.g, c.b];
       });
@@ -201,10 +223,12 @@ const Aurora: React.FC<AuroraProps> = (props) => {
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
-      if (ctn && gl.canvas.parentNode === ctn) {
+      if (ctn && gl && gl.canvas instanceof HTMLCanvasElement && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      if (gl) {
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amplitude]);
@@ -213,4 +237,3 @@ const Aurora: React.FC<AuroraProps> = (props) => {
 };
 
 export default Aurora;
-

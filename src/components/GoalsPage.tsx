@@ -28,9 +28,15 @@ const GoalsPage: React.FC = () => {
   return (
     <div className="goals-page" id="goals">
       {/* Arrow SVG - Static in center */}
-      <div className="goals-arrow-container">
+      <motion.div 
+        className="goals-arrow-container"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false }}
+      >
         <img src="/arrow.svg" alt="Goals Arrow" className="goals-arrow" />
-      </div>
+      </motion.div>
 
       {/* OUR GOALS Title - Drops with arrow, then appears */}
       <motion.div
@@ -38,7 +44,7 @@ const GoalsPage: React.FC = () => {
         initial={{ opacity: 0, y: -100 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        viewport={{ once: true }}
+        viewport={{ once: false }}
       >
         <ShinyText 
           text="OUR GOALS" 
@@ -50,11 +56,11 @@ const GoalsPage: React.FC = () => {
       {/* Goal 1 - First goal animation */}
       <motion.div
         className="goal-1-container"
-        initial={{ opacity: 0, scale: 0.5 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: -80, scale: 0.8 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
-        transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false }}
       >
         <img src="/Goal1.svg" alt="Goal 1" className="goal-svg" />
       </motion.div>
@@ -62,11 +68,11 @@ const GoalsPage: React.FC = () => {
       {/* Goal 3 - Second goal animation */}
       <motion.div
         className="goal-3-container"
-        initial={{ opacity: 0, scale: 0.5 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: -80, scale: 0.8 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
-        transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false }}
       >
         <img src="/goal3.svg" alt="Goal 3" className="goal-svg" />
       </motion.div>
@@ -74,11 +80,11 @@ const GoalsPage: React.FC = () => {
       {/* Goal 2 - Third goal animation */}
       <motion.div
         className="goal-2-container"
-        initial={{ opacity: 0, scale: 0.5 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: -80, scale: 0.8 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
         whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: "easeInOut" } }}
-        transition={{ duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false }}
       >
         <img src="/Goal2.svg" alt="Goal 2" className="goal-svg" />
       </motion.div>

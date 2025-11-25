@@ -52,13 +52,19 @@ const FAQ: React.FC = () => {
           className="faq-title"
           initial={{ opacity: 0, y: -100 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false, amount: 0.2 }}
         >
           FREQUENTLY ASKED QUESTIONS
         </motion.h2>
         
-        <div className="faq-accordion-container">
+        <motion.div 
+          className="faq-accordion-container"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false, amount: 0.3 }}
+        >
           {faqItems.map((item, index) => (
             <Accordion
               key={index}
@@ -81,7 +87,7 @@ const FAQ: React.FC = () => {
               </AccordionDetails>
             </Accordion>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
