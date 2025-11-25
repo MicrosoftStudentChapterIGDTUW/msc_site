@@ -36,7 +36,7 @@
 
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 3rem;
+  gap: 3.5rem;
   justify-items: center;
 }
 
@@ -45,50 +45,57 @@
 -------------------------- */
 .sponsor-card {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(14px);
-  border-radius: 22px;
-  padding: 2.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  border-radius: 24px;
+  padding: 2.4rem;
   width: 380px;
   min-height: 420px;
 
   text-align: center;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
-  transition: all 0.25s ease;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+
+  transition: all 0.35s ease;
+  transform-style: preserve-3d;
 }
 
-/* Interactive Glow on Hover */
+/* Glow on Hover */
 .sponsor-card:hover {
-  box-shadow: 0 14px 36px rgba(96, 128, 255, 0.45);
+  box-shadow: 0 18px 40px rgba(45, 104, 255, 0.5);
+  border-color: rgba(80, 130, 255, 0.5);
 }
 
 /* -------------------------
    SPONSOR LOGO
 -------------------------- */
+.sponsor-floating {
+  display: flex;
+  justify-content: center;
+}
+
 .sponsor-logo {
-  width: 150px;
-  height: auto;
+  width: 160px;
   object-fit: contain;
-  margin: 0 auto 1.5rem auto;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
 }
 
 .sponsor-card:hover .sponsor-logo {
-  transform: scale(1.08);
+  transform: scale(1.12);
 }
 
 /* -------------------------
    TEXT
 -------------------------- */
 .sponsor-name {
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   color: white;
-  margin-bottom: 1rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
   font-weight: 600;
 }
 
 .sponsor-description {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   line-height: 1.6;
   color: #dcdcdc;
   opacity: 0.9;
@@ -99,8 +106,7 @@
   .sponsors-header h1 {
     font-size: 2.8rem;
   }
-
   .sponsor-card {
-    width: 90%;
+    width: 92%;
   }
 }

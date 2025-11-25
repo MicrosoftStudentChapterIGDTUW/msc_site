@@ -1,13 +1,36 @@
+"use client";
+
+import React from "react";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
+import { motion } from "motion/react";
+import { FloatingDock } from "react-bits";
+import "./Sponsors.css";
 
 export default function SponsorsPage() {
+  const sponsors = [
+    {
+      id: 1,
+      name: "Sponsor Name 1",
+      description:
+        "A proud collaborator supporting innovation, technical excellence, and student growth.",
+      logo: "/images/sponsor1.png",
+    },
+    {
+      id: 2,
+      name: "Sponsor Name 2",
+      description:
+        "Partnering with MSC to empower students through events, projects, and opportunities.",
+      logo: "/images/sponsor2.png",
+    },
+  ];
+
   return (
     <>
-      {/* Global Background with SVG */}
+      {/* Background */}
       <div className="background-with-svg" id="top"></div>
 
-      {/* Global Aurora Background */}
+      {/* Aurora */}
       <Aurora
         colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
         blend={1}
@@ -20,39 +43,63 @@ export default function SponsorsPage() {
         logo="/logo.png"
         logoAlt="MSC Logo"
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'About us', href: '/#about' },
-          { label: 'Events', href: '/#events' },
-          { label: 'Blogs', href: '/#blogs' },
-          { label: 'Team', href: '/#team' },
-          { label: 'Sponsors', href: '/sponsors' },  // NEW
-          { label: 'Contact us', href: '/#contact' },
-          { label: 'FAQ', href: '/#faq' },
+          { label: "Home", href: "/" },
+          { label: "About us", href: "/#about" },
+          { label: "Events", href: "/#events" },
+          { label: "Blogs", href: "/#blogs" },
+          { label: "Team", href: "/#team" },
+          { label: "Sponsors", href: "/sponsors" },
+          { label: "Contact us", href: "/#contact" },
+          { label: "FAQ", href: "/#faq" },
         ]}
         activeHref="/sponsors"
-        baseColor="#808080"      // gray navbar
-        pillColor="#00008b"      // dark blue pill
+        baseColor="transparent"
+        pillColor="#274BFF"   // brighter blue for nicer UI
         hoveredPillTextColor="#ffffff"
         pillTextColor="#ffffff"
-        className="custom-nav"
       />
 
-      {/* Page Content */}
-      <section className="pt-40 pb-20 px-8 max-w-5xl mx-auto text-white">
-        <h1 className="text-4xl font-bold mb-6">Our Sponsors</h1>
-        <p className="opacity-80 mb-10">
-          Show appreciation to the organizations/companies sponsoring MSC.
-        </p>
+      {/* Intro Section */}
+      <section className="sponsors-header">
+        <motion.h1
+          initial={{ opacity: 0, y: -60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          OUR SPONSORS
+        </motion.h1>
 
-        {/* Add sponsor cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Example Card */}
-          <div className="p-6 backdrop-blur-xl bg-white/10 rounded-xl border border-white/20 shadow-lg">
-            <h2 className="text-xl font-semibold mb-2">Sponsor Name</h2>
-            <p className="text-sm opacity-70">Sponsor description here…</p>
-          </div>
-        </div>
+        <motion.p
+          className="sponsors-subtitle"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          Organizations that believe in the vision of MSC and support
+          opportunities, innovation, and growth for IGDTUW students.
+        </motion.p>
       </section>
+
+      {/* Sponsor Cards */}
+      <div className="sponsors-grid">
+        {sponsors.map((s) => (
+          <motion.div
+            key={s.id}
+            className="sponsor-card"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -12, scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 120, damping: 10 }}
+          >
+            <FloatingDock className="sponsor-floating">
+              <img src={s.logo} alt={s.name} className="sponsor-logo" />
+            </FloatingDock>
+
+            <h3 className="sponsor-name">{s.name}</h3>
+            <p className="sponsor-description">{s.description}</p>
+          </motion.div>
+        ))}
+      </div>
     </>
   );
 }

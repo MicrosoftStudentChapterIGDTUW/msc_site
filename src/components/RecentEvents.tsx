@@ -10,13 +10,15 @@ const RecentEvents: React.FC = () => {
     {
       id: 1,
       title: 'Summer Bootcamp',
-      description: 'Under the AI-DS Department, IGDTUW — the spirit of the season.',
+      description:
+        'For mentees to learn from their mentors — an initiative to make the most out of the summer and build real skills through guided mentorship.',
       image: '/images/summer_bootcamp.jpg',
     },
     {
       id: 2,
       title: 'HACK-IT-UP 2025',
-      description: 'Igdtuw-hackathon • the hackathon for 25.',
+      description:
+        'A hackathon initiative for IGDTUW students to participate, build real-time projects, compete, collaborate, and push each other to innovate.',
       image: '/images/gallery-hackitup.jpg',
     },
   ];
@@ -24,6 +26,7 @@ const RecentEvents: React.FC = () => {
   return (
     <section className="recent-events-section">
       <div className="recent-events-content">
+
         <motion.h2
           className="recent-events-title"
           initial={{ opacity: 0, y: -100 }}
@@ -36,23 +39,27 @@ const RecentEvents: React.FC = () => {
 
         <div className="recent-events-grid">
           {events.map((event) => (
-            <TiltedCard
-              key={event.id}
-              imageSrc={event.image}
-              altText={event.title}
-              captionText={event.title}
-              containerHeight="520px"    // BIGGER
-              containerWidth="400px"     // BIGGER
-              scaleOnHover={1.05}
-              rotateAmplitude={12}
-              showMobileWarning={false}
-              showTooltip={false}
-            >
-              <div className="event-card-content">
-                <h3 className="event-card-title">{event.title}</h3>
-                <p className="event-card-description">{event.description}</p>
-              </div>
-            </TiltedCard>
+            <div key={event.id} className="event-card-wrapper">
+              
+              <TiltedCard
+                imageSrc={event.image}
+                altText={event.title}
+                captionText={event.title}
+                containerHeight="380px"      // FINAL FIX
+                containerWidth="400px"
+                scaleOnHover={1.06}
+                rotateAmplitude={10}
+                showMobileWarning={false}
+                showTooltip={false}
+              >
+                <div className="event-card-content">
+                  <h3 className="event-card-title">{event.title}</h3>
+                </div>
+              </TiltedCard>
+
+              <p className="event-bottom-description">{event.description}</p>
+
+            </div>
           ))}
         </div>
       </div>
