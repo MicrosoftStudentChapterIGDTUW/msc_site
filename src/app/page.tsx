@@ -11,7 +11,6 @@ import PillNav from '@/components/PillNav';
 import GoalsPage from '@/components/GoalsPage';
 import AboutUs from '@/components/AboutUs';
 import RecentEvents from '@/components/RecentEvents';
-import SponsorsPage from '@/app/sponsors/page';
 import FAQ from '@/components/FAQ';
 import StillHaveQuestions from '@/components/StillHaveQuestions';
 import Footer from '@/components/Footer';
@@ -60,6 +59,7 @@ export default function Home() {
           { label: 'Blogs', href: '#blogs' },
           { label: 'Team', href: '/team' },
           { label: 'Contact us', href: '#contact' },
+          { label: 'Sponsors', href: '/sponsors' },
           { label: 'FAQ', href: '#faq' },
         ]}
         activeHref="/"
