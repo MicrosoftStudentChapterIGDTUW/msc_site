@@ -54,7 +54,7 @@ export default function Home() {
 
     const handleHashScroll = () => {
       if (isScrolling) return;
-      
+
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         if (window.location.hash) {
@@ -81,7 +81,7 @@ export default function Home() {
 
     window.addEventListener('click', handleAnchorClick, { passive: false });
     window.addEventListener('hashchange', handleHashScroll, { passive: true });
-    
+
     return () => {
       window.removeEventListener('click', handleAnchorClick);
       window.removeEventListener('hashchange', handleHashScroll);
@@ -93,7 +93,7 @@ export default function Home() {
     <>
       {/* Global Background with SVG - now sticky */}
       <div className="background-with-svg" id="top"></div>
-      
+
       {/* Global Aurora Background - now sticky */}
       <Aurora
         colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
@@ -109,7 +109,7 @@ export default function Home() {
         items={[
           { label: 'Home', href: '#top' },
           { label: 'About us', href: '#about' },
-          { label: 'Events', href: '#events' },
+          { label: 'Events', href: '/events' },
           { label: 'Blogs', href: '#blogs' },
           { label: 'Team', href: '/team' },
           { label: 'Contact us', href: '/contact' },
@@ -129,8 +129,8 @@ export default function Home() {
 
         {/* Main Title */}
         <div className="main-title">
-          <ShinyText 
-            text="MICROSOFT STUDENT CHAPTER" 
+          <ShinyText
+            text="MICROSOFT STUDENT CHAPTER"
             speed={4}
             className="shiny-title"
           />
