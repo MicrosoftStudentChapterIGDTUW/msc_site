@@ -6,7 +6,7 @@ export async function GET() {
     const sheets = await getSheet();
 
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID!;
-    const range = "Sheet1!A2:E";
+    const range = "BlogsData!A2:E";
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
