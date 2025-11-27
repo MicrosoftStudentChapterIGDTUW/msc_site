@@ -1,8 +1,8 @@
-// src/lib/blogs.ts
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 export type Post = {
   slug: string;
@@ -11,73 +11,79 @@ export type Post = {
   category: string;
   date: string;
   excerpt: string;
-  cover?: string | null;
+  cover?: string;
   readingTime: string;
-  content: string; // HTML for detail page; empty string in list
+  content: string;
 };
 
-const postsDirectory = path.join(process.cwd(), "src", "content", "blogs");
+// Use process.cwd() for Vercel compatibility
+const postsDirectory = path.join(process.cwd(), "posts");
 
-function getReadingTime(text: string): string {
-  const words = text.trim().split(/\s+/).length;
-  const minutes = Math.max(1, Math.ceil(words / 200));
-  return `${minutes} min read`;
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
+
+function getReadingTime(text: string) {
+  const words = text.split(/\s+/).length;
+  return `${Math.ceil(words / 200)} min read`;
 }
 
 export function getAllPosts(): Post[] {
-  if (!fs.existsSync(postsDirectory)) return [];
+  // Safety check if directory exists
+  if (!fs.existsSync(postsDirectory)) {
+    console.error("Directory not found:", postsDirectory);
+    return [];
+  }
 
-  const fileNames = fs.readdirSync(postsDirectory).filter((f) => f.endsWith(".md"));
+  const files = fs.readdirSync(postsDirectory);
 
-  const posts = fileNames.map((fileName) => {
-    const slug = fileName.replace(/\.md$/, "");
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { data, content } = matter(fileContents);
+  return files
+    .filter((fn) => fn.endsWith(".md"))
+    .map((file) => {
+      const slug = file.replace(".md", "");
+      const fullPath = path.join(postsDirectory, file);
+      const raw = fs.readFileSync(fullPath, "utf8");
 
-    return {
-      slug,
-      title: (data.title as string) || "Untitled Post",
-      keywords: (data.keywords as any[]) || [],
-      category: (data.category as string) || "General",
-      date: (data.date as string) || "Unknown",
-      excerpt: (data.excerpt as string) || (content.slice(0, 160) + "..."),
-      cover: (data.cover as string) || null,
-      readingTime: getReadingTime(content),
-      // keep content empty for list view (detail page will load full HTML)
-      content: "",
-    } as Post;
-  });
+      const { data, content } = matter(raw);
 
-  // Optionally sort by date (desc) if dates are present, else by slug
-  posts.sort((a, b) => {
-    if (a.date && b.date && a.date !== "Unknown" && b.date !== "Unknown") {
-      return b.date.localeCompare(a.date);
-    }
-    return a.slug.localeCompare(b.slug);
-  });
-
-  return posts;
+      return {
+        slug,
+        title: data.title || "Untitled Post",
+        keywords: data.keywords || [],
+        category: data.category || "General",
+        date: data.date || "",
+        excerpt: data.excerpt || content.slice(0, 160) + "...",
+        cover: data.cover || "",
+        readingTime: getReadingTime(content),
+        content: "",
+      };
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getPostBySlug(slug: string): Post | null {
+export function getPostBySlug(slug: string): Post {
   const fullPath = path.join(postsDirectory, `${slug}.md`);
-  if (!fs.existsSync(fullPath)) return null;
+  
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Post not found: ${slug}`);
+  }
+  
+  const raw = fs.readFileSync(fullPath, "utf8");
+  const { data, content } = matter(raw);
 
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(fileContents);
-
-  const html = marked.parse(content);
+  const rawHtml = marked(content) as string;
+  const cleanHtml = DOMPurify.sanitize(rawHtml);
 
   return {
     slug,
-    title: (data.title as string) || "Untitled Post",
-    keywords: (data.keywords as any[]) || [],
-    category: (data.category as string) || "General",
-    date: (data.date as string) || "Unknown",
-    excerpt: (data.excerpt as string) || (content.slice(0, 160) + "..."),
-    cover: (data.cover as string) || null,
+    title: data.title || "Untitled Post",
+    keywords: data.keywords || [],
+    category: data.category || "General",
+    date: data.date || "",
+    excerpt: data.excerpt || content.slice(0, 160) + "...",
+    cover: data.cover || "",
     readingTime: getReadingTime(content),
-    content,
-  } as Post;
+    content: cleanHtml,
+  };
 }
