@@ -6,7 +6,7 @@ export async function GET() {
     const sheets = await getSheet();
 
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID!;
-    const range = "BlogsData!A2:E";
+    const range = "Sheet1!A2:E";
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
@@ -18,7 +18,9 @@ export async function GET() {
     const blogs = rows.map((row: any[]) => ({
       slug: row[0],
       title: row[1],
-      keywords: row[2] ? row[2].split(",").map((k) => k.trim()) : [],
+      keywords: row[2]
+        ? (row[2] as string).split(",").map((k: string) => k.trim())
+        : [],
       content: row[3] || "",
       createdAt: row[4] || "",
     }));
