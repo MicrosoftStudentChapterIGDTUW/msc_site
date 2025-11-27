@@ -12,7 +12,6 @@ import GoalsPage from '@/components/GoalsPage';
 import AboutUs from '@/components/AboutUs';
 import RecentEvents from '@/components/RecentEvents';
 import SponsorsPage from '@/app/sponsors/page';
-import Blog from '@/app/blog/page';
 import FAQ from '@/components/FAQ';
 import StillHaveQuestions from '@/components/StillHaveQuestions';
 import Footer from '@/components/Footer';
@@ -174,9 +173,6 @@ export default function Home() {
 
       {/* Sponsors */}
       <SponsorsPage />
-
-      {/* Blogs */}
-      <Blog />
 
       {/* Footer */}
       <Footer />

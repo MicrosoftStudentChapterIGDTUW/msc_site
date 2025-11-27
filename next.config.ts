@@ -1,9 +1,15 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'react-icons'],
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // This tells Webpack to ignore 'fs' and 'path' on the client side
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      };
+    }
+    return config;
   },
 };
 
