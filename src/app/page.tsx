@@ -29,10 +29,8 @@ export default function Home() {
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
-
       if (anchor) {
         const href = anchor.getAttribute('href');
-
         if (href === '#top') {
           e.preventDefault();
           if (!isScrolling) {
@@ -43,7 +41,6 @@ export default function Home() {
         } else if (href?.startsWith('#')) {
           const hash = href.substring(1);
           const element = document.getElementById(hash);
-
           if (element && !isScrolling) {
             e.preventDefault();
             isScrolling = true;
@@ -60,15 +57,13 @@ export default function Home() {
       if (isScrolling) return;
 
       clearTimeout(scrollTimeout);
-
       scrollTimeout = setTimeout(() => {
         if (window.location.hash) {
           const hash = window.location.hash.substring(1);
           const element = document.getElementById(hash);
-
           if (element) {
             isScrolling = true;
-
+            // Wait a bit longer for page to fully load when coming from other pages
             setTimeout(() => {
               requestAnimationFrame(() => {
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -80,6 +75,7 @@ export default function Home() {
       }, 100);
     };
 
+    // Handle hash on mount (when coming from other pages)
     if (window.location.hash) {
       handleHashScroll();
     }
@@ -99,6 +95,7 @@ export default function Home() {
       {/* Background */}
       <div className="background-with-svg" id="top"></div>
 
+      {/* Global Aurora Background - now sticky */}
       <Aurora
         colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
         blend={0.9}
@@ -152,7 +149,10 @@ export default function Home() {
           <CircularGallery bend={0} textColor="#ffffff" borderRadius={0.05} scrollEase={0.02} />
         </div>
 
-        {/* Journey */}
+        {/* Call to Action Button */}
+        {/* <CallToAction /> */}
+
+        {/* Journey Text */}
         <JourneyText />
       </div>
 
