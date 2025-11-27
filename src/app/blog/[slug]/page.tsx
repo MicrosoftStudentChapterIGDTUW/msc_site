@@ -6,8 +6,8 @@ import { notFound } from "next/navigation";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
 
-import "../../../globals.css";
-import "../../blog.css";
+import "../../globals.css";
+import "../blog.css";
 
 // Define the params interface
 interface BlogPostPageProps {
