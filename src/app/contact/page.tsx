@@ -88,7 +88,7 @@ export default function ContactPage() {
                 items={[
                     { label: 'Home', href: '/' },
                     { label: 'About us', href: '/#about' },
-                    { label: 'Events', href: '/#events' },
+                    { label: 'Events', href: '/events' },
                     { label: 'Blogs', href: '/#blogs' },
                     { label: 'Team', href: '/team' },
                     { label: 'Contact us', href: '/contact' },

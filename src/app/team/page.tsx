@@ -139,7 +139,7 @@ export default function TeamPage() {
           items={[
             { label: "Home", href: "/" },
             { label: "About us", href: "/#about" },
-            { label: "Events", href: "/#events" },
+            { label: "Events", href: "/events" },
             { label: "Blogs", href: "/#blogs" },
             { label: "Team", href: "/team" },
             { label: "Contact us", href: "/contact" },
@@ -154,17 +154,17 @@ export default function TeamPage() {
       </div>
       {/* Page Header */}
       <div className="relative z-20 pt-30 text-center">
-        <h1 className={`${anton.className} uppercase text-[2.8rem] sm:text-[4.5rem] font-normal tracking-[0.12em] text-[#4cc9ff] drop-shadow-[0_0_12px_rgba(76,201,255,0.5)]`}>
+      <h1 className={`${anton.className} uppercase text-[2.8rem] sm:text-[4.5rem] font-normal tracking-[0.12em] text-[#4cc9ff] drop-shadow-[0_0_12px_rgba(76,201,255,0.5)]`}>
           MEET THE TEAM
         </h1>
 
-          <p
-            className="mt-4 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed tracking-[0.05em] font-[Roboto] font-bold text-white"
-            style={{ fontFamily: "Roboto, sans-serif" }}
-          >
-            Meet our passionate innovators and future tech leaders, empowered by
-            Microsoft technologies in our vibrant college community.
-          </p>
+        <p
+          className="mt-4 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed tracking-[0.05em] font-[Roboto] font-bold text-white"
+          style={{ fontFamily: "Roboto, sans-serif" }}
+        >
+          Meet our passionate innovators and future tech leaders, empowered by
+          Microsoft technologies in our vibrant college community.
+        </p>
       </div>
 
 
@@ -186,7 +186,7 @@ export default function TeamPage() {
           {teamMembers.map((member, index) => (
             <Tilt key={index} className="rounded-xl glow-card group">
               <div className="relative overflow-hidden rounded-xl shadow-lg w-full max-w-[320px] h-[350px] bg-black/40 backdrop-blur-md border border-white/10 mx-auto">
-
+              
                 {/* Image */}
                 <img
                   src={member.imageUrl}
