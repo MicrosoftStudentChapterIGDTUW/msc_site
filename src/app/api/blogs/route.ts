@@ -4,11 +4,13 @@ import { getSheet } from "@/lib/googleSheets";
 export async function GET() {
   try {
     const sheets = await getSheet();
-    const sheetId = process.env.GOOGLE_SHEETS_ID!;
+
+    const spreadsheetId = process.env.GOOGLE_SHEETS_ID!;
+    const range = "BlogsData!A2:E";
 
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId,
-      range: "BlogsData!A2:E", // Adjust if your sheet name differs
+      spreadsheetId,
+      range,
     });
 
     const rows = response.data.values || [];
@@ -16,14 +18,14 @@ export async function GET() {
     const blogs = rows.map((row: any[]) => ({
       slug: row[0],
       title: row[1],
-      keywords: row[2]?.split(",") || [],
+      keywords: row[2] ? row[2].split(",").map((k) => k.trim()) : [],
       content: row[3] || "",
       createdAt: row[4] || "",
     }));
 
     return NextResponse.json({ blogs });
   } catch (err) {
-    console.error("Google Sheets fetch error:", err);
+    console.error("Google Sheets error:", err);
     return NextResponse.json(
       { error: "Failed to load blogs" },
       { status: 500 }
