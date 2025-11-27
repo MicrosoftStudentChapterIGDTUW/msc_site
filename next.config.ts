@@ -1,13 +1,16 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // This tells Webpack to ignore 'fs' and 'path' on the client side
-  webpack: (config, { isServer }) => {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // We explicitly type 'config' as 'any' to satisfy TypeScript
+  webpack: (config: any, { isServer }: { isServer: boolean }) => {
     if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-      };
+      // Ensure resolve.fallback exists
+      config.resolve = config.resolve || {};
+      config.resolve.fallback = config.resolve.fallback || {};
+
+      // Disable fs and path on the client side
+      config.resolve.fallback.fs = false;
+      config.resolve.fallback.path = false;
     }
     return config;
   },
