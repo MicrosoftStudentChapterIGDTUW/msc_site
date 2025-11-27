@@ -8,17 +8,89 @@ export default function SponsorsPage() {
   const sponsors = [
     {
       id: 1,
-      name: "Sponsor Name 1",
-      description:
-        "A proud collaborator supporting innovation, technical excellence, and student growth.",
-      logo: "/images/sponsor1.png",
+      name: "Rise in",
+      description: "Education initiative supporting student growth.",
+      logo: "/images/risein.png",
     },
     {
       id: 2,
-      name: "Sponsor Name 2",
+      name: "AlgoPrep",
+      description: "Platform for interview & coding preparation.",
+      logo: "/images/algoprep.png",
+    },
+    {
+      id: 3,
+      name: "DoraHacks",
+      description: "Global hackathon and Web3 builder community.",
+      logo: "/images/dorahacks.png",
+    },
+    {
+      id: 4,
+      name: "HackerRank",
       description:
-        "Partnering with MSC to empower students through events, projects, and opportunities.",
-      logo: "/images/sponsor2.png",
+        "World’s leading competitive coding and skill assessment platform.",
+      logo: "/images/hackerrank.png",
+    },
+    {
+      id: 5,
+      name: "GFG",
+      description:
+        "GeeksforGeeks — largest CS learning & interview prep platform.",
+      logo: "/images/gfg.png",
+    },
+    {
+      id: 6,
+      name: "InterviewBuddy",
+      description: "Mock interviews and technical practice sessions.",
+      logo: "/images/interviewbuddy.png",
+    },
+    {
+      id: 7,
+      name: "Unstop",
+      description:
+        "Platform for competitions, jobs, and student opportunities.",
+      logo: "/images/unstop.png",
+    },
+    {
+      id: 8,
+      name: "Eduquest Education",
+      description:
+        "Ed-tech platform providing coaching and career guidance.",
+      logo: "/images/eduquesteducation.png",
+    },
+    {
+      id: 9,
+      name: "My Certificate",
+      description:
+        "Digital certification and credential verification service.",
+      logo: "/images/mycertificate.png",
+    },
+    {
+      id: 10,
+      name: "Fueler",
+      description:
+        "Portfolio-based opportunity and student upskilling platform.",
+      logo: "/images/fueler.png",
+    },
+    {
+      id: 11,
+      name: "Certopus Support",
+      description: "Certification automation and support system.",
+      logo: "/images/certopus.png",
+    },
+    {
+      id: 12,
+      name: "StockEdge",
+      description:
+        "Stock market education, analysis tools and insights.",
+      logo: "/images/stockedge.png",
+    },
+    {
+      id: 13,
+      name: "Banyan Nation",
+      description:
+        "Sustainability, plastic recycling and environment partner.",
+      logo: "/images/banyannation.png",
     },
   ];
 
@@ -40,8 +112,8 @@ export default function SponsorsPage() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          Organizations that believe in the vision of MSC and empower IGDTUW students
-          through innovation, mentorship, and real-world opportunities.
+          Organizations that believe in the vision of MSC and empower IGDTUW
+          students through innovation, mentorship, and real-world opportunities.
         </motion.p>
       </section>
 
