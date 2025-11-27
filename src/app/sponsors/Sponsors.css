@@ -95,17 +95,29 @@
 
 
 /* -------------------------
-   LOGO
+   LOGO (White Background)
 -------------------------- */
 .sponsor-logo {
   width: 160px;
-  height: auto;
+  height: 160px;
+
+  padding: 20px;
+  background: #ffffff;        /* WHITE BACKGROUND */
+  border-radius: 18px;        /* Rounded */
   object-fit: contain;
-  transition: transform 0.35s ease;
+
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
+
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sponsor-card:hover .sponsor-logo {
-  transform: scale(1.12);
+  transform: scale(1.08);
+  box-shadow: 0 10px 26px rgba(255, 255, 255, 0.25);
 }
 
 
@@ -141,5 +153,6 @@
   }
   .sponsor-logo {
     width: 130px;
+    height: 130px;
   }
 }
