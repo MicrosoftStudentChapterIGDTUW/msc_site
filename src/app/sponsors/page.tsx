@@ -56,7 +56,7 @@ export default function SponsorsPage() {
       name: "Eduquest Education",
       description:
         "Ed-tech platform providing coaching and career guidance.",
-      logo: "/images/eduquesteducation.png",
+      logo: "/images/eduquesteducation.jpeg",
     },
     {
       id: 9,
@@ -70,7 +70,7 @@ export default function SponsorsPage() {
       name: "Fueler",
       description:
         "Portfolio-based opportunity and student upskilling platform.",
-      logo: "/images/fueler.png",
+      logo: "/images/fueler.svg",
     },
     {
       id: 11,
