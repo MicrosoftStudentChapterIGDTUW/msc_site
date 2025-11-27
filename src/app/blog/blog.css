@@ -1,95 +1,83 @@
-/* src/app/blog/blog.css */
-
-.blog-page {
-  padding: 6.5rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  color: white;
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+.post-page {
+  max-width: 800px;
+  margin: 60px auto;
+  font-family: var(--font-primary, "Inter", sans-serif);
+  color: var(--text-primary, #111); 
+  padding: 0 16px;
 }
 
-.blog-heading {
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-weight: 800;
+.post-title {
+  font-size: 38px;
+  font-weight: 700;
+  margin-bottom: 12px;
 }
 
-.blog-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.6rem;
-  flex-wrap: wrap;
+.post-meta {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 24px;
 }
 
-.search-box {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  padding: 0.6rem 0.8rem;
+.post-cover {
+  width: 100%;
+  border-radius: 12px;
+  margin: 28px 0;
+}
+
+.post-content {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-primary, #222);
+}
+
+/* HEADINGS */
+.post-content h2 {
+  font-size: 30px;
+  font-weight: 600;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+.post-content h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+
+/* PARAGRAPHS */
+.post-content p {
+  margin: 18px 0;
+}
+
+/* LISTS */
+.post-content ul,
+.post-content ol {
+  padding-left: 26px;
+  margin: 12px 0;
+}
+
+/* LINKS */
+.post-content a {
+  color: #0055ff;
+  text-decoration: underline;
+}
+
+/* IMAGES */
+.post-content img {
+  max-width: 100%;
   border-radius: 10px;
-  min-width: 320px;
-  color: white;
+  margin: 20px 0;
 }
 
-.tag-chip {
-  padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.05);
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #c9d2e6;
-}
-.tag-chip.active { background: linear-gradient(90deg,#6b8dff,#9db8ff); color: white; border-color: transparent; }
-
-.blog-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+/* CODE BLOCKS */
+.post-content pre {
+  background: #f4f4f4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
 }
 
-.blog-card {
-  background: rgba(255,255,255,0.04);
-  border-radius: 16px;
-  padding: 1.2rem;
-  border: 1px solid rgba(255,255,255,0.06);
-  transition: transform .25s ease, box-shadow .25s ease;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-.blog-card:hover { transform: translateY(-8px); box-shadow: 0 14px 36px rgba(0,0,0,0.4); }
-
-.card-cover { width: 100%; height: 160px; border-radius: 8px; object-fit: cover; background: #0b1220; }
-
-.blog-card h3 { margin: 0; font-size: 1.25rem; }
-.meta { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 6px; }
-.blog-keywords { font-size: 0.9rem; color: rgba(220,220,220,0.8); margin-top: 6px; }
-.excerpt { color: rgba(230,230,230,0.9); margin-top: 8px; }
-
-.pagination { display:flex; gap:8px; justify-content:center; margin-top:12px; }
-.page-btn { padding: 0.5rem 0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); cursor:pointer; color:white; }
-
-.single-blog-page {
-  padding: 6.5rem 2rem;
-  max-width: 900px;
-  margin: 0 auto;
-  color: white;
-}
-.back-btn { text-decoration:none; color:#9db8ff; display:inline-block; margin-bottom:8px; }
-.single-blog-title { font-size:2.6rem; margin: 8px 0 6px 0; }
-.single-blog-keywords { color: rgba(255,255,255,0.75); margin-bottom: 12px; }
-.single-blog-cover { width:100%; height: 300px; object-fit:cover; border-radius:12px; margin: 12px 0; }
-.single-blog-content { margin-top: 1.2rem; color: #e6eefc; line-height:1.8; font-size:1.05rem; }
-
-/* responsive */
-@media (max-width: 1000px) {
-  .blog-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 620px) {
-  .blog-grid { grid-template-columns: 1fr; }
-  .search-box { min-width: 180px; }
-  .blog-heading { font-size: 2.2rem; }
+.post-content code {
+  font-family: "JetBrains Mono", monospace;
 }
