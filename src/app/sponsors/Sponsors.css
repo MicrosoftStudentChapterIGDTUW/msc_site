@@ -35,88 +35,143 @@
 
 
 /* -------------------------
-   GRID LAYOUT
+   GRID (3 per row)
 -------------------------- */
 .sponsors-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);   /* 2 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 3.5rem;
   justify-items: center;
   margin-bottom: 6rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .sponsors-grid {
-    grid-template-columns: 1fr;  /* 1 per row on mobile */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .sponsors-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 
 /* -------------------------
-   SPONSOR CARD
+   SPONSOR CARD (Glass + Gradient Border + Tilt)
 -------------------------- */
 .sponsor-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  border-radius: 24px;
-  padding: 2.4rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 26px;
+  padding: 2.6rem;
   width: 100%;
-  max-width: 520px;
+  max-width: 420px;
 
   text-align: center;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(18px);
+  position: relative;
+  overflow: hidden;
+
+  transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Gradient border */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.sponsor-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  padding: 2px;
+  background: linear-gradient(135deg, #6b8dff, #9db8ff, #c8d6ff);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 .sponsor-card:hover {
-  box-shadow: 0 18px 40px rgba(80, 120, 255, 0.5);
-  border-color: rgba(90, 130, 255, 0.4);
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 20px 45px rgba(120, 150, 255, 0.45);
 }
 
 
 /* -------------------------
-   WHITE LOGO BLOCK (REPLACES BOTH BOXES)
+   3D TILT EFFECT
+-------------------------- */
+.sponsor-card {
+  perspective: 900px;
+}
+
+.floating-wrapper {
+  transform-style: preserve-3d;
+}
+
+
+/* -------------------------
+   WHITE LOGO BLOCK with Gradient Aura
 -------------------------- */
 .floating-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 100%;
+  background: white;
   padding: 3rem;
   border-radius: 22px;
 
-  background: #ffffff;      /* PURE WHITE BOX */
-  border: 1px solid rgba(0,0,0,0.08);
-  
-  box-shadow: 0 8px 25px rgba(255,255,255,0.18);
-  transition: all 0.35s ease;
+  box-shadow:
+    0 8px 25px rgba(255, 255, 255, 0.16),
+    0 0 65px rgba(150, 180, 255, 0.25);
+
+  transition: all 0.45s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradient aura pulse */
+.floating-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle, rgba(120,150,255,0.35), transparent 70%);
+  animation: auraPulse 2.8s infinite ease-in-out;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes auraPulse {
+  0% { opacity: 0.25; transform: scale(0.9); }
+  50% { opacity: 0.55; transform: scale(1.1); }
+  100% { opacity: 0.25; transform: scale(0.9); }
 }
 
 .sponsor-card:hover .floating-wrapper {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 16px 32px rgba(255,255,255,0.3);
+  transform: translateY(-6px) scale(1.05);
+  box-shadow:
+    0 14px 32px rgba(255, 255, 255, 0.3),
+    0 0 120px rgba(145, 170, 255, 0.55);
 }
 
 
 /* -------------------------
-   LOGO (NO INNER BOX ANYMORE)
+   LOGO
 -------------------------- */
 .sponsor-logo {
-  width: 160px;
-  height: 160px;
+  width: 165px;
+  height: 165px;
   object-fit: contain;
 
-  background: transparent !important;
-  border-radius: 0;
-  padding: 0;
+  position: relative;
+  z-index: 3;
 
-  transition: transform 0.35s ease;
+  transition: transform 0.4s ease;
 }
 
 .sponsor-card:hover .sponsor-logo {
-  transform: scale(1.08);
+  transform: scale(1.12) translateZ(25px);
 }
 
 
@@ -124,10 +179,10 @@
    TEXT
 -------------------------- */
 .sponsor-name {
-  font-size: 1.7rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
   color: white;
-  margin-top: 1.4rem;
+  margin-top: 1.5rem;
   margin-bottom: 0.6rem;
 }
 
