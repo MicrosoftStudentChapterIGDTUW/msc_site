@@ -2,13 +2,15 @@
   min-height: 100vh;
   background: transparent;
   position: relative;
+  margin-top: 40px;
+  padding-top: 20px;
 }
 
 /* OUR GOALS Title - Top Left */
 .goals-title-container {
   position: absolute;
   top: 80px;
-  left: 80px;
+  left: 120px;
   z-index: 10;
 }
 
@@ -51,7 +53,7 @@
 .goal-1-container:hover .goal-svg,
 .goal-2-container:hover .goal-svg,
 .goal-3-container:hover .goal-svg {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4)) drop-shadow(0 0 15px rgba(96, 165, 250, 0.25));
 }
 
 /* Arrow Container - Moved right and down */

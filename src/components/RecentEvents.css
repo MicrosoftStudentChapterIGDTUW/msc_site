@@ -1,100 +1,122 @@
-/* ------------------------------
-   SECTION
------------------------------- */
 .recent-events-section {
-  padding: 6rem 0;
+  min-height: 100vh;
+  padding: 100px 40px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  width: 100%;
 }
 
 .recent-events-content {
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
-  padding: 0 2rem;
-}
-
-/* ------------------------------
-   TITLE
------------------------------- */
-.recent-events-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: 2px;
   text-align: center;
-  margin-bottom: 4rem;
+}
+
+.recent-events-title {
+  font-family: var(--font-anton), sans-serif;
+  font-size: 5rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
   color: white;
+  margin-bottom: 60px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-/* ------------------------------
-   GRID
------------------------------- */
 .recent-events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-  gap: 4rem;
-  justify-items: center;
-}
-
-/* ------------------------------
-   CARD WRAPPER
------------------------------- */
-.event-card-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 40px;
   align-items: center;
-  gap: 1.6rem;
-  overflow: visible; /* Ensures description is visible */
+  justify-content: center;
 }
 
-/* ------------------------------
-   CARD TITLE (INSIDE TILTEDCARD)
------------------------------- */
+.event-card-wrapper {
+  background: rgba(96, 165, 250, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  max-width: 350px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-card-wrapper:hover {
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.tilted-card-container {
+  width: 100%;
+  overflow: hidden;
+  flex: 1;
+}
+
+.event-card-content {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+}
+
 .event-card-title {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: white;
-  text-align: center;
+  margin-bottom: 12px;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ------------------------------
-   DESCRIPTION BELOW CARD
------------------------------- */
-.event-bottom-description {
-  color: #dcdcdc;
-  font-size: 1.1rem;
-  max-width: 400px;
-  text-align: center;
+.event-card-description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.6;
-  opacity: 0.9;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 1.4rem 1rem;
-  border-radius: 14px;
-  backdrop-filter: blur(12px);
-  transition: all 0.25s ease;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin: 0;
 }
 
-.event-bottom-description:hover {
-  opacity: 1;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+.recent-events-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ------------------------------
-   RESPONSIVE
------------------------------- */
-@media (max-width: 520px) {
-  .recent-events-title {
-    font-size: 2.4rem;
-  }
-
+/* Responsive */
+@media (min-width: 768px) {
   .recent-events-grid {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-  }
-
-  .event-bottom-description {
-    font-size: 1rem;
+    flex-direction: row;
+    gap: 40px;
   }
 }
+
+@media (max-width: 768px) {
+  .recent-events-section {
+    padding: 80px 20px;
+  }
+
+  .recent-events-title {
+    font-size: 2.5rem;
+  }
+
+  .event-card {
+    max-width: 100%;
+  }
+
+  .event-card-title {
+    font-size: 1.3rem;
+  }
+
+  .event-card-description {
+    font-size: 0.9rem;
+  }
+}
+

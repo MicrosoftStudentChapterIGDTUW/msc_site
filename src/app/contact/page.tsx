@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { MapPin, CheckCircle, X } from "lucide-react";
 import { FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 import PillNav from '@/components/PillNav';
 import Aurora from '@/components/Aurora';
-import React from "react";
 
 
 export default function ContactPage() {
@@ -89,9 +88,9 @@ export default function ContactPage() {
                 items={[
                     { label: 'Home', href: '/' },
                     { label: 'About us', href: '/#about' },
-                    { label: 'Events', href: '/#events' },
+                    { label: 'Events', href: '/events' },
                     { label: 'Blogs', href: '/#blogs' },
-                    { label: 'Team', href: '/#team' },
+                    { label: 'Team', href: '/team' },
                     { label: 'Contact us', href: '/contact' },
                     { label: 'FAQ', href: '/#faq' },
                 ]}

@@ -11,23 +11,41 @@
   --logo: 40px;
   --pill-pad-x: 18px;
   --pill-gap: 6px;
+  width: 100%;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  transition: background-color 300ms ease;
+}
+
+.pill-nav-content {
+  padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 5px 20px;
-  width: 100%;
-  background: rgba(0, 51, 102, 0.8);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  padding-top: 16px;
+  transition: padding-top 0.3s ease;
+}
+
+.pill-nav-container.scrolled .pill-nav-content {
+  padding-top: 0;
+}
+
+.pill-nav-container.scrolled .pill-nav {
+  padding: 0;
+}
+
+.pill-nav-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .pill-logo {
   width: 40px;
   height: auto;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .pill-logo img {
@@ -41,14 +59,16 @@
   position: relative;
   display: flex;
   align-items: center;
-  height: var(--nav-h);
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-radius: 0;
-  border: none;
-  padding: 0;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  max-width: fit-content;
+  margin: 0 auto;
+  min-height: 48px;
+  overflow: visible;
+  box-shadow: 0 0 25px rgba(96, 165, 250, 0.08), 0 0 40px rgba(96, 165, 250, 0.04);
 }
+
 
 .pill-list {
   list-style: none;
@@ -66,24 +86,32 @@
 }
 
 .pill {
-  min-width: 110px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: 36px;
   padding: 0 var(--pill-pad-x);
-  background: var(--pill-bg, #0066cc);
+  background: transparent;
   color: var(--pill-text, #ffffff);
   text-decoration: none;
   border-radius: 9999px;
   box-sizing: border-box;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 400;
+  font-size: 15px;
   letter-spacing: 0.3px;
   white-space: nowrap;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.pill:hover {
+  background: #0066cc;
+}
+
+.pill.is-active {
+  background: #0066cc;
 }
 
 .pill .hover-circle {
@@ -103,11 +131,8 @@
 }
 
 .pill .label-stack {
-  width: 100%;
-  text-align: center;
-  justify-content: center;
   position: relative;
-  display: flex;
+  display: inline-block;
   line-height: 1;
   z-index: 3;
 }
@@ -142,7 +167,5 @@
   border-radius: 50px;
   z-index: 4;
 }
-
-
 
 

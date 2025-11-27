@@ -2,7 +2,7 @@
   background: rgba(0, 51, 102, 0.8);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 60px 40px 30px;
+  padding: 45px 40px 25px;
   width: 100%;
 }
 
@@ -12,7 +12,7 @@
   padding: 0 100px;
   display: grid;
   grid-template-columns: auto 200px 200px 200px;
-  gap: 50px;
+  gap: 30px;
   align-items: start;
   justify-content: space-between;
 }
@@ -24,18 +24,18 @@
 }
 
 .footer-logo-img {
-  width: 400px;
-  height: 400px;
+  width: 280px;
+  height: 280px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(96, 165, 250, 0.3));
-  margin-left: -120px;
+  margin-left: -80px;
 }
 
 .footer-title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
@@ -46,13 +46,13 @@
 }
 
 .footer-list li {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .footer-list a {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: color 0.3s ease;
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
@@ -63,8 +63,8 @@
 
 .footer-text {
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.5;
   margin: 0;
   font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
@@ -95,8 +95,8 @@
 }
 
 .footer-copyright-section {
-  margin-top: 50px;
-  padding-top: 30px;
+  margin-top: 30px;
+  padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
