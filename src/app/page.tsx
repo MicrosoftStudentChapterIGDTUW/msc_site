@@ -1,182 +1,181 @@
-'use client';
+// src/app/blog/page.tsx
+"use client";
 
-import MicrosoftLogo from '@/components/MicrosoftLogo';
-import ShinyText from '@/components/ShinyText';
-import BlurText from '@/components/BlurText';
-import CircularGallery from '@/components/CircularGallery';
-import Aurora from '@/components/Aurora';
-import CallToAction from '@/components/CallToAction';
-import JourneyText from '@/components/JourneyText';
-import PillNav from '@/components/PillNav';
-import GoalsPage from '@/components/GoalsPage';
-import AboutUs from '@/components/AboutUs';
-import RecentEvents from '@/components/RecentEvents';
-import SponsorsPage from '@/app/sponsors/page';
-import FAQ from '@/components/FAQ';
-import StillHaveQuestions from '@/components/StillHaveQuestions';
-import Footer from '@/components/Footer';
-import { useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
+import { loadBlogs, Blog } from "./data";
+import "./blog.css";
 
-export default function Home() {
-  const handleAnimationComplete = () => {
-    console.log('IGDTUW Animation completed!');
-  };
+const PER_PAGE = 6;
+
+function readTime(text: string) {
+  const words = text.split(/\s+/).length;
+  const mins = Math.max(1, Math.round(words / 200));
+  return `${mins} min read`;
+}
+
+export default function BlogIndex() {
+  const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
+  const [query, setQuery] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
-    let isScrolling = false;
-
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest('a');
-      if (anchor) {
-        const href = anchor.getAttribute('href');
-        if (href === '#top') {
-          e.preventDefault();
-          if (!isScrolling) {
-            isScrolling = true;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => { isScrolling = false; }, 1000);
-          }
-        } else if (href?.startsWith('#')) {
-          const hash = href.substring(1);
-          const element = document.getElementById(hash);
-          if (element && !isScrolling) {
-            e.preventDefault();
-            isScrolling = true;
-            requestAnimationFrame(() => {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              setTimeout(() => { isScrolling = false; }, 1000);
-            });
-          }
-        }
-      }
-    };
-
-    const handleHashScroll = () => {
-      if (isScrolling) return;
-
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        if (window.location.hash) {
-          const hash = window.location.hash.substring(1);
-          const element = document.getElementById(hash);
-          if (element) {
-            isScrolling = true;
-            // Wait a bit longer for page to fully load when coming from other pages
-            setTimeout(() => {
-              requestAnimationFrame(() => {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                setTimeout(() => { isScrolling = false; }, 1000);
-              });
-            }, 200);
-          }
-        }
-      }, 100);
-    };
-
-    // Handle hash on mount (when coming from other pages)
-    if (window.location.hash) {
-      handleHashScroll();
-    }
-
-    window.addEventListener('click', handleAnchorClick, { passive: false });
-    window.addEventListener('hashchange', handleHashScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('click', handleAnchorClick);
-      window.removeEventListener('hashchange', handleHashScroll);
-      clearTimeout(scrollTimeout);
-    };
+    const loaded = loadBlogs();
+    setAllBlogs(loaded);
   }, []);
 
+  useEffect(() => {
+    const stored = typeof window !== "undefined" && localStorage.getItem("msc_theme");
+    if (stored === "light") setTheme("light");
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.background = theme === "light" ? "#f7f9ff" : "#07102a";
+    localStorage.setItem("msc_theme", theme);
+  }, [theme]);
+
+  // unique tags
+  const tags = useMemo(() => {
+    const s = new Set<string>();
+    allBlogs.forEach((b) => b.tags.forEach((t) => s.add(t)));
+    return [...s];
+  }, [allBlogs]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = allBlogs;
+    if (activeTag) list = list.filter((b) => b.tags.includes(activeTag));
+    if (q.length) {
+      list = list.filter(
+        (b) =>
+          b.title.toLowerCase().includes(q) ||
+          b.keywords.join(" ").toLowerCase().includes(q) ||
+          b.content.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [allBlogs, query, activeTag]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [totalPages, page]);
+
+  const pageBlogs = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const popular = [...allBlogs]
+    .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
+    .slice(0, 5);
+
+  const recent = [...allBlogs].sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || "")).slice(0, 5);
+
   return (
-    <>
-      {/* Global Background with SVG - now sticky */}
-      <div className="background-with-svg" id="top"></div>
+    <div className="blog-page">
+      <h1 className="blog-heading">MSC Blog</h1>
 
-      {/* Global Aurora Background - now sticky */}
-      <Aurora
-        colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
-        blend={0.9}
-        amplitude={0.9}
-        speed={1}
-      />
+      <div className="blog-controls">
+        <input
+          className="search-box"
+          placeholder="Search by title, content or keywords..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
 
-      {/* Sticky Glass Pill Navbar */}
-      <PillNav
-        logo="/logo.png"
-        logoAlt="MSC Logo"
-        items={[
-          { label: 'Home', href: '#top' },
-          { label: 'About us', href: '#about' },
-          { label: 'Events', href: '/events' },
-          { label: 'Blogs', href: '#blogs' },
-          { label: 'Team', href: '/team' },
-          { label: 'Contact us', href: '#contact' },
-          { label: 'Sponsors', href: '/sponsors' },
-          { label: 'FAQ', href: '#faq' },
-        ]}
-        activeHref="/"
-        className="custom-nav"
-        baseColor="#0066cc"
-        pillColor="#0066cc"
-        hoveredPillTextColor="#ffffff"
-        pillTextColor="#ffffff"
-      />
-
-      <div className="font-sans min-h-screen relative overflow-hidden">
-        {/* Microsoft Learn Student Ambassador Logo */}
-        <MicrosoftLogo />
-
-        {/* Main Title */}
-        <div className="main-title">
-          <ShinyText
-            text="MICROSOFT STUDENT CHAPTER"
-            speed={4}
-            className="shiny-title"
-          />
-          <ShinyText
-            text="IGDTUW"
-            speed={3}
-            className="subtitle"
-          />
+        <div className="tag-chips">
+          <div
+            className={`tag-chip ${activeTag === null ? "active" : ""}`}
+            onClick={() => setActiveTag(null)}
+          >
+            All
+          </div>
+          {tags.map((t) => (
+            <div
+              key={t}
+              className={`tag-chip ${activeTag === t ? "active" : ""}`}
+              onClick={() => setActiveTag((cur) => (cur === t ? null : t))}
+            >
+              {t}
+            </div>
+          ))}
         </div>
 
-        {/* Circular Gallery */}
-        <div style={{ height: '600px', position: 'relative', width: '100%' }}>
-          <CircularGallery bend={0} textColor="#ffffff" borderRadius={0.05} scrollEase={0.02} />
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+          <div className="theme-toggle" onClick={() => setTheme((x) => (x === "dark" ? "light" : "dark"))}>
+            {theme === "dark" ? "Light" : "Dark"}
+          </div>
+          <Link href="/blog/admin" className="page-btn">Admin</Link>
         </div>
-
-        {/* Call to Action Button */}
-        {/* <CallToAction /> */}
-
-        {/* Journey Text */}
-        <JourneyText />
       </div>
 
-      {/* Old navbar removed in favor of sticky PillNav */}
+      <div className="blog-grid">
+        <div>
+          <div className="blog-list">
+            {pageBlogs.map((b) => (
+              <Link href={`/blog/${b.slug}`} key={b.slug} className="blog-card">
+                <img src={b.cover || "/images/blog-fallback.png"} alt={b.title} className="cover" />
+                <div>
+                  <h2>{b.title}</h2>
+                  <div className="meta">{b.publishedAt} • {readTime(b.content)}</div>
+                  <p className="blog-keywords">{b.keywords.join(" • ")}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-      {/* Goals Page - appears when scrolling down */}
-      <GoalsPage />
+          {/* pagination */}
+          <div className="pagination">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                className="page-btn"
+                onClick={() => setPage(i + 1)}
+                style={{ opacity: page === i + 1 ? 1 : 0.7 }}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* About Us Section - appears after scrolling past goals */}
-      <AboutUs />
+        <aside className="blog-sidebar">
+          <div className="sidebar-section">
+            <h4>Popular</h4>
+            {popular.map((p) => (
+              <div key={p.slug} className="popular-item">
+                <img src={p.cover || "/images/blog-fallback.png"} width={56} height={40} style={{ borderRadius: 8, objectFit: "cover" }} />
+                <div>
+                  <Link href={`/blog/${p.slug}`} style={{ color: "white", textDecoration: "none" }}>{p.title}</Link>
+                  <div style={{ fontSize: 12, color: "var(--muted)" }}>{p.publishedAt}</div>
+                </div>
+              </div>
+            ))}
+          </div>
 
-      {/* FAQ Section - appears after About Us */}
-      <FAQ />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.02)", margin: "1rem 0" }} />
 
-      {/* Still Have Questions Section - appears after FAQ */}
-      <StillHaveQuestions />
+          <div className="sidebar-section">
+            <h4>Recent</h4>
+            {recent.map((r) => (
+              <div key={r.slug} style={{ padding: "0.4rem 0" }}>
+                <Link href={`/blog/${r.slug}`} style={{ color: "white", textDecoration: "none" }}>{r.title}</Link>
+                <div style={{ fontSize: 12, color: "var(--muted)" }}>{r.publishedAt}</div>
+              </div>
+            ))}
+          </div>
 
-      {/* Recent Events Section - appears after Still Have Questions */}
-      <RecentEvents />
-      
-      {/* Sponsors Page Section - appears after Recent Events */}
-      <SponsorsPage /> 
+          <div style={{ height: 1, background: "rgba(255,255,255,0.02)", margin: "1rem 0" }} />
 
-      {/* Footer */}
-      <Footer />
-    </>
+          <div className="sidebar-section">
+            <h4>Newsletter</h4>
+            <div className="newsletter">
+              <input placeholder="you@domain.com" />
+              <button className="page-btn" onClick={() => alert("Subscribed (demo)")}>Subscribe</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
   );
 }
