@@ -1,3 +1,10 @@
+/* FORCE DARK THEME FOR SPONSOR PAGE ONLY */
+.sponsors-page-wrapper,
+.sponsors-page-wrapper * {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
 /* -------------------------
    PAGE WRAPPER
 -------------------------- */
@@ -6,6 +13,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 8rem 2rem 4rem 2rem;
+  background: #000 !important; /* full-page dark fix */
 }
 
 /* -------------------------
@@ -20,17 +28,17 @@
 .sponsors-header h1 {
   font-size: 3.6rem;
   font-weight: 800;
-  color: white;
 }
 
+/* white text already forced globally above */
 .sponsors-subtitle {
   font-size: 1.25rem;
-  color: #e6e6e6;
+  opacity: 0.85;
   margin-top: 1rem;
 }
 
 /* -------------------------
-   GRID 3×
+   GRID
 -------------------------- */
 .sponsors-grid {
   display: grid;
@@ -55,7 +63,7 @@
    CARD
 -------------------------- */
 .sponsor-card {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05) !important;
   border-radius: 26px;
   padding: 2.6rem;
   width: 100%;
@@ -82,67 +90,57 @@
   mask-composite: exclude;
 }
 
-.sponsor-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 34px rgba(120, 150, 255, 0.24);
-}
-
 /* -------------------------
-   FLOATING LOGO BLOCK (WHITE)
+   FLOATING LOGO BLOCK — FIXED
 -------------------------- */
 .floating-wrapper {
-  background: white;
+  background: rgba(255, 255, 255, 0.1) !important; /* NO MORE WHITE BLOCK */
   padding: 2.2rem;
   border-radius: 22px;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.12),
-    0 0 30px rgba(255, 255, 255, 0.18);
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    0 0 30px rgba(0, 150, 255, 0.22);
   transition: all 0.35s ease;
   position: relative;
-  
-  /* --- KEY FIXES FOR CENTERING --- */
-  display: flex;           
-  justify-content: center; 
-  align-items: center;     
-  min-height: 200px;       /* Ensures uniform box height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
 
-/* toned down brand glow */
+/* stronger glow effect on hover (dark mode friendly) */
 .sponsor-card:hover .floating-wrapper {
   transform: translateY(-4px) scale(1.04);
   box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.18),
+    0 6px 18px rgba(0, 0, 0, 0.45),
     0 0 40px var(--brand-glow),
-    0 0 70px color-mix(in srgb, var(--brand-glow) 50%, transparent);
+    0 0 70px color-mix(in srgb, var(--brand-glow) 40%, transparent);
 }
 
-/* low-intensity aura */
 .floating-wrapper::after {
   content: "";
   position: absolute;
   inset: -45%;
   border-radius: inherit;
   background: radial-gradient(circle, color-mix(in srgb, var(--brand-glow) 45%, transparent) 0%, transparent 70%);
-  opacity: 0.18;
+  opacity: 0.2;
   animation: softPulse 3.2s infinite ease-in-out;
 }
 
 @keyframes softPulse {
-  0% { transform: scale(0.9); opacity: 0.15; }
-  50% { transform: scale(1.05); opacity: 0.25; }
-  100% { transform: scale(0.9); opacity: 0.15; }
+  0% { transform: scale(0.9); opacity: 0.18; }
+  50% { transform: scale(1.05); opacity: 0.28; }
+  100% { transform: scale(0.9); opacity: 0.18; }
 }
 
 /* -------------------------
    LOGO
 -------------------------- */
 .sponsor-logo {
-  /* --- KEY FIXES FOR SIZING --- */
-  width: auto;         /* Allow width to adjust naturally */
-  max-width: 100%;     /* Prevent overflow */
-  max-height: 90px;    /* Control height (Make this 100px or 110px if you want them bigger) */
+  width: auto;
+  max-width: 100%;
+  max-height: 90px;
   object-fit: contain;
-  
   z-index: 2;
   position: relative;
   transition: transform 0.35s ease;
@@ -158,15 +156,13 @@
 .sponsor-name {
   font-size: 1.7rem;
   font-weight: 600;
-  color: white;
   margin-top: 1.4rem;
 }
 
 .sponsor-description {
   font-size: 1.1rem;
-  color: #dddddd;
-  margin-top: 0.4rem;
   opacity: 0.85;
+  margin-top: 0.4rem;
   line-height: 1.5;
 }
 
@@ -176,9 +172,9 @@
 @media (max-width: 580px) {
   .floating-wrapper {
     padding: 1.8rem;
-    min-height: 160px; /* Slightly smaller box on mobile */
+    min-height: 160px;
   }
   .sponsor-logo {
-    max-height: 70px;  /* Slightly smaller logos on mobile */
+    max-height: 70px;
   }
 }
