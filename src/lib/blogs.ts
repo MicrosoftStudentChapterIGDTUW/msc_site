@@ -38,7 +38,7 @@ Consistency and curiosity are your most important tools.
     slug: "why-girls-should-learn-tech",
     title: "Why Girls Should Learn Tech in 2025",
     excerpt: "Tech is the future — and women are shaping it in powerful ways.",
-    cover: "/blog/women-tech.jpeg",
+    cover: "/blog/women-tech.jpg",
     date: "2024-02-10",
     content: `
 ### Women in Tech 2025  
