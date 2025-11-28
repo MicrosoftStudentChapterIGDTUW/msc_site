@@ -13,7 +13,7 @@ export const blogPosts: BlogPost[] = [
     title: "How to Start Coding – A Roadmap for Beginners",
     excerpt:
       "A beginner-friendly roadmap to start your tech journey with clarity and confidence.",
-    cover: "/blog/coding.png",
+    cover: "/blog/coding.avif",
     date: "2024-01-12",
     content: `
 ### Introduction
@@ -38,7 +38,7 @@ Consistency and curiosity are your most important tools.
     slug: "why-girls-should-learn-tech",
     title: "Why Girls Should Learn Tech in 2025",
     excerpt: "Tech is the future — and women are shaping it in powerful ways.",
-    cover: "/blog/women-tech.png",
+    cover: "/blog/women-tech.jpeg",
     date: "2024-02-10",
     content: `
 ### Women in Tech 2025  
