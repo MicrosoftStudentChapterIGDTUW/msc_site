@@ -1,24 +1,35 @@
-/* FORCE DARK THEME FOR SPONSOR PAGE ONLY */
-.sponsors-page-wrapper,
-.sponsors-page-wrapper * {
-  background-color: transparent !important;
-  color: #ffffff !important;
+/* -------------------------
+   FULLSCREEN DARK BG FOR SPONSORS PAGE
+-------------------------- */
+
+.sponsors-page-wrapper {
+  position: relative;
+  z-index: 0;
+}
+
+.sponsors-page-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #000000; /* full viewport black */
+  z-index: -1;
 }
 
 /* -------------------------
    PAGE WRAPPER
 -------------------------- */
+
 .sponsors-page-wrapper {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   padding: 8rem 2rem 4rem 2rem;
-  background: #000 !important; /* full-page dark fix */
 }
 
 /* -------------------------
    HEADER
 -------------------------- */
+
 .sponsors-header {
   text-align: center;
   max-width: 900px;
@@ -28,18 +39,19 @@
 .sponsors-header h1 {
   font-size: 3.6rem;
   font-weight: 800;
+  color: white;
 }
 
-/* white text already forced globally above */
 .sponsors-subtitle {
   font-size: 1.25rem;
-  opacity: 0.85;
+  color: #e6e6e6;
   margin-top: 1rem;
 }
 
 /* -------------------------
-   GRID
+   GRID 3×
 -------------------------- */
+
 .sponsors-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -62,8 +74,9 @@
 /* -------------------------
    CARD
 -------------------------- */
+
 .sponsor-card {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 26px;
   padding: 2.6rem;
   width: 100%;
@@ -90,52 +103,62 @@
   mask-composite: exclude;
 }
 
+.sponsor-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 34px rgba(120, 150, 255, 0.24);
+}
+
 /* -------------------------
-   FLOATING LOGO BLOCK — FIXED
+   FLOATING LOGO BLOCK (WHITE)
 -------------------------- */
+
 .floating-wrapper {
-  background: rgba(255, 255, 255, 0.1) !important; /* NO MORE WHITE BLOCK */
+  background: white;
   padding: 2.2rem;
   border-radius: 22px;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.35),
-    0 0 30px rgba(0, 150, 255, 0.22);
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    0 0 30px rgba(255, 255, 255, 0.18);
   transition: all 0.35s ease;
   position: relative;
+  
+  /* Center logo */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
 }
 
-/* stronger glow effect on hover (dark mode friendly) */
+/* toned down brand glow */
 .sponsor-card:hover .floating-wrapper {
   transform: translateY(-4px) scale(1.04);
   box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.45),
+    0 6px 18px rgba(0, 0, 0, 0.18),
     0 0 40px var(--brand-glow),
-    0 0 70px color-mix(in srgb, var(--brand-glow) 40%, transparent);
+    0 0 70px color-mix(in srgb, var(--brand-glow) 50%, transparent);
 }
 
+/* low-intensity aura */
 .floating-wrapper::after {
   content: "";
   position: absolute;
   inset: -45%;
   border-radius: inherit;
   background: radial-gradient(circle, color-mix(in srgb, var(--brand-glow) 45%, transparent) 0%, transparent 70%);
-  opacity: 0.2;
+  opacity: 0.18;
   animation: softPulse 3.2s infinite ease-in-out;
 }
 
 @keyframes softPulse {
-  0% { transform: scale(0.9); opacity: 0.18; }
-  50% { transform: scale(1.05); opacity: 0.28; }
-  100% { transform: scale(0.9); opacity: 0.18; }
+  0% { transform: scale(0.9); opacity: 0.15; }
+  50% { transform: scale(1.05); opacity: 0.25; }
+  100% { transform: scale(0.9); opacity: 0.15; }
 }
 
 /* -------------------------
    LOGO
 -------------------------- */
+
 .sponsor-logo {
   width: auto;
   max-width: 100%;
@@ -153,22 +176,26 @@
 /* -------------------------
    TEXT
 -------------------------- */
+
 .sponsor-name {
   font-size: 1.7rem;
   font-weight: 600;
+  color: white;
   margin-top: 1.4rem;
 }
 
 .sponsor-description {
   font-size: 1.1rem;
-  opacity: 0.85;
+  color: #dddddd;
   margin-top: 0.4rem;
+  opacity: 0.85;
   line-height: 1.5;
 }
 
 /* -------------------------
    MOBILE
 -------------------------- */
+
 @media (max-width: 580px) {
   .floating-wrapper {
     padding: 1.8rem;
