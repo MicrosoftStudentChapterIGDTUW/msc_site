@@ -4,9 +4,9 @@ import { useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   MapPin,
   Calendar,
-  ExternalLink,
   Clock,
 } from "lucide-react";
 import Aurora from "@/components/Aurora";
@@ -19,7 +19,7 @@ interface Event {
   venue: string;
   image: string;
   link: string;
-  category: "upcoming" | "seminar" | "hackathon";
+  category: "upcoming" | "seminar" | "hackathon" | "bootcamp";
   time?: string;
 }
 
@@ -38,8 +38,18 @@ const events: Event[] = [
     image:
       "https://res.cloudinary.com/duxmh9dws/image/upload/v1694947654/bootcamp_modal_cauj6h.jpg",
     link: "bootcamp24",
-    category: "upcoming",
+    category: "bootcamp",
     time: "10:00 AM",
+  },
+  {
+    id: 6,
+    name: "Hack-it-up",
+    date: "18th February, 2025",
+    venue: "Seminar Hall, IGDTUW",
+    image: "/images/HACK-IT-UP-HomePage.jpg",
+    link: "hackitup",
+    category: "hackathon",
+    time: "9:00 AM",
   },
   {
     id: 2,
@@ -82,7 +92,7 @@ const events: Event[] = [
     image:
       "https://res.cloudinary.com/duxmh9dws/image/upload/v1694947654/bootcamp_modal_cauj6h.jpg",
     link: "bootcamp",
-    category: "hackathon",
+    category: "bootcamp",
     time: "9:00 AM",
   },
 ];
@@ -92,12 +102,19 @@ const calendarEvents: CalendarEvent[] = [
   { id: 3, title: "Insider Series 2", date: "July 23, 2023" },
   { id: 5, title: "Bootcamp Start", date: "June 5, 2023" },
   { id: 2, title: "Insider 3", date: "August 18, 2023" },
+  { id: 6, title: "Hack-it-up", date: "February 18, 2025" },
 ];
 
 export default function EventsPage() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date(2023, 5, 1));
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   const handleDateClick = (day: number, event: CalendarEvent | undefined) => {
     setSelectedDate(day);
@@ -160,6 +177,19 @@ export default function EventsPage() {
     setSelectedEventId(null);
   };
 
+  const changeYear = (offset: number) => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear() + offset, currentDate.getMonth(), 1)
+    );
+  };
+
+  const selectMonth = (monthIndex: number) => {
+    setCurrentDate(new Date(currentDate.getFullYear(), monthIndex, 1));
+    setShowMonthPicker(false);
+    setSelectedDate(null);
+    setSelectedEventId(null);
+  };
+
   const selectedEvent = selectedEventId
     ? events.find((e) => e.id === selectedEventId)
     : null;
@@ -168,12 +198,14 @@ export default function EventsPage() {
     upcoming: events.filter((e) => e.category === "upcoming"),
     seminar: events.filter((e) => e.category === "seminar"),
     hackathon: events.filter((e) => e.category === "hackathon"),
+    bootcamp: events.filter((e) => e.category === "bootcamp"),
   };
 
   const categoryConfig = {
     upcoming: { title: "Upcoming Events", color: "from-blue-500 to-cyan-500" },
     seminar: { title: "Seminars", color: "from-orange-500 to-red-500" },
     hackathon: { title: "Hackathons", color: "from-green-500 to-emerald-500" },
+    bootcamp: { title: "Bootcamps", color: "from-purple-500 to-pink-500" },
   };
 
   return (
@@ -222,62 +254,91 @@ export default function EventsPage() {
           {/* Calendar + Event Details Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
             {/* Calendar - Left Side */}
-            <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/10">
+            <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/10 text-white min-h-[350px]">
               <div className="flex items-center justify-between mb-6">
                 <button
-                  onClick={previousMonth}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200"
+                  onClick={showMonthPicker ? () => changeYear(-1) : previousMonth}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <h2 className="text-xl font-bold">{monthName}</h2>
+
                 <button
-                  onClick={nextMonth}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200"
+                  onClick={() => setShowMonthPicker(!showMonthPicker)}
+                  className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
+                >
+                  <h2 className="text-xl font-bold">
+                    {showMonthPicker ? currentDate.getFullYear() : monthName}
+                  </h2>
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-300 ${showMonthPicker ? "rotate-180" : ""
+                      }`}
+                  />
+                </button>
+
+                <button
+                  onClick={showMonthPicker ? () => changeYear(1) : nextMonth}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="grid grid-cols-7 gap-1">
-                {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-                  <div
-                    key={i}
-                    className="text-center font-semibold text-gray-400 text-xs py-2"
-                  >
-                    {day}
-                  </div>
-                ))}
-
-                {Array.from({ length: startingDayOfWeek }).map((_, i) => (
-                  <div key={`empty-${i}`} className="aspect-square" />
-                ))}
-
-                {Array.from({ length: daysInMonth }).map((_, i) => {
-                  const day = i + 1;
-                  const event = getEventForDate(day);
-                  const isSelected = selectedDate === day;
-
-                  return (
+              {showMonthPicker ? (
+                <div className="grid grid-cols-3 gap-4 h-[280px] content-center">
+                  {months.map((month, index) => (
                     <button
-                      key={day}
-                      onClick={() => handleDateClick(day, event)}
-                      className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 ${
-                        isSelected
+                      key={month}
+                      onClick={() => selectMonth(index)}
+                      className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 mb-2 ${currentDate.getMonth() === index
+                        ? "bg-[#4da6ff] text-white shadow-lg scale-105"
+                        : "bg-white/5 text-gray-300 hover:bg-white/10 hover:scale-105"
+                        }`}
+                    >
+                      {month}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-7 gap-1">
+                  {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
+                    <div
+                      key={i}
+                      className="text-center font-semibold text-gray-400 text-xs py-2"
+                    >
+                      {day}
+                    </div>
+                  ))}
+
+                  {Array.from({ length: startingDayOfWeek }).map((_, i) => (
+                    <div key={`empty-${i}`} className="aspect-square" />
+                  ))}
+
+                  {Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1;
+                    const event = getEventForDate(day);
+                    const isSelected = selectedDate === day;
+
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => handleDateClick(day, event)}
+                        className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 ${isSelected
                           ? "bg-[#4da6ff] text-white scale-105 shadow-lg"
                           : event
-                          ? "bg-gradient-to-br from-[#5d3b88] to-[#4da6ff] hover:scale-105"
-                          : "bg-white/5 hover:bg-white/10"
-                      }`}
-                    >
-                      <span className="font-medium">{day}</span>
-                      {event && !isSelected && (
-                        <div className="w-1 h-1 bg-white rounded-full mt-0.5" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+                            ? "bg-gradient-to-br from-[#5d3b88] to-[#4da6ff] hover:scale-105"
+                            : "bg-white/5 hover:bg-white/10"
+                          }`}
+                      >
+                        <span className="font-medium">{day}</span>
+                        {event && !isSelected && (
+                          <div className="w-1 h-1 bg-white rounded-full mt-0.5" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Event Details - Right Side */}
@@ -320,13 +381,7 @@ export default function EventsPage() {
                     </div>
                   </div>
 
-                  <a
-                    href={`/${selectedEvent.link}`}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#4da6ff] to-[#5d3b88] rounded-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4da6ff]/50 hover:scale-105"
-                  >
-                    View Details
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+
                 </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center">
@@ -401,13 +456,7 @@ export default function EventsPage() {
                             </div>
                           </div>
 
-                          <a
-                            href={`/${event.link}`}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#4da6ff] to-[#5d3b88] rounded-lg text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4da6ff]/50"
-                          >
-                            Learn More
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+
                         </div>
                       </div>
                     ))}
