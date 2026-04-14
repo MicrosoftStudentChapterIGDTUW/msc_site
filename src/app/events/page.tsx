@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,6 +9,7 @@ import {
   MapPin,
   Calendar,
   Clock,
+  ArrowRight,
 } from "lucide-react";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
@@ -21,6 +23,7 @@ interface Event {
   link: string;
   category: "upcoming" | "seminar" | "hackathon" | "bootcamp";
   time?: string;
+  description?: string;
 }
 
 interface CalendarEvent {
@@ -30,6 +33,17 @@ interface CalendarEvent {
 }
 
 const events: Event[] = [
+  {
+    id: 7,
+    name: "GD",
+    date: "April 2026",
+    venue: "Online",
+    image: "/images/HACK-IT-UP-HomePage.jpg",
+    link: "gd",
+    category: "upcoming",
+    time: "TBD",
+    
+  },
   {
     id: 1,
     name: "Bootcamp'24",
@@ -106,14 +120,30 @@ const calendarEvents: CalendarEvent[] = [
 ];
 
 export default function EventsPage() {
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const today = new Date();
+
+  const [selectedDate, setSelectedDate] = useState<number | null>(
+    today.getDate()
+  );
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date(2023, 5, 1));
+  const [currentDate, setCurrentDate] = useState(
+    new Date(today.getFullYear(), today.getMonth(), 1)
+  );
   const [showMonthPicker, setShowMonthPicker] = useState(false);
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const handleDateClick = (day: number, event: CalendarEvent | undefined) => {
@@ -132,7 +162,6 @@ export default function EventsPage() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-
     return { daysInMonth, startingDayOfWeek };
   };
 
@@ -144,7 +173,6 @@ export default function EventsPage() {
       day: "numeric",
       year: "numeric",
     });
-
     return calendarEvents.find((event) => {
       const eventDate = new Date(event.date).toLocaleDateString("en-US", {
         month: "long",
@@ -153,6 +181,14 @@ export default function EventsPage() {
       });
       return eventDate === dateStr;
     });
+  };
+
+  const isToday = (day: number) => {
+    return (
+      day === today.getDate() &&
+      currentDate.getMonth() === today.getMonth() &&
+      currentDate.getFullYear() === today.getFullYear()
+    );
   };
 
   const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
@@ -204,7 +240,10 @@ export default function EventsPage() {
   const categoryConfig = {
     upcoming: { title: "Upcoming Events", color: "from-blue-500 to-cyan-500" },
     seminar: { title: "Seminars", color: "from-orange-500 to-red-500" },
-    hackathon: { title: "Hackathons", color: "from-green-500 to-emerald-500" },
+    hackathon: {
+      title: "Hackathons",
+      color: "from-green-500 to-emerald-500",
+    },
     bootcamp: { title: "Bootcamps", color: "from-purple-500 to-pink-500" },
   };
 
@@ -243,22 +282,25 @@ export default function EventsPage() {
       />
 
       <div className="min-h-screen text-white pt-20">
-        {" "}
-        {/* Added pt-20 for top padding */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
           {/* Header */}
           <div className="text-center mb-12">
             <p className="text-gray-300 text-lg">
               Explore our workshops, seminars, and hackathons
             </p>
           </div>
+
           {/* Calendar + Event Details Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
+
             {/* Calendar - Left Side */}
             <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/10 text-white min-h-[350px]">
               <div className="flex items-center justify-between mb-6">
                 <button
-                  onClick={showMonthPicker ? () => changeYear(-1) : previousMonth}
+                  onClick={
+                    showMonthPicker ? () => changeYear(-1) : previousMonth
+                  }
                   className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -269,16 +311,21 @@ export default function EventsPage() {
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
                 >
                   <h2 className="text-xl font-bold">
-                    {showMonthPicker ? currentDate.getFullYear() : monthName}
+                    {showMonthPicker
+                      ? currentDate.getFullYear()
+                      : monthName}
                   </h2>
                   <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-300 ${showMonthPicker ? "rotate-180" : ""
-                      }`}
+                    className={`w-5 h-5 transition-transform duration-300 ${
+                      showMonthPicker ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
                 <button
-                  onClick={showMonthPicker ? () => changeYear(1) : nextMonth}
+                  onClick={
+                    showMonthPicker ? () => changeYear(1) : nextMonth
+                  }
                   className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 text-white"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -291,10 +338,11 @@ export default function EventsPage() {
                     <button
                       key={month}
                       onClick={() => selectMonth(index)}
-                      className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 mb-2 ${currentDate.getMonth() === index
-                        ? "bg-[#4da6ff] text-white shadow-lg scale-105"
-                        : "bg-white/5 text-gray-300 hover:bg-white/10 hover:scale-105"
-                        }`}
+                      className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 mb-2 ${
+                        currentDate.getMonth() === index
+                          ? "bg-[#4da6ff] text-white shadow-lg scale-105"
+                          : "bg-white/5 text-gray-300 hover:bg-white/10 hover:scale-105"
+                      }`}
                     >
                       {month}
                     </button>
@@ -319,21 +367,34 @@ export default function EventsPage() {
                     const day = i + 1;
                     const event = getEventForDate(day);
                     const isSelected = selectedDate === day;
+                    const todayCell = isToday(day);
 
                     return (
                       <button
                         key={day}
                         onClick={() => handleDateClick(day, event)}
-                        className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 ${isSelected
-                          ? "bg-[#4da6ff] text-white scale-105 shadow-lg"
-                          : event
+                        className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 ${
+                          isSelected
+                            ? "bg-[#4da6ff] text-white scale-105 shadow-lg"
+                            : event
                             ? "bg-gradient-to-br from-[#5d3b88] to-[#4da6ff] hover:scale-105"
+                            : todayCell
+                            ? "bg-white/15 ring-2 ring-[#4da6ff] hover:bg-white/20"
                             : "bg-white/5 hover:bg-white/10"
-                          }`}
+                        }`}
                       >
-                        <span className="font-medium">{day}</span>
+                        <span
+                          className={`font-medium ${
+                            todayCell && !isSelected ? "text-[#4da6ff]" : ""
+                          }`}
+                        >
+                          {day}
+                        </span>
                         {event && !isSelected && (
                           <div className="w-1 h-1 bg-white rounded-full mt-0.5" />
+                        )}
+                        {todayCell && !isSelected && !event && (
+                          <div className="w-1 h-1 bg-[#4da6ff] rounded-full mt-0.5" />
                         )}
                       </button>
                     );
@@ -381,8 +442,6 @@ export default function EventsPage() {
                       <span>{selectedEvent.venue}</span>
                     </div>
                   </div>
-
-
                 </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center">
@@ -423,7 +482,7 @@ export default function EventsPage() {
                     {categoryEvents.map((event) => (
                       <div
                         key={event.id}
-                        className="group bg-white/5 backdrop-blur-lg rounded-xl overflow-hidden shadow-lg border border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-[#4da6ff]/50"
+                        className="group bg-white/5 backdrop-blur-lg rounded-xl overflow-hidden shadow-lg border border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-[#4da6ff]/50 flex flex-col"
                       >
                         <div className="relative overflow-hidden h-48">
                           <img
@@ -439,7 +498,7 @@ export default function EventsPage() {
                           </div>
                         </div>
 
-                        <div className="p-5">
+                        <div className="p-5 flex flex-col flex-1">
                           <div className="space-y-2 mb-4">
                             <div className="flex items-center gap-2 text-gray-300 text-sm">
                               <Calendar className="w-4 h-4 text-[#4da6ff]" />
@@ -457,7 +516,21 @@ export default function EventsPage() {
                             </div>
                           </div>
 
+                          {event.description && (
+                            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                              {event.description}
+                            </p>
+                          )}
 
+                          <div className="mt-auto">
+                            <Link
+                              href={`/${event.link}`}
+                              className="inline-flex items-center gap-2 text-[#4da6ff] text-sm font-medium hover:gap-3 transition-all duration-200 hover:text-white"
+                            >
+                              Learn More
+                              <ArrowRight className="w-4 h-4" />
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -466,6 +539,7 @@ export default function EventsPage() {
               );
             })}
           </div>
+
         </div>
       </div>
     </>
