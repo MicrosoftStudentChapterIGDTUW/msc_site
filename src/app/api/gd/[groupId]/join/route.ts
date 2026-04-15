@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import { GDGroup } from "@/models/GDGroup";
+import { getSessionWindowState } from "@/lib/gdSessionWindow";
 
 /**
  * POST /api/gd/[groupId]/join
@@ -39,6 +40,18 @@ export async function POST(
       );
     }
 
+    const windowState = getSessionWindowState(group);
+    if (!windowState.isActive) {
+      if (windowState.code === "expired") {
+        group.status = "closed";
+        await group.save();
+      }
+      return NextResponse.json(
+        { success: false, status: windowState.code, error: windowState.message },
+        { status: 403 }
+      );
+    }
+
     // Find the participant by name (case-insensitive)
     const participantIndex = group.participants.findIndex(
       (p) => p.name.toLowerCase() === participantName.trim().toLowerCase()
@@ -48,6 +61,16 @@ export async function POST(
       return NextResponse.json(
         { success: false, error: "Participant not found in this group." },
         { status: 404 }
+      );
+    }
+
+    if (group.participants[participantIndex].hasSubmitted) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "You have already submitted your evaluation for this session.",
+        },
+        { status: 409 }
       );
     }
 
@@ -62,6 +85,11 @@ export async function POST(
         success: true,
         groupId: group.groupId,
         topic: group.topic,
+        date: group.date,
+        time: group.time,
+        duration: group.duration,
+        scheduleStartAt: group.scheduleStartAt,
+        scheduleEndAt: group.scheduleEndAt,
         status: group.status,
         participants: group.participants,
         // Frontend expects 'peers' so it can evaluate everyone EXCEPT itself
