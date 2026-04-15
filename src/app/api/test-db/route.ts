@@ -11,7 +11,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       message: "MongoDB connected successfully ✅",
-      database: conn.connection.db.databaseName,
+      database: conn.connection.db?.databaseName ?? "unknown",
       host: conn.connection.host,
     });
   } catch (error: any) {

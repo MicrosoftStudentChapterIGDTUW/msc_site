@@ -207,6 +207,13 @@ export async function PATCH(
     }
 
     if (Array.isArray(body.participants)) {
+      type GroupParticipant = {
+        id: string;
+        name: string;
+        hasSubmitted: boolean;
+        isJoined?: boolean;
+      };
+
       if (body.participants.length < 2) {
         return NextResponse.json(
           { success: false, error: "At least 2 participants are required." },
@@ -234,8 +241,11 @@ export async function PATCH(
         );
       }
 
-      const existingByLower = new Map(
-        group.participants.map((participant) => [participant.name.toLowerCase(), participant])
+      const existingByLower = new Map<string, GroupParticipant>(
+        (group.participants as GroupParticipant[]).map((participant: GroupParticipant) => [
+          participant.name.toLowerCase(),
+          participant,
+        ])
       );
 
       const nextParticipants = trimmedNames.map((name: string) => {
@@ -257,10 +267,10 @@ export async function PATCH(
         };
       });
 
-      const nextIds = new Set(nextParticipants.map((participant) => participant.id));
-      removedParticipantIds = group.participants
-        .filter((participant) => !nextIds.has(participant.id))
-        .map((participant) => participant.id);
+      const nextIds = new Set(nextParticipants.map((participant: GroupParticipant) => participant.id));
+      removedParticipantIds = (group.participants as GroupParticipant[])
+        .filter((participant: GroupParticipant) => !nextIds.has(participant.id))
+        .map((participant: GroupParticipant) => participant.id);
 
       updates.participants = nextParticipants;
     }
