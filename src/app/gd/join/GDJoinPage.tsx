@@ -6,7 +6,7 @@ import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
 import { useSearchParams } from "next/navigation";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const CONTRIBUTION_TYPES = [
   "Bringing new ideas",
@@ -30,7 +30,14 @@ interface PeerEval {
   peerId: string; ratings: number[]; contribution: string;
   teamPlayer: boolean | null; strength: string; improvement: string;
 }
-interface SessionData { groupId: string; topic: string; peers: Peer[] }
+interface SessionData {
+  groupId: string;
+  topic: string;
+  peers: Peer[];
+  date?: string;
+  time?: string;
+  duration?: string;
+}
 interface SubmissionStatus { name: string; submitted: boolean }
 
 const defaultEval = (peerId: string): PeerEval => ({
@@ -42,13 +49,16 @@ const defaultEval = (peerId: string): PeerEval => ({
 
 function ErrorBanner({ message }: { message: string | string[] }) {
   const items = Array.isArray(message) ? message : [message];
+  const isChecklist = Array.isArray(message);
   return (
     <div className="bg-red-500/10 border border-red-500/25 text-red-400 text-sm rounded-xl px-4 py-3 mb-5">
       <div className="flex items-center gap-2">
         <AlertCircle className="w-4 h-4 flex-shrink-0" />
-        <span className="font-medium">Please complete all fields before continuing.</span>
+        <span className="font-medium">
+          {isChecklist ? "Please complete all fields before continuing." : items[0]}
+        </span>
       </div>
-      {items.length > 1 && (
+      {isChecklist && items.length > 1 && (
         <ul className="mt-2 space-y-1 pl-6 list-disc text-red-400/80 text-xs">
           {items.map((m) => <li key={m}>{m}</li>)}
         </ul>
@@ -156,6 +166,7 @@ function NameDropdown({ peers, value, onChange, disabled }: {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function GDJoinPage() {
+  const [nowTick, setNowTick] = useState(Date.now());
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [groupIdInput, setGroupIdInput] = useState("");
   const [nameInput, setNameInput] = useState("");
@@ -167,6 +178,7 @@ export default function GDJoinPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allStatuses, setAllStatuses] = useState<SubmissionStatus[]>([]);
   const [error, setError] = useState<string | string[] | null>(null);
+  const [evaluatorId, setEvaluatorId] = useState("");
 
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -175,24 +187,115 @@ export default function GDJoinPage() {
   }, [searchParams]);
 
   useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowTick(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const getCountdownState = (date?: string, time?: string, duration?: string) => {
+    if (!date || !time || !duration) {
+      return { label: "Schedule pending", tone: "text-gray-400 border-white/20 bg-white/5" };
+    }
+
+    const start = new Date(`${date}T${time}:00`);
+    const durationMinutes = Number(duration);
+    if (Number.isNaN(start.getTime()) || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+      return { label: "Schedule pending", tone: "text-gray-400 border-white/20 bg-white/5" };
+    }
+
+    const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
+    const now = new Date(nowTick);
+
+    const format = (target: Date) => {
+      const ms = Math.max(target.getTime() - now.getTime(), 0);
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+      return `${minutes}m ${seconds}s`;
+    };
+
+    if (now < start) {
+      return {
+        label: `Starts in ${format(start)}`,
+        tone: "text-amber-300 border-amber-300/30 bg-amber-400/10",
+      };
+    }
+
+    if (now > end) {
+      return {
+        label: "Session ended",
+        tone: "text-red-300 border-red-300/30 bg-red-400/10",
+      };
+    }
+
+    return {
+      label: `Ends in ${format(end)}`,
+      tone: "text-emerald-300 border-emerald-300/30 bg-emerald-400/10",
+    };
+  };
+
+  useEffect(() => {
     const id = groupIdInput.trim();
-    if (!/^GD-\d{4}$/.test(id)) { setDropdownPeers([]); setNameInput(""); return; }
+    if (!/^[A-Z0-9]{5}$/.test(id)) { setDropdownPeers([]); setNameInput(""); return; }
     if (USE_MOCK) {
       const raw = localStorage.getItem(`gd_session_${id}`);
       setDropdownPeers(raw ? (JSON.parse(raw) as SessionData).peers : []);
       setNameInput("");
     } else {
-      // TODO: fetch(`/api/gd/participants?groupId=${id}`)
-      //   .then(r => r.ok ? r.json() : Promise.reject())
-      //   .then(data => { setDropdownPeers(data.peers); setNameInput(""); })
-      //   .catch(() => setDropdownPeers([]));
+      fetch(`/api/gd/${id}`)
+        .then(async (r) => {
+          const data = await r.json();
+          if (!r.ok) {
+            throw new Error(data.error || "Session is not available right now.");
+          }
+          return data;
+        })
+        .then((data) => {
+          const peers = (data.participants || [])
+            .filter((p: { hasSubmitted?: boolean }) => !p.hasSubmitted)
+            .map((p: { id: string; name: string }) => ({
+            id: p.id,
+            name: p.name,
+            initials: p.name.split(" ").map((w) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2),
+            }));
+          setDropdownPeers(peers);
+          setNameInput("");
+          if (peers.length === 0) {
+            setError("All participants have already submitted for this session.");
+          } else {
+            setError(null);
+          }
+        })
+        .catch((err: any) => {
+          setDropdownPeers([]);
+          if (id.length === 5) {
+            setError(err.message || "Session is not available right now.");
+          }
+        });
     }
   }, [groupIdInput]);
 
   const currentPeer    = session?.peers[peerIndex] ?? null;
   const currentEval    = evaluations[peerIndex]    ?? null;
-  const isLastPeer     = session ? peerIndex === session.peers.length - 1 : false;
   const submittedCount = allStatuses.filter((s) => s.submitted).length;
+
+  const getMissingFields = (evalItem: PeerEval): string[] => {
+    const missing: string[] = [];
+    RATING_LABELS.forEach((label, i) => {
+      if (evalItem.ratings[i] === 0) missing.push(label);
+    });
+    if (!evalItem.contribution) missing.push("Contribution Type");
+    if (evalItem.teamPlayer === null) missing.push("Team Player");
+    if (!evalItem.strength.trim()) missing.push("One-line strength");
+    if (!evalItem.improvement.trim()) missing.push("One area to improve");
+    return missing;
+  };
+
+  const completedCount = evaluations.filter((item) => getMissingFields(item).length === 0).length;
 
   const updateEval = (update: Partial<PeerEval>) => {
     setError(null);
@@ -220,12 +323,23 @@ export default function GDJoinPage() {
         data = { ...full, peers: full.peers.filter((p) => p.name.trim().toLowerCase() !== name.toLowerCase()) };
         if (data.peers.length === 0) throw new Error("No peers to evaluate. You may be the only participant.");
       } else {
-        const res = await fetch("/api/gd/join", {
+        const res = await fetch(`/api/gd/${id}/join`, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ groupId: id, participantName: name }),
         });
-        if (!res.ok) { const err = await res.json(); throw new Error(err.message ?? "Invalid Group ID or session closed."); }
-        data = await res.json();
+        const joined = await res.json();
+        if (!res.ok || !joined.success) {
+          throw new Error(joined.error ?? "Invalid Group ID or session closed.");
+        }
+        data = {
+          groupId: joined.groupId,
+          topic: joined.topic,
+          peers: joined.peers,
+          date: joined.date,
+          time: joined.time,
+          duration: joined.duration,
+        };
+        setEvaluatorId(joined.evaluatorId || "");
       }
       setSession(data);
       setEvaluations(data.peers.map((p) => defaultEval(p.id)));
@@ -235,25 +349,37 @@ export default function GDJoinPage() {
     } finally { setIsJoining(false); }
   };
 
-  const validateCurrentEval = (): string[] => {
-    if (!currentEval) return [];
-    const missing: string[] = [];
-    RATING_LABELS.forEach((label, i) => {
-      if (currentEval.ratings[i] === 0) missing.push(label);
-    });
-    if (!currentEval.contribution) missing.push("Contribution Type");
-    if (currentEval.teamPlayer === null) missing.push("Team Player");
-    if (!currentEval.strength.trim()) missing.push("One-line strength");
-    if (!currentEval.improvement.trim()) missing.push("One area to improve");
-    return missing;
-  };
-
   const handleSaveNext = async () => {
     if (!session || !currentEval) return;
-    const missing = validateCurrentEval();
-    if (missing.length > 0) { setError(missing); return; }
     setError(null);
-    if (!isLastPeer) { setPeerIndex((i) => i + 1); return; }
+    if (peerIndex < session.peers.length - 1) {
+      setPeerIndex((i) => i + 1);
+      return;
+    }
+
+    const firstPendingIndex = evaluations.findIndex((item) => getMissingFields(item).length > 0);
+    if (firstPendingIndex >= 0) {
+      setPeerIndex(firstPendingIndex);
+    }
+  };
+
+  const handleSubmitAll = async () => {
+    if (!session) return;
+
+    const missingByPeer = evaluations
+      .map((evalItem, index) => ({
+        peerName: session.peers[index]?.name || `Peer ${index + 1}`,
+        missing: getMissingFields(evalItem),
+      }))
+      .filter((item) => item.missing.length > 0)
+      .map((item) => `${item.peerName}: ${item.missing.join(", ")}`);
+
+    if (missingByPeer.length > 0) {
+      setError(missingByPeer);
+      return;
+    }
+
+    setError(null);
     setIsSubmitting(true);
     try {
       let statuses: SubmissionStatus[];
@@ -265,12 +391,16 @@ export default function GDJoinPage() {
         if (!statuses.find((s) => s.name.trim().toLowerCase() === nameInput.trim().toLowerCase()))
           statuses = [{ name: nameInput.trim(), submitted: true }, ...statuses];
       } else {
-        const res = await fetch("/api/gd/submit", {
+        if (!evaluatorId) {
+          throw new Error("Unable to identify evaluator. Please rejoin the session.");
+        }
+        const res = await fetch(`/api/gd/${session.groupId}/submit`, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ groupId: session.groupId, participantName: nameInput.trim(), evaluations }),
+          body: JSON.stringify({ evaluatorId, evaluations }),
         });
-        if (!res.ok) throw new Error("Submission failed. Please try again.");
-        statuses = (await res.json()).allStatuses;
+        const submitData = await res.json();
+        if (!res.ok || !submitData.success) throw new Error(submitData.error || "Submission failed. Please try again.");
+        statuses = submitData.allStatuses;
       }
       setAllStatuses(statuses);
       setStep(3);
@@ -310,7 +440,7 @@ export default function GDJoinPage() {
                   <input
                     value={groupIdInput}
                     onChange={(e) => { setGroupIdInput(e.target.value.toUpperCase()); setError(null); }}
-                    placeholder="GD-XXXX" maxLength={7}
+                    placeholder="ABCDE" maxLength={5}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-2xl font-mono font-bold text-center text-white tracking-[0.2em] placeholder-gray-600 focus:outline-none focus:border-[#4da6ff]/60 transition-colors"
                   />
                 </div>
@@ -344,13 +474,46 @@ export default function GDJoinPage() {
                 badge={session.groupId}
                 title={`Peer ${peerIndex + 1} of ${session.peers.length}`}
                 subtitle={`You: ${nameInput}`}
-                right={<span className="text-xs text-amber-400 mt-2">{session.peers.length - peerIndex} remaining</span>}
+                right={
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-xs text-amber-400">{completedCount} / {session.peers.length} completed</span>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] ${getCountdownState(
+                        session.date,
+                        session.time,
+                        session.duration
+                      ).tone}`}
+                    >
+                      {getCountdownState(session.date, session.time, session.duration).label}
+                    </span>
+                  </div>
+                }
               />
 
-              <div className="flex items-center gap-2 mb-8">
-                {session.peers.map((_, i) => (
-                  <div key={i} className={`h-1 w-8 rounded-full transition-all duration-300 ${i < peerIndex ? "bg-emerald-400" : i === peerIndex ? "bg-[#4da6ff]" : "bg-white/10"}`} />
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-8">
+                {session.peers.map((peer, i) => {
+                  const missing = getMissingFields(evaluations[i]).length;
+                  const done = missing === 0;
+                  return (
+                    <button
+                      key={peer.id}
+                      type="button"
+                      onClick={() => { setPeerIndex(i); setError(null); }}
+                      className={`rounded-lg border px-3 py-2 text-left transition-colors ${
+                        i === peerIndex
+                          ? "border-[#4da6ff]/60 bg-[#4da6ff]/10"
+                          : done
+                          ? "border-emerald-500/40 bg-emerald-500/10"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                      }`}
+                    >
+                      <p className="text-xs text-white truncate">{peer.name}</p>
+                      <p className={`text-[10px] mt-1 ${done ? "text-emerald-400" : "text-gray-400"}`}>
+                        {done ? "Marked" : "Pending"}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
 
               {error && <ErrorBanner message={error} />}
@@ -454,7 +617,11 @@ export default function GDJoinPage() {
                     )}
                     <button onClick={handleSaveNext} disabled={isSubmitting}
                       className="flex items-center gap-1.5 bg-[#4da6ff] hover:bg-[#4da6ff]/90 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isSubmitting ? <><RefreshCw className="w-4 h-4 animate-spin" />Submitting…</> : <>{isLastPeer ? "Submit All" : "Save & Next"}<ChevronRight className="w-4 h-4" /></>}
+                      Save & Next <ChevronRight className="w-4 h-4" />
+                    </button>
+                    <button onClick={handleSubmitAll} disabled={isSubmitting}
+                      className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-500/90 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isSubmitting ? <><RefreshCw className="w-4 h-4 animate-spin" />Submitting…</> : "Submit All"}
                     </button>
                   </div>
                 </div>

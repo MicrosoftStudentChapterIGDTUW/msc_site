@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import { GDGroup } from "@/models/GDGroup";
 import { GDEvaluation } from "@/models/GDEvaluation";
+import { logAdminActivity } from "@/lib/gdAdminActivity";
+import { getSessionWindowState } from "@/lib/gdSessionWindow";
 
 /**
  * POST /api/gd/[groupId]/submit
@@ -47,6 +49,17 @@ export async function POST(
       );
     }
 
+    const windowState = getSessionWindowState(group);
+    if (!windowState.isActive) {
+      if (windowState.code === "expired") {
+        await GDGroup.updateOne({ groupId }, { $set: { status: "closed" } });
+      }
+      return NextResponse.json(
+        { success: false, status: windowState.code, error: windowState.message },
+        { status: 403 }
+      );
+    }
+
     const evaluator = group.participants.find((p) => p.id === evaluatorId);
     if (!evaluator) {
       return NextResponse.json(
@@ -57,13 +70,14 @@ export async function POST(
 
     if (evaluator.hasSubmitted) {
       return NextResponse.json(
-        { success: false, error: "You have already submitted." },
-        { status: 400 }
+        { success: false, error: "You have already submitted your evaluation for this session." },
+        { status: 409 }
       );
     }
 
     const evaluationsToInsert = [];
     const participantIds = new Set(group.participants.map((p) => p.id));
+    const expectedEvaluateeCount = Math.max(group.participants.length - 1, 0);
     
     for (const evalData of evaluations) {
       // Handle mapping from frontend field names if they differ
@@ -75,11 +89,25 @@ export async function POST(
       if (!evaluateeId || !participantIds.has(evaluateeId)) continue;
       if (evaluateeId === evaluatorId) continue;
 
+      const ratings = Array.isArray(evalData.ratings) ? evalData.ratings : [];
+      const hasCompleteRatings =
+        ratings.length === 7 && ratings.every((value: unknown) => Number(value) >= 1 && Number(value) <= 5);
+      const hasRequiredFeedback =
+        typeof contributionType === "string" &&
+        contributionType.trim().length > 0 &&
+        typeof isTeamPlayer === "boolean" &&
+        typeof evalData.strength === "string" &&
+        evalData.strength.trim().length > 0 &&
+        typeof evalData.improvement === "string" &&
+        evalData.improvement.trim().length > 0;
+
+      if (!hasCompleteRatings || !hasRequiredFeedback) continue;
+
       evaluationsToInsert.push({
         groupId,
         evaluatorId,
         evaluateeId,
-        ratings: evalData.ratings,
+        ratings,
         contributionType,
         isTeamPlayer,
         strength: evalData.strength,
@@ -87,20 +115,33 @@ export async function POST(
       });
     }
 
-    if (evaluationsToInsert.length === 0) {
+    if (
+      evaluationsToInsert.length === 0 ||
+      new Set(evaluationsToInsert.map((item) => item.evaluateeId)).size !== expectedEvaluateeCount ||
+      evaluationsToInsert.length !== expectedEvaluateeCount
+    ) {
        return NextResponse.json(
-        { success: false, error: "No valid evaluations to submit." },
+        { success: false, error: "Please complete all peer evaluations before submitting." },
         { status: 400 }
       );
     }
 
     await GDEvaluation.insertMany(evaluationsToInsert);
 
-    // Update submission status
     await GDGroup.updateOne(
       { groupId, "participants.id": evaluatorId },
       { $set: { "participants.$.hasSubmitted": true } }
     );
+
+    if (group.createdByAdminId && group.createdByAdminEmail) {
+      await logAdminActivity({
+        adminId: group.createdByAdminId,
+        adminEmail: group.createdByAdminEmail,
+        action: "PARTICIPANT_SUBMIT",
+        groupId,
+        details: `${evaluator.name} submitted evaluations`,
+      });
+    }
 
     // Check if everyone has submitted
     const updatedGroup = await GDGroup.findOne({ groupId });
@@ -108,6 +149,16 @@ export async function POST(
     
     if (allSubmitted) {
       await GDGroup.updateOne({ groupId }, { $set: { status: "closed" } });
+
+      if (group.createdByAdminId && group.createdByAdminEmail) {
+        await logAdminActivity({
+          adminId: group.createdByAdminId,
+          adminEmail: group.createdByAdminEmail,
+          action: "AUTO_CLOSE_GROUP",
+          groupId,
+          details: "All participants submitted. Session auto-closed.",
+        });
+      }
     }
 
     return NextResponse.json(
@@ -122,6 +173,12 @@ export async function POST(
       { status: 200 }
     );
   } catch (error: any) {
+    if (error?.code === 11000) {
+      return NextResponse.json(
+        { success: false, error: "You have already submitted your evaluation for this session." },
+        { status: 409 }
+      );
+    }
     console.error(`Error submitting evaluations:`, error);
     return NextResponse.json(
       { success: false, error: "Internal Server Error" },

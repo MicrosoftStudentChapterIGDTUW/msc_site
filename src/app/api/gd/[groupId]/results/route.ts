@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import { GDGroup } from "@/models/GDGroup";
 import { GDEvaluation } from "@/models/GDEvaluation";
+import { getAuthenticatedAdmin } from "@/lib/gdAdminAuth";
+import { logAdminActivity } from "@/lib/gdAdminActivity";
 
 /**
  * GET /api/gd/[groupId]/results
@@ -14,6 +16,13 @@ export async function GET(
   try {
     const { groupId } = await params;
     await connectToDatabase();
+    const admin = await getAuthenticatedAdmin();
+    if (!admin) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized admin access." },
+        { status: 401 }
+      );
+    }
 
     const group = await GDGroup.findOne({ groupId }).lean();
     if (!group) {
@@ -23,7 +32,22 @@ export async function GET(
       );
     }
 
+    if (group.createdByAdminId !== admin.id) {
+      return NextResponse.json(
+        { success: false, error: "Forbidden. This session belongs to another admin." },
+        { status: 403 }
+      );
+    }
+
     const evaluations = await GDEvaluation.find({ groupId }).lean();
+
+    await logAdminActivity({
+      adminId: admin.id,
+      adminEmail: admin.email,
+      action: "VIEW_RESULTS",
+      groupId,
+      details: `Viewed results for group ${groupId}`,
+    });
 
     return NextResponse.json(
       {

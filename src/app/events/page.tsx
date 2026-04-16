@@ -32,6 +32,11 @@ interface CalendarEvent {
   date: string;
 }
 
+function getEventHref(link: string): string {
+  if (!link) return "/events";
+  return link.startsWith("/") ? link : `/${link}`;
+}
+
 const events: Event[] = [
   {
     id: 7,
@@ -39,7 +44,7 @@ const events: Event[] = [
     date: "April 2026",
     venue: "Online",
     image: "/images/HACK-IT-UP-HomePage.jpg",
-    link: "gd",
+    link: "/gd",
     category: "upcoming",
     time: "TBD",
     
@@ -524,7 +529,7 @@ export default function EventsPage() {
 
                           <div className="mt-auto">
                             <Link
-                              href={`/${event.link}`}
+                              href={getEventHref(event.link)}
                               className="inline-flex items-center gap-2 text-[#4da6ff] text-sm font-medium hover:gap-3 transition-all duration-200 hover:text-white"
                             >
                               Learn More

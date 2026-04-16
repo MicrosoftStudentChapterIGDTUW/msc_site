@@ -5,8 +5,8 @@ import { getAuthenticatedAdmin } from "@/lib/gdAdminAuth";
 import { logAdminActivity } from "@/lib/gdAdminActivity";
 
 /**
- * POST /api/gd/[groupId]/force-close
- * Manually close a GD Session (Admin Only)
+ * POST /api/gd/[groupId]/reopen
+ * Reopen a closed GD Session (Admin Only, owner only)
  */
 export async function POST(
   request: Request,
@@ -14,7 +14,18 @@ export async function POST(
 ) {
   try {
     const { groupId } = await params;
+    const body = await request.json().catch(() => ({}));
+    const durationMinutes = Number(body?.durationMinutes);
+
+    if (!Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+      return NextResponse.json(
+        { success: false, error: "Please provide a valid reopen duration in minutes." },
+        { status: 400 }
+      );
+    }
+
     await connectToDatabase();
+
     const admin = await getAuthenticatedAdmin();
     if (!admin) {
       return NextResponse.json(
@@ -24,7 +35,6 @@ export async function POST(
     }
 
     const group = await GDGroup.findOne({ groupId }).lean();
-
     if (!group) {
       return NextResponse.json(
         { success: false, error: "GD Group not found." },
@@ -39,37 +49,56 @@ export async function POST(
       );
     }
 
-    if (group.status === "closed") {
+    if (group.status !== "closed") {
       return NextResponse.json(
-        { success: false, error: "This GD Group is already closed." },
+        { success: false, error: "Only closed sessions can be reopened." },
         { status: 400 }
       );
     }
 
+    const startAt = new Date();
+    const endAt = new Date(startAt.getTime() + durationMinutes * 60 * 1000);
+    const date = startAt.toISOString().slice(0, 10);
+    const time = startAt.toTimeString().slice(0, 5);
+
     await GDGroup.updateOne(
       { groupId },
-      { $set: { status: "closed" } }
+      {
+        $set: {
+          status: "open",
+          date,
+          time,
+          duration: String(durationMinutes),
+          scheduleStartAt: startAt,
+          scheduleEndAt: endAt,
+        },
+      }
     );
 
     await logAdminActivity({
       adminId: admin.id,
       adminEmail: admin.email,
-      action: "FORCE_CLOSE_GROUP",
+      action: "REOPEN_GROUP",
       groupId,
-      details: `Force-closed group ${groupId}`,
+      details: `Reopened group ${groupId} for ${durationMinutes} minutes`,
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: "GD Group forcefully closed.",
-        groupId: group.groupId,
-        status: "closed",
+        message: "GD Group reopened successfully.",
+        groupId,
+        status: "open",
+        date,
+        time,
+        duration: String(durationMinutes),
+        scheduleStartAt: startAt,
+        scheduleEndAt: endAt,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error(`Error forcefully closing GD group:`, error);
+    console.error("Error reopening GD group:", error);
     return NextResponse.json(
       { success: false, error: "Internal Server Error" },
       { status: 500 }

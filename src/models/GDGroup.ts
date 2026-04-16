@@ -13,7 +13,11 @@ export interface IGDGroup extends Document {
   date?: string;
   time?: string;
   duration?: string;
+  scheduleStartAt?: Date;
+  scheduleEndAt?: Date;
   status: "open" | "closed";
+  createdByAdminId: string;
+  createdByAdminEmail: string;
   participants: IParticipant[];
   createdAt: Date;
 }
@@ -32,7 +36,11 @@ const GDGroupSchema = new Schema<IGDGroup>(
     date: { type: String },
     time: { type: String },
     duration: { type: String },
+    scheduleStartAt: { type: Date },
+    scheduleEndAt: { type: Date },
     status: { type: String, enum: ["open", "closed"], default: "open" },
+    createdByAdminId: { type: String, required: true, index: true },
+    createdByAdminEmail: { type: String, required: true },
     participants: { type: [ParticipantSchema], default: [] },
     createdAt: { type: Date, default: Date.now },
   },
