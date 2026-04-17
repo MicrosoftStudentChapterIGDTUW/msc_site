@@ -5,6 +5,7 @@ export interface IParticipant {
   name: string;
   hasSubmitted: boolean;
   isJoined?: boolean;
+  isAdditionalEvaluator?: boolean;
 }
 
 export interface IGDGroup extends Document {
@@ -19,6 +20,8 @@ export interface IGDGroup extends Document {
   createdByAdminId: string;
   createdByAdminEmail: string;
   participants: IParticipant[];
+  additionalEvaluators: IParticipant[];
+  additionalEvaluatorIds: string[];
   createdAt: Date;
 }
 
@@ -27,6 +30,7 @@ const ParticipantSchema = new Schema<IParticipant>({
   name: { type: String, required: true },
   hasSubmitted: { type: Boolean, default: false },
   isJoined: { type: Boolean, default: false },
+  isAdditionalEvaluator: { type: Boolean, default: false },
 }, { _id: false }); // Disable automatic _id for nested subdocuments unless needed
 
 const GDGroupSchema = new Schema<IGDGroup>(
@@ -42,6 +46,8 @@ const GDGroupSchema = new Schema<IGDGroup>(
     createdByAdminId: { type: String, required: true, index: true },
     createdByAdminEmail: { type: String, required: true },
     participants: { type: [ParticipantSchema], default: [] },
+    additionalEvaluators: { type: [ParticipantSchema], default: [] },
+    additionalEvaluatorIds: { type: [String], default: [] },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

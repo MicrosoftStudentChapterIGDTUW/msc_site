@@ -31,7 +31,19 @@ export async function GET() {
     }
 
     const data = groups.map((group) => {
-      const submittedCount = group.participants.filter((p) => p.hasSubmitted).length;
+      const additionalFromArray = group.additionalEvaluators || [];
+      const additionalEvaluatorIds = new Set<string>([
+        ...(group.additionalEvaluatorIds || []).map((id) => String(id)),
+        ...additionalFromArray.map((participant) => String(participant.id)),
+      ]);
+      const coreParticipants = group.participants.filter(
+        (p) => !p.isAdditionalEvaluator && !additionalEvaluatorIds.has(String(p.id))
+      );
+      const additionalFromParticipants = group.participants.filter(
+        (p) => p.isAdditionalEvaluator || additionalEvaluatorIds.has(String(p.id))
+      );
+      const mergedAdditional = additionalFromArray.length > 0 ? additionalFromArray : additionalFromParticipants;
+      const submittedCount = coreParticipants.filter((p) => p.hasSubmitted).length;
       return {
         groupId: group.groupId,
         topic: group.topic,
@@ -39,9 +51,11 @@ export async function GET() {
         time: group.time,
         duration: group.duration,
         status: group.status,
-        participants: group.participants,
+        participants: [...coreParticipants, ...mergedAdditional],
         submittedCount,
-        totalParticipants: group.participants.length,
+        totalParticipants: coreParticipants.length,
+        additionalEvaluatorCount: mergedAdditional.length,
+        additionalEvaluators: mergedAdditional,
         evaluationCount: countMap.get(group.groupId) || 0,
         createdAt: group.createdAt,
       };

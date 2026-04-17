@@ -52,19 +52,33 @@ export async function POST(
       );
     }
 
-    // Find the participant by name (case-insensitive)
+    const normalizedName = participantName.trim().toLowerCase();
+    const additionalFromArray = group.additionalEvaluators || [];
+    const additionalEvaluatorIds = new Set<string>([
+      ...(group.additionalEvaluatorIds || []).map((id) => String(id)),
+      ...additionalFromArray.map((participant) => String(participant.id)),
+    ]);
+
     const participantIndex = group.participants.findIndex(
-      (p) => p.name.toLowerCase() === participantName.trim().toLowerCase()
+      (p) => p.name.toLowerCase() === normalizedName
+    );
+    const additionalIndex = additionalFromArray.findIndex(
+      (p) => p.name.toLowerCase() === normalizedName
     );
 
-    if (participantIndex === -1) {
+    if (participantIndex === -1 && additionalIndex === -1) {
       return NextResponse.json(
         { success: false, error: "Participant not found in this group." },
         { status: 404 }
       );
     }
 
-    if (group.participants[participantIndex].hasSubmitted) {
+    const evaluator =
+      participantIndex !== -1
+        ? group.participants[participantIndex]
+        : additionalFromArray[additionalIndex];
+
+    if (evaluator.hasSubmitted) {
       return NextResponse.json(
         {
           success: false,
@@ -75,10 +89,27 @@ export async function POST(
     }
 
     // Update isJoined status
-    group.participants[participantIndex].isJoined = true;
+    if (participantIndex !== -1) {
+      group.participants[participantIndex].isJoined = true;
+    } else if (additionalIndex !== -1) {
+      group.additionalEvaluators[additionalIndex].isJoined = true;
+    }
     await group.save();
 
-    const evaluator = group.participants[participantIndex];
+    const additionalFromParticipants = group.participants.filter(
+      (participant) =>
+        participant.isAdditionalEvaluator || additionalEvaluatorIds.has(String(participant.id))
+    );
+    const coreParticipants = group.participants.filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator && !additionalEvaluatorIds.has(String(participant.id))
+    );
+    const mergedAdditional = additionalFromArray.length > 0 ? additionalFromArray : additionalFromParticipants;
+    const isAdditionalEvaluator =
+      evaluator.isAdditionalEvaluator || additionalEvaluatorIds.has(String(evaluator.id));
+    const peerPool = isAdditionalEvaluator
+      ? coreParticipants
+      : coreParticipants.filter((p) => p.id !== evaluator.id);
 
     return NextResponse.json(
       {
@@ -91,10 +122,11 @@ export async function POST(
         scheduleStartAt: group.scheduleStartAt,
         scheduleEndAt: group.scheduleEndAt,
         status: group.status,
-        participants: group.participants,
+        participants: coreParticipants,
+        additionalEvaluators: mergedAdditional,
+        additionalEvaluatorIds: [...additionalEvaluatorIds],
         // Frontend expects 'peers' so it can evaluate everyone EXCEPT itself
-        peers: group.participants
-          .filter(p => p.id !== evaluator.id)
+        peers: peerPool
           .map(p => ({
             id: p.id,
             name: p.name,

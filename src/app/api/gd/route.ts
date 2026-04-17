@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       scheduleStartAt,
       scheduleEndAt,
       participants: participantNames,
+      additionalEvaluators: additionalEvaluatorNames,
     } = body;
     
     if (!participantNames || !Array.isArray(participantNames) || participantNames.length === 0) {
@@ -62,6 +63,9 @@ export async function POST(request: Request) {
     const trimmedNames: string[] = participantNames.map((name: string) => 
       typeof name === "string" ? name.trim() : ""
     );
+    const trimmedAdditionalEvaluators: string[] = Array.isArray(additionalEvaluatorNames)
+      ? additionalEvaluatorNames.map((name: string) => (typeof name === "string" ? name.trim() : ""))
+      : [];
     
     if (trimmedNames.some((name: string) => name.length === 0)) {
        return NextResponse.json(
@@ -70,22 +74,39 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check for duplicate names (case-insensitive)
-    const lowerNames = trimmedNames.map((n: string) => n.toLowerCase());
-    const uniqueNames = new Set(lowerNames);
-    if (uniqueNames.size !== lowerNames.length) {
+    if (trimmedAdditionalEvaluators.some((name: string) => name.length === 0)) {
       return NextResponse.json(
-        { success: false, error: "Duplicate participant names are not allowed." },
+        { success: false, error: "Additional evaluator names cannot be empty." },
         { status: 400 }
       );
     }
 
-    // Map names to participant objects with unique IDs
+    // Check for duplicate names (case-insensitive)
+    const lowerNames = [...trimmedNames, ...trimmedAdditionalEvaluators].map((n: string) => n.toLowerCase());
+    const uniqueNames = new Set(lowerNames);
+    if (uniqueNames.size !== lowerNames.length) {
+      return NextResponse.json(
+        { success: false, error: "Duplicate names are not allowed across participants and additional evaluators." },
+        { status: 400 }
+      );
+    }
+
+    // Map participant names to participant objects with unique IDs
     const participants = trimmedNames.map((name: string) => ({
       id: uuidv4(),
       name: name,
       hasSubmitted: false,
+      isAdditionalEvaluator: false,
     }));
+
+    const additionalEvaluators = trimmedAdditionalEvaluators.map((name: string) => ({
+      id: uuidv4(),
+      name: name,
+      hasSubmitted: false,
+      isAdditionalEvaluator: true,
+    }));
+
+    const additionalEvaluatorIds = additionalEvaluators.map((member) => member.id);
 
     // Generate groupId with collision retry (max 5 attempts)
     let groupId = "";
@@ -106,6 +127,8 @@ export async function POST(request: Request) {
           createdByAdminId: admin.id,
           createdByAdminEmail: admin.email,
           participants,
+          additionalEvaluators,
+          additionalEvaluatorIds,
         });
         break;
       } catch (err: any) {
@@ -129,7 +152,7 @@ export async function POST(request: Request) {
       adminEmail: admin.email,
       action: "CREATE_GROUP",
       groupId,
-      details: `Created GD group with ${participants.length} participants`,
+      details: `Created GD group with ${participants.length} participants and ${additionalEvaluators.length} additional evaluators`,
     });
 
     return NextResponse.json(
@@ -138,6 +161,8 @@ export async function POST(request: Request) {
         groupId,
         status: createdGroup.status,
         participants: createdGroup.participants,
+        additionalEvaluatorIds,
+        additionalEvaluators: createdGroup.additionalEvaluators || [],
         topic: createdGroup.topic,
       },
       { status: 201 }

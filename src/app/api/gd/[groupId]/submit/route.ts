@@ -60,13 +60,38 @@ export async function POST(
       );
     }
 
-    const evaluator = group.participants.find((p) => p.id === evaluatorId);
+    const additionalFromArray = group.additionalEvaluators || [];
+    const additionalEvaluatorIds = new Set<string>([
+      ...(group.additionalEvaluatorIds || []).map((id) => String(id)),
+      ...additionalFromArray.map((participant) => String(participant.id)),
+    ]);
+    const additionalFromParticipants = group.participants.filter(
+      (participant) =>
+        participant.isAdditionalEvaluator || additionalEvaluatorIds.has(String(participant.id))
+    );
+    const coreParticipants = group.participants.filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator && !additionalEvaluatorIds.has(String(participant.id))
+    );
+    const mergedAdditional = additionalFromArray.length > 0 ? additionalFromArray : additionalFromParticipants;
+    const allMembers = [...coreParticipants, ...mergedAdditional];
+
+    const evaluator = allMembers.find((participant) => participant.id === evaluatorId);
     if (!evaluator) {
       return NextResponse.json(
         { success: false, error: "Evaluator not found in this group." },
         { status: 404 }
       );
     }
+
+    const isAdditionalEvaluator =
+      evaluator.isAdditionalEvaluator || additionalEvaluatorIds.has(String(evaluator.id));
+    const allowedEvaluateeIds = new Set(
+      (isAdditionalEvaluator
+        ? coreParticipants
+        : coreParticipants.filter((p) => p.id !== evaluatorId)
+      ).map((p) => p.id)
+    );
 
     if (evaluator.hasSubmitted) {
       return NextResponse.json(
@@ -76,8 +101,7 @@ export async function POST(
     }
 
     const evaluationsToInsert = [];
-    const participantIds = new Set(group.participants.map((p) => p.id));
-    const expectedEvaluateeCount = Math.max(group.participants.length - 1, 0);
+    const expectedEvaluateeCount = allowedEvaluateeIds.size;
     
     for (const evalData of evaluations) {
       // Handle mapping from frontend field names if they differ
@@ -86,8 +110,7 @@ export async function POST(
       const contributionType = evalData.contribution || evalData.contributionType;
       const isTeamPlayer = evalData.teamPlayer !== undefined ? evalData.teamPlayer : evalData.isTeamPlayer;
 
-      if (!evaluateeId || !participantIds.has(evaluateeId)) continue;
-      if (evaluateeId === evaluatorId) continue;
+      if (!evaluateeId || !allowedEvaluateeIds.has(evaluateeId)) continue;
 
       const ratings = Array.isArray(evalData.ratings) ? evalData.ratings : [];
       const hasCompleteRatings =
@@ -128,10 +151,16 @@ export async function POST(
 
     await GDEvaluation.insertMany(evaluationsToInsert);
 
-    await GDGroup.updateOne(
+    const participantSubmitUpdate = await GDGroup.updateOne(
       { groupId, "participants.id": evaluatorId },
       { $set: { "participants.$.hasSubmitted": true } }
     );
+    if (participantSubmitUpdate.modifiedCount === 0) {
+      await GDGroup.updateOne(
+        { groupId, "additionalEvaluators.id": evaluatorId },
+        { $set: { "additionalEvaluators.$.hasSubmitted": true } }
+      );
+    }
 
     if (group.createdByAdminId && group.createdByAdminEmail) {
       await logAdminActivity({
@@ -145,7 +174,16 @@ export async function POST(
 
     // Check if everyone has submitted
     const updatedGroup = await GDGroup.findOne({ groupId });
-    const allSubmitted = updatedGroup?.participants.every((p) => p.hasSubmitted === true);
+    const updatedAdditionalFromArray = updatedGroup?.additionalEvaluators || [];
+    const updatedAdditionalIds = new Set<string>([
+      ...((updatedGroup?.additionalEvaluatorIds || []) as string[]).map((id) => String(id)),
+      ...updatedAdditionalFromArray.map((participant) => String(participant.id)),
+    ]);
+    const updatedCoreParticipants = (updatedGroup?.participants || []).filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator && !updatedAdditionalIds.has(String(participant.id))
+    );
+    const allSubmitted = updatedCoreParticipants.every((participant) => participant.hasSubmitted === true);
     
     if (allSubmitted) {
       await GDGroup.updateOne({ groupId }, { $set: { status: "closed" } });
@@ -165,10 +203,13 @@ export async function POST(
       {
         success: true,
         message: "Evaluations submitted successfully.",
-        allStatuses: updatedGroup?.participants.map(p => ({
-            name: p.name,
-            submitted: p.hasSubmitted
-        }))
+        allStatuses: [
+          ...(updatedGroup?.participants || []),
+          ...(updatedGroup?.additionalEvaluators || []),
+        ].map((participant) => ({
+          name: participant.name,
+          submitted: participant.hasSubmitted,
+        })),
       },
       { status: 200 }
     );
