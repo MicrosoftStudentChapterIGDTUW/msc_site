@@ -1269,10 +1269,10 @@ export default function GDAdminPage() {
                         <div className="mt-5 border-t border-white/10 pt-4">
                           <div className="flex items-center justify-between mb-3">
                             <h4 className="text-xs uppercase tracking-widest text-amber-300">Additional Evaluators</h4>
-                            <span className="text-[11px] text-amber-300/80">{groupData.additionalEvaluators.length} total</span>
+                            <span className="text-[11px] text-amber-300/80">{(groupData.additionalEvaluators || []).length} total</span>
                           </div>
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {groupData.additionalEvaluators.map((evaluator) => (
+                            {(groupData.additionalEvaluators || []).map((evaluator) => (
                               <div key={evaluator.id} className="bg-amber-500/10 rounded-xl border border-amber-400/25 px-3 py-2.5 flex items-center gap-2.5">
                                 <span className="w-2 h-2 rounded-full flex-shrink-0 bg-amber-300" />
                                 <span className="text-sm text-amber-50 truncate">{evaluator.name}</span>
