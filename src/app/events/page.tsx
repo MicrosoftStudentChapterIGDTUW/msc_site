@@ -40,10 +40,10 @@ function getEventHref(link: string): string {
 const events: Event[] = [
   {
     id: 7,
-    name: "GD",
+    name: "Think-Tank",
     date: "April 2026",
     venue: "Online",
-    image: "/images/HACK-IT-UP-HomePage.jpg",
+    image: "/images/think_tank.jpeg",
     link: "/gd",
     category: "upcoming",
     time: "TBD",

@@ -20,13 +20,27 @@ export async function GET(
     await connectToDatabase();
 
     const group = await GDGroup.findOne({ groupId }).lean();
-
     if (!group) {
       return NextResponse.json(
         { success: false, error: "GD Group not found." },
         { status: 404 }
       );
     }
+
+    const additionalFromArray = group.additionalEvaluators || [];
+    const additionalEvaluatorIdsSet = new Set<string>([
+      ...(group.additionalEvaluatorIds || []).map((id) => String(id)),
+      ...additionalFromArray.map((participant) => String(participant.id)),
+    ]);
+    const additionalFromParticipants = (group.participants || []).filter(
+      (participant) => participant.isAdditionalEvaluator || additionalEvaluatorIdsSet.has(String(participant.id))
+    );
+    const coreParticipants = (group.participants || []).filter(
+      (participant) => !participant.isAdditionalEvaluator && !additionalEvaluatorIdsSet.has(String(participant.id))
+    );
+    const mergedAdditional = additionalFromArray.length > 0 ? additionalFromArray : additionalFromParticipants;
+    const allMembers = [...coreParticipants, ...mergedAdditional];
+    const additionalEvaluatorIds = mergedAdditional.map((participant) => String(participant.id));
 
     // Usually, we want to tell the frontend if the group is closed so it can show a "Closed" screen
     if (group.status === "closed") {
@@ -60,7 +74,9 @@ export async function GET(
             scheduleEndAt: group.scheduleEndAt,
             status: group.status,
             windowState: windowState.code,
-            participants: group.participants,
+            participants: coreParticipants,
+            additionalEvaluatorIds,
+            additionalEvaluators: mergedAdditional,
           },
           { status: 200 }
         );
@@ -87,7 +103,9 @@ export async function GET(
         scheduleStartAt: group.scheduleStartAt,
         scheduleEndAt: group.scheduleEndAt,
         status: group.status,
-        participants: group.participants,
+        participants: coreParticipants,
+        additionalEvaluatorIds,
+        additionalEvaluators: mergedAdditional,
       },
       { status: 200 }
     );
@@ -155,7 +173,16 @@ export async function PATCH(
         name: string;
         hasSubmitted: boolean;
         isJoined?: boolean;
+        isAdditionalEvaluator?: boolean;
       }>;
+      additionalEvaluators?: Array<{
+        id: string;
+        name: string;
+        hasSubmitted: boolean;
+        isJoined?: boolean;
+        isAdditionalEvaluator?: boolean;
+      }>;
+      additionalEvaluatorIds?: string[];
     } = {};
 
     let removedParticipantIds: string[] = [];
@@ -212,6 +239,7 @@ export async function PATCH(
         name: string;
         hasSubmitted: boolean;
         isJoined?: boolean;
+        isAdditionalEvaluator?: boolean;
       };
 
       if (body.participants.length < 2) {
@@ -225,6 +253,13 @@ export async function PATCH(
         .map((name: unknown) => (typeof name === "string" ? name.trim() : ""))
         .filter((name: string) => name.length > 0);
 
+      const hasAdditionalEvaluatorsPayload = Array.isArray(body.additionalEvaluators);
+      const trimmedAdditionalEvaluators = hasAdditionalEvaluatorsPayload
+        ? body.additionalEvaluators
+            .map((name: unknown) => (typeof name === "string" ? name.trim() : ""))
+            .filter((name: string) => name.length > 0)
+        : [];
+
       if (trimmedNames.length !== body.participants.length) {
         return NextResponse.json(
           { success: false, error: "Participant names cannot be empty." },
@@ -232,17 +267,49 @@ export async function PATCH(
         );
       }
 
-      const lowerNames = trimmedNames.map((name: string) => name.toLowerCase());
+      if (hasAdditionalEvaluatorsPayload && trimmedAdditionalEvaluators.length !== body.additionalEvaluators.length) {
+        return NextResponse.json(
+          { success: false, error: "Additional evaluator names cannot be empty." },
+          { status: 400 }
+        );
+      }
+
+      const currentAdditionalFromArray = (group.additionalEvaluators as GroupParticipant[]) || [];
+      const currentAdditionalIds = new Set<string>([
+        ...((group.additionalEvaluatorIds as string[]) || []).map((id: string) => String(id)),
+        ...currentAdditionalFromArray.map((participant: GroupParticipant) => String(participant.id)),
+      ]);
+      const currentAdditionalFromParticipants = (group.participants as GroupParticipant[]).filter(
+        (participant: GroupParticipant) =>
+          participant.isAdditionalEvaluator || currentAdditionalIds.has(String(participant.id))
+      );
+      const currentCoreParticipants = (group.participants as GroupParticipant[]).filter(
+        (participant: GroupParticipant) =>
+          !participant.isAdditionalEvaluator && !currentAdditionalIds.has(String(participant.id))
+      );
+      const currentAdditionalEvaluators =
+        currentAdditionalFromArray.length > 0 ? currentAdditionalFromArray : currentAdditionalFromParticipants;
+      const currentAllMembers = [...currentCoreParticipants, ...currentAdditionalEvaluators];
+
+      const sourceAdditionalEvaluatorNames = hasAdditionalEvaluatorsPayload
+        ? trimmedAdditionalEvaluators
+        : currentAdditionalEvaluators
+            .map((participant: GroupParticipant) => participant.name.trim())
+            .filter((name: string) => name.length > 0);
+
+      const lowerNames = [...trimmedNames, ...sourceAdditionalEvaluatorNames].map((name: string) =>
+        name.toLowerCase()
+      );
       const uniqueNames = new Set(lowerNames);
       if (uniqueNames.size !== lowerNames.length) {
         return NextResponse.json(
-          { success: false, error: "Duplicate participant names are not allowed." },
+          { success: false, error: "Duplicate names are not allowed across participants and additional evaluators." },
           { status: 400 }
         );
       }
 
       const existingByLower = new Map<string, GroupParticipant>(
-        (group.participants as GroupParticipant[]).map((participant: GroupParticipant) => [
+        currentAllMembers.map((participant: GroupParticipant) => [
           participant.name.toLowerCase(),
           participant,
         ])
@@ -256,6 +323,7 @@ export async function PATCH(
             name,
             hasSubmitted: existing.hasSubmitted,
             isJoined: existing.isJoined,
+            isAdditionalEvaluator: false,
           };
         }
 
@@ -264,15 +332,44 @@ export async function PATCH(
           name,
           hasSubmitted: false,
           isJoined: false,
+          isAdditionalEvaluator: false,
         };
       });
 
-      const nextIds = new Set(nextParticipants.map((participant: GroupParticipant) => participant.id));
-      removedParticipantIds = (group.participants as GroupParticipant[])
+      const nextAdditionalEvaluators = sourceAdditionalEvaluatorNames.map((name: string) => {
+        const existing = existingByLower.get(name.toLowerCase());
+        if (existing) {
+          return {
+            id: existing.id,
+            name,
+            hasSubmitted: existing.hasSubmitted,
+            isJoined: existing.isJoined,
+            isAdditionalEvaluator: true,
+          };
+        }
+
+        return {
+          id: uuidv4(),
+          name,
+          hasSubmitted: false,
+          isJoined: false,
+          isAdditionalEvaluator: true,
+        };
+      });
+
+      const allMembers = [...nextParticipants, ...nextAdditionalEvaluators];
+      const additionalEvaluatorIds = nextAdditionalEvaluators.map(
+        (participant: GroupParticipant) => participant.id
+      );
+
+      const nextIds = new Set(allMembers.map((participant: GroupParticipant) => participant.id));
+      removedParticipantIds = currentAllMembers
         .filter((participant: GroupParticipant) => !nextIds.has(participant.id))
         .map((participant: GroupParticipant) => participant.id);
 
       updates.participants = nextParticipants;
+      updates.additionalEvaluators = nextAdditionalEvaluators;
+      updates.additionalEvaluatorIds = additionalEvaluatorIds;
     }
 
     if (Object.keys(updates).length === 0) {

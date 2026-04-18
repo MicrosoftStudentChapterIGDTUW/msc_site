@@ -25,14 +25,18 @@ interface FormData {
 }
 
 interface ParticipantStatus {
+  id: string;
   name: string;
   submitted: boolean;
   joined: boolean;
+  isAdditionalEvaluator?: boolean;
 }
 
 interface GroupData {
   groupId: string;
   participantStatuses: ParticipantStatus[];
+  additionalEvaluatorIds?: string[];
+  additionalEvaluators?: { id: string; name: string; isAdditionalEvaluator?: boolean }[];
   date?: string;
   time?: string;
   duration?: string;
@@ -54,6 +58,8 @@ interface GroupHistoryItem {
   submittedCount: number;
   totalParticipants: number;
   evaluationCount: number;
+  additionalEvaluatorCount?: number;
+  additionalEvaluators?: { id: string; name: string; isAdditionalEvaluator?: boolean }[];
   createdAt: string;
 }
 
@@ -73,12 +79,15 @@ interface EvaluationItem {
   isTeamPlayer: boolean;
   strength: string;
   improvement: string;
+  createdAt?: string;
 }
 
 interface ResultsResponse {
   groupId: string;
   status: "open" | "closed";
-  participants: { id: string; name: string }[];
+  participants: { id: string; name: string; isAdditionalEvaluator?: boolean }[];
+  additionalEvaluators?: { id: string; name: string; isAdditionalEvaluator?: boolean }[];
+  additionalEvaluatorIds?: string[];
   evaluations: EvaluationItem[];
 }
 
@@ -89,14 +98,36 @@ const defaultFormData: FormData = {
   duration: "",
 };
 
+const RATING_LABELS = [
+  "Topic Understanding",
+  "Clarity",
+  "Confidence",
+  "Listening",
+  "Contribution Quality",
+  "Respectfulness",
+  "Critical Thinking",
+];
+
 function toParticipantStatuses(
-  participants: { name: string; hasSubmitted: boolean; isJoined?: boolean }[]
+  participants: {
+    id: string;
+    name: string;
+    hasSubmitted: boolean;
+    isJoined?: boolean;
+    isAdditionalEvaluator?: boolean;
+  }[]
 ): ParticipantStatus[] {
   return participants.map((p) => ({
+    id: p.id,
     name: p.name,
     submitted: Boolean(p.hasSubmitted),
     joined: Boolean(p.isJoined),
+    isAdditionalEvaluator: Boolean(p.isAdditionalEvaluator),
   }));
+}
+
+function toMemberNames(members?: { id: string; name: string; isAdditionalEvaluator?: boolean }[]) {
+  return (members || []).map((member) => member.name);
 }
 
 function prettyActivity(action: string) {
@@ -138,6 +169,8 @@ export default function GDAdminPage() {
   const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [participants, setParticipants] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [additionalEvaluators, setAdditionalEvaluators] = useState<string[]>([]);
+  const [additionalEvaluatorInput, setAdditionalEvaluatorInput] = useState("");
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -159,12 +192,30 @@ export default function GDAdminPage() {
   const [editFormData, setEditFormData] = useState<FormData>(defaultFormData);
   const [editParticipants, setEditParticipants] = useState<string[]>([]);
   const [editParticipantInput, setEditParticipantInput] = useState("");
+  const [editAdditionalEvaluators, setEditAdditionalEvaluators] = useState<string[]>([]);
+  const [editAdditionalEvaluatorInput, setEditAdditionalEvaluatorInput] = useState("");
   const [isUpdatingSession, setIsUpdatingSession] = useState(false);
 
-  const submittedCount =
-    groupData?.participantStatuses.filter((p) => p.submitted).length ?? 0;
-  const totalCount =
-    groupData?.participantStatuses.length ?? participants.length;
+  const submittedCount = useMemo(() => {
+    if (!groupData) return 0;
+    const additionalIds = new Set((groupData.additionalEvaluatorIds || []).map((id) => String(id)));
+    const coreMembers = groupData.participantStatuses.filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator &&
+        !additionalIds.has(String(participant.id))
+    );
+    return coreMembers.filter((participant) => participant.submitted).length;
+  }, [groupData]);
+
+  const totalCount = useMemo(() => {
+    if (!groupData) return participants.length;
+    const additionalIds = new Set((groupData.additionalEvaluatorIds || []).map((id) => String(id)));
+    return groupData.participantStatuses.filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator &&
+        !additionalIds.has(String(participant.id))
+    ).length;
+  }, [groupData, participants.length]);
 
   const currentSessions = useMemo(
     () => historyItems.filter((item) => item.status === "open"),
@@ -172,10 +223,19 @@ export default function GDAdminPage() {
   );
 
   const scoreByParticipant = useMemo(() => {
-    if (!resultsData) return [] as { name: string; average: number; count: number }[];
+    if (!resultsData) {
+      return [] as { id: string; name: string; average: number; count: number }[];
+    }
+
+    const additionalEvaluatorIds = new Set(
+      (resultsData.additionalEvaluatorIds || []).map((id) => String(id))
+    );
+    const scoreEligibleParticipants = resultsData.participants.filter(
+      (participant) => !participant.isAdditionalEvaluator && !additionalEvaluatorIds.has(String(participant.id))
+    );
 
     const stats = new Map<string, { sum: number; count: number }>();
-    for (const participant of resultsData.participants) {
+    for (const participant of scoreEligibleParticipants) {
       stats.set(participant.id, { sum: 0, count: 0 });
     }
 
@@ -188,15 +248,132 @@ export default function GDAdminPage() {
       target.count += 1;
     }
 
-    return resultsData.participants.map((participant) => {
+    return scoreEligibleParticipants.map((participant) => {
       const stat = stats.get(participant.id);
       const average = stat && stat.count > 0 ? stat.sum / stat.count : 0;
       return {
+        id: participant.id,
         name: participant.name,
         average,
         count: stat?.count || 0,
       };
     });
+  }, [resultsData]);
+
+  const participantNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!resultsData) return map;
+    for (const participant of resultsData.participants) {
+      map.set(participant.id, participant.name);
+    }
+    for (const evaluator of resultsData.additionalEvaluators || []) {
+      map.set(evaluator.id, evaluator.name);
+    }
+    return map;
+  }, [resultsData]);
+
+  const responsesByEvaluator = useMemo(() => {
+    if (!resultsData) {
+      return [] as {
+        evaluatorId: string;
+        evaluatorName: string;
+        totalSubmitted: number;
+        averageGiven: number;
+        evaluations: {
+          evaluateeId: string;
+          evaluateeName: string;
+          ratings: number[];
+          ratingAverage: number;
+          contributionType: string;
+          isTeamPlayer: boolean;
+          strength: string;
+          improvement: string;
+          createdAt?: string;
+        }[];
+      }[];
+    }
+
+    const map = new Map<
+      string,
+      {
+        evaluatorId: string;
+        evaluatorName: string;
+        totalSubmitted: number;
+        averageGiven: number;
+        evaluations: {
+          evaluateeId: string;
+          evaluateeName: string;
+          ratings: number[];
+          ratingAverage: number;
+          contributionType: string;
+          isTeamPlayer: boolean;
+          strength: string;
+          improvement: string;
+          createdAt?: string;
+        }[];
+      }
+    >();
+
+    const allPotentialEvaluators = [
+      ...resultsData.participants,
+      ...(resultsData.additionalEvaluators || []),
+    ];
+
+    for (const participant of allPotentialEvaluators) {
+      map.set(participant.id, {
+        evaluatorId: participant.id,
+        evaluatorName: participant.name,
+        totalSubmitted: 0,
+        averageGiven: 0,
+        evaluations: [],
+      });
+    }
+
+    for (const evaluation of resultsData.evaluations) {
+      const evaluatorBucket = map.get(evaluation.evaluatorId);
+      if (!evaluatorBucket) continue;
+
+      const ratingTotal = evaluation.ratings.reduce((acc, val) => acc + val, 0);
+      const ratingAverage = evaluation.ratings.length > 0 ? ratingTotal / evaluation.ratings.length : 0;
+
+      evaluatorBucket.evaluations.push({
+        evaluateeId: evaluation.evaluateeId,
+        evaluateeName: participantNameById.get(evaluation.evaluateeId) || evaluation.evaluateeId,
+        ratings: evaluation.ratings,
+        ratingAverage,
+        contributionType: evaluation.contributionType,
+        isTeamPlayer: evaluation.isTeamPlayer,
+        strength: evaluation.strength,
+        improvement: evaluation.improvement,
+        createdAt: evaluation.createdAt,
+      });
+    }
+
+    for (const bucket of map.values()) {
+      bucket.totalSubmitted = bucket.evaluations.length;
+      const sumOfAverages = bucket.evaluations.reduce((acc, item) => acc + item.ratingAverage, 0);
+      bucket.averageGiven = bucket.totalSubmitted > 0 ? sumOfAverages / bucket.totalSubmitted : 0;
+      bucket.evaluations.sort((a, b) => a.evaluateeName.localeCompare(b.evaluateeName));
+    }
+
+    return Array.from(map.values()).sort((a, b) => {
+      if (b.totalSubmitted !== a.totalSubmitted) return b.totalSubmitted - a.totalSubmitted;
+      return a.evaluatorName.localeCompare(b.evaluatorName);
+    });
+  }, [participantNameById, resultsData]);
+
+  const submittedResponsesByEvaluator = useMemo(
+    () => responsesByEvaluator.filter((item) => item.totalSubmitted > 0),
+    [responsesByEvaluator]
+  );
+
+  const evaluatorIdSet = useMemo(() => {
+    if (!resultsData) return new Set<string>();
+    const ids = new Set<string>((resultsData.additionalEvaluatorIds || []).map((id) => String(id)));
+    for (const evaluator of resultsData.additionalEvaluators || []) {
+      ids.add(String(evaluator.id));
+    }
+    return ids;
   }, [resultsData]);
 
   useEffect(() => {
@@ -353,6 +530,8 @@ export default function GDAdminPage() {
       setActivityItems([]);
       setResultsData(null);
       setSelectedResultsGroupId(null);
+      setAdditionalEvaluators([]);
+      setEditAdditionalEvaluators([]);
     }
   }
 
@@ -364,12 +543,38 @@ export default function GDAdminPage() {
   const handleAddParticipant = () => {
     const trimmed = inputValue.trim();
     if (!trimmed) return;
-    if (participants.includes(trimmed)) {
-      setError("Participant already added.");
+    const existsInParticipants = participants.some(
+      (name) => name.toLowerCase() === trimmed.toLowerCase()
+    );
+    const existsInEvaluators = additionalEvaluators.some(
+      (name) => name.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (existsInParticipants || existsInEvaluators) {
+      setError("Name already added.");
       return;
     }
     setParticipants((prev) => [...prev, trimmed]);
     setInputValue("");
+    setError(null);
+  };
+
+  const handleAddAdditionalEvaluator = () => {
+    const trimmed = additionalEvaluatorInput.trim();
+    if (!trimmed) return;
+
+    const existsInParticipants = participants.some(
+      (name) => name.toLowerCase() === trimmed.toLowerCase()
+    );
+    const existsInEvaluators = additionalEvaluators.some(
+      (name) => name.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (existsInParticipants || existsInEvaluators) {
+      setError("Name already added.");
+      return;
+    }
+
+    setAdditionalEvaluators((prev) => [...prev, trimmed]);
+    setAdditionalEvaluatorInput("");
     setError(null);
   };
 
@@ -380,8 +585,19 @@ export default function GDAdminPage() {
     }
   };
 
+  const handleAdditionalEvaluatorKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddAdditionalEvaluator();
+    }
+  };
+
   const handleRemove = (name: string) => {
     setParticipants((prev) => prev.filter((p) => p !== name));
+  };
+
+  const handleRemoveAdditionalEvaluator = (name: string) => {
+    setAdditionalEvaluators((prev) => prev.filter((evaluator) => evaluator !== name));
   };
 
   const handleGenerate = async () => {
@@ -394,7 +610,12 @@ export default function GDAdminPage() {
       const res = await fetch("/api/gd", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, ...schedule, participants }),
+        body: JSON.stringify({
+          ...formData,
+          ...schedule,
+          participants,
+          additionalEvaluators,
+        }),
       });
 
       const data = await res.json();
@@ -405,6 +626,8 @@ export default function GDAdminPage() {
       setGroupData({
         groupId: data.groupId,
         participantStatuses: toParticipantStatuses(data.participants || []),
+        additionalEvaluatorIds: data.additionalEvaluatorIds || [],
+        additionalEvaluators: data.additionalEvaluators || [],
         date: formData.date,
         time: formData.time,
         duration: formData.duration,
@@ -417,6 +640,11 @@ export default function GDAdminPage() {
         duration: formData.duration,
       });
       setEditParticipants([...participants]);
+      setEditAdditionalEvaluators([...additionalEvaluators]);
+      setParticipants([]);
+      setAdditionalEvaluators([]);
+      setInputValue("");
+      setAdditionalEvaluatorInput("");
       setStep(2);
       await Promise.all([fetchHistory(), fetchActivity()]);
     } catch (err: any) {
@@ -444,6 +672,8 @@ export default function GDAdminPage() {
           ? {
               ...prev,
               participantStatuses: toParticipantStatuses(data.participants || []),
+              additionalEvaluatorIds: data.additionalEvaluatorIds || [],
+              additionalEvaluators: data.additionalEvaluators || [],
               date: data.date,
               time: data.time,
               duration: data.duration,
@@ -578,12 +808,20 @@ export default function GDAdminPage() {
       setGroupData({
         groupId,
         participantStatuses: toParticipantStatuses(data.participants || []),
+        additionalEvaluatorIds: data.additionalEvaluatorIds || [],
+        additionalEvaluators: data.additionalEvaluators || [],
         date: data.date,
         time: data.time,
         duration: data.duration,
       });
-      setEditParticipants((data.participants || []).map((participant: { name: string }) => participant.name));
+      setEditParticipants(
+        toMemberNames(data.participants || [])
+      );
+      setEditAdditionalEvaluators(
+        toMemberNames(data.additionalEvaluators || [])
+      );
       setEditParticipantInput("");
+      setEditAdditionalEvaluatorInput("");
       setStep(2);
     } catch (err: any) {
       setError(err.message || "Unable to load current session details.");
@@ -605,7 +843,12 @@ export default function GDAdminPage() {
       const res = await fetch(`/api/gd/${editingSessionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...editFormData, ...schedule, participants: editParticipants }),
+        body: JSON.stringify({
+          ...editFormData,
+          ...schedule,
+          participants: editParticipants,
+          additionalEvaluators: editAdditionalEvaluators,
+        }),
       });
       const data = await res.json();
 
@@ -628,11 +871,14 @@ export default function GDAdminPage() {
     const trimmed = editParticipantInput.trim();
     if (!trimmed) return;
 
-    const exists = editParticipants.some(
+    const existsInParticipants = editParticipants.some(
       (participant) => participant.toLowerCase() === trimmed.toLowerCase()
     );
-    if (exists) {
-      setError("Participant already added.");
+    const existsInEvaluators = editAdditionalEvaluators.some(
+      (evaluator) => evaluator.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (existsInParticipants || existsInEvaluators) {
+      setError("Name already added.");
       return;
     }
 
@@ -641,8 +887,33 @@ export default function GDAdminPage() {
     setError(null);
   };
 
+  const handleAddEditAdditionalEvaluator = () => {
+    const trimmed = editAdditionalEvaluatorInput.trim();
+    if (!trimmed) return;
+
+    const existsInParticipants = editParticipants.some(
+      (participant) => participant.toLowerCase() === trimmed.toLowerCase()
+    );
+    const existsInEvaluators = editAdditionalEvaluators.some(
+      (evaluator) => evaluator.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (existsInParticipants || existsInEvaluators) {
+      setError("Name already added.");
+      return;
+    }
+
+    setEditAdditionalEvaluators((prev) => [...prev, trimmed]);
+    setEditAdditionalEvaluatorInput("");
+    setError(null);
+  };
+
   const handleRemoveEditParticipant = (name: string) => {
     setEditParticipants((prev) => prev.filter((participant) => participant !== name));
+    setError(null);
+  };
+
+  const handleRemoveEditAdditionalEvaluator = (name: string) => {
+    setEditAdditionalEvaluators((prev) => prev.filter((evaluator) => evaluator !== name));
     setError(null);
   };
 
@@ -870,6 +1141,54 @@ export default function GDAdminPage() {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1.5 tracking-wide">
+                      Additional Evaluators <span className="text-gray-500">(optional)</span>
+                    </label>
+
+                    {additionalEvaluators.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {additionalEvaluators.map((name) => (
+                          <span
+                            key={name}
+                            className="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-400/25 text-amber-300 text-xs rounded-lg px-3 py-1.5"
+                          >
+                            {name}
+                            <button
+                              onClick={() => handleRemoveAdditionalEvaluator(name)}
+                              className="hover:text-white transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <input
+                        value={additionalEvaluatorInput}
+                        onChange={(e) => {
+                          setAdditionalEvaluatorInput(e.target.value);
+                          setError(null);
+                        }}
+                        onKeyDown={handleAdditionalEvaluatorKeyDown}
+                        placeholder="Type evaluator name and press Enter"
+                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4da6ff]/60"
+                      />
+                      <button
+                        onClick={handleAddAdditionalEvaluator}
+                        className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-sm px-4 py-2.5 rounded-xl"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-2">
+                      Additional evaluators can submit evaluations, appear in name selection, and are excluded from being evaluated.
+                    </p>
+                  </div>
+
                   <button
                     onClick={handleGenerate}
                     disabled={!formData.topic.trim() || participants.length < 2 || isLoading}
@@ -904,7 +1223,7 @@ export default function GDAdminPage() {
                         {groupData.groupId}
                       </p>
                       <p className="text-gray-400 text-xs mb-5">
-                        Active until all {totalCount} participants submit
+                        Active until all {totalCount} members submit
                       </p>
                       <button
                         onClick={handleCopy}
@@ -937,9 +1256,34 @@ export default function GDAdminPage() {
                           <div key={p.name} className="bg-white/5 rounded-xl border border-white/10 px-3 py-2.5 flex items-center gap-2.5">
                             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${p.submitted ? "bg-emerald-400" : p.joined ? "bg-amber-400" : "bg-gray-600"}`} />
                             <span className="text-sm text-gray-300 truncate">{p.name}</span>
+                            {p.isAdditionalEvaluator && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-400/25 text-amber-300">
+                                Evaluator
+                              </span>
+                            )}
                           </div>
                         ))}
                       </div>
+
+                      {(groupData.additionalEvaluators || []).length > 0 && (
+                        <div className="mt-5 border-t border-white/10 pt-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-xs uppercase tracking-widest text-amber-300">Additional Evaluators</h4>
+                            <span className="text-[11px] text-amber-300/80">{(groupData.additionalEvaluators || []).length} total</span>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {(groupData.additionalEvaluators || []).map((evaluator) => (
+                              <div key={evaluator.id} className="bg-amber-500/10 rounded-xl border border-amber-400/25 px-3 py-2.5 flex items-center gap-2.5">
+                                <span className="w-2 h-2 rounded-full flex-shrink-0 bg-amber-300" />
+                                <span className="text-sm text-amber-50 truncate">{evaluator.name}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-400/30 text-amber-200">
+                                  Evaluator
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex gap-3 mt-5">
                         <button
@@ -959,6 +1303,7 @@ export default function GDAdminPage() {
                           Refresh Status
                         </button>
                       </div>
+
                     </div>
                   </div>
                 )}
@@ -1004,12 +1349,135 @@ export default function GDAdminPage() {
                             <span>Status: <span className={item.status === "closed" ? "text-emerald-400" : "text-amber-400"}>{item.status}</span></span>
                             <span>Submitted: {item.submittedCount}/{item.totalParticipants}</span>
                             <span>Evaluations: {item.evaluationCount}</span>
+                            {(item.additionalEvaluatorCount || 0) > 0 && (
+                              <span>Evaluators: {item.additionalEvaluatorCount}</span>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
+
+                {selectedResultsGroupId && !resultsLoading && resultsData && (
+                  <div className="bg-white/5 backdrop-blur-lg rounded-2xl border border-[#4da6ff]/25 p-5 sm:p-6 space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base sm:text-lg font-semibold text-[#4da6ff]">GD Scoreboard</h3>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Group {resultsData.groupId} · {resultsData.evaluations.length} total responses
+                        </p>
+                      </div>
+                      <span className="text-[11px] text-[#4da6ff] border border-[#4da6ff]/30 bg-[#4da6ff]/10 px-2 py-0.5 rounded-full">
+                        {resultsData.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {[...scoreByParticipant]
+                        .sort((a, b) => b.average - a.average)
+                        .map((item, index) => (
+                          <div key={item.id} className="bg-white/5 border border-white/10 rounded-xl p-3">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-white font-medium">#{index + 1} {item.name}</span>
+                              <span className="text-[#4da6ff]">
+                                {item.count > 0 ? `${item.average.toFixed(2)} / 5` : "No score"}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Received {item.count} peer evaluations</p>
+                          </div>
+                        ))}
+                    </div>
+
+                    <div className="border-t border-white/10 pt-4 space-y-3">
+                      <h4 className="text-sm font-semibold text-white">Evaluator Responses (Participants + Additional Evaluators)</h4>
+
+                      {submittedResponsesByEvaluator.length === 0 ? (
+                        <p className="text-sm text-gray-500">No responses submitted yet for this GD.</p>
+                      ) : (
+                        <div className="space-y-3 max-h-[34rem] overflow-auto pr-1">
+                          {submittedResponsesByEvaluator.map((evaluator) => (
+                            <div key={evaluator.evaluatorId} className="border border-white/10 bg-white/5 rounded-xl p-3">
+                              <div className="flex items-center justify-between gap-3 mb-2">
+                                <div>
+                                  <p className="text-sm font-semibold text-white flex items-center gap-2">
+                                    {evaluator.evaluatorName}
+                                    <span
+                                      className={`text-[10px] px-1.5 py-0.5 rounded border ${
+                                        evaluatorIdSet.has(String(evaluator.evaluatorId))
+                                          ? "border-amber-400/35 bg-amber-500/10 text-amber-300"
+                                          : "border-[#4da6ff]/35 bg-[#4da6ff]/10 text-[#4da6ff]"
+                                      }`}
+                                    >
+                                      {evaluatorIdSet.has(String(evaluator.evaluatorId))
+                                        ? "ADDITIONAL EVALUATOR"
+                                        : "PARTICIPANT"}
+                                    </span>
+                                  </p>
+                                  <p className="text-xs text-gray-400">
+                                    Submitted {evaluator.totalSubmitted} response{evaluator.totalSubmitted === 1 ? "" : "s"}
+                                  </p>
+                                </div>
+                                <span className="text-xs text-[#4da6ff] border border-[#4da6ff]/30 bg-[#4da6ff]/10 px-2 py-1 rounded-lg">
+                                  Avg Given: {evaluator.totalSubmitted > 0 ? evaluator.averageGiven.toFixed(2) : "0.00"}
+                                </span>
+                              </div>
+
+                              {evaluator.evaluations.length === 0 ? (
+                                <p className="text-xs text-gray-500">No submission from this participant yet.</p>
+                              ) : (
+                                <div className="space-y-2">
+                                  {evaluator.evaluations.map((response) => (
+                                    <div key={`${evaluator.evaluatorId}-${response.evaluateeId}`} className="rounded-lg border border-white/10 bg-black/20 p-3 space-y-2">
+                                      <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <p className="text-xs text-white font-medium">
+                                          Evaluated: <span className="text-[#4da6ff]">{response.evaluateeName}</span>
+                                        </p>
+                                        <p className="text-[11px] text-gray-400">
+                                          Avg: {response.ratingAverage.toFixed(2)} / 5
+                                        </p>
+                                      </div>
+
+                                      <div className="grid sm:grid-cols-2 gap-x-4 gap-y-1">
+                                        {RATING_LABELS.map((label, idx) => (
+                                          <p key={`${response.evaluateeId}-${label}`} className="text-[11px] text-gray-300">
+                                            {label}: <span className="text-white">{response.ratings[idx] ?? 0}/5</span>
+                                          </p>
+                                        ))}
+                                      </div>
+
+                                      <div className="grid sm:grid-cols-2 gap-2 text-[11px]">
+                                        <p className="text-gray-300">
+                                          Contribution Type: <span className="text-white">{response.contributionType}</span>
+                                        </p>
+                                        <p className="text-gray-300">
+                                          Team Player: <span className="text-white">{response.isTeamPlayer ? "Yes" : "No"}</span>
+                                        </p>
+                                      </div>
+
+                                      <p className="text-[11px] text-gray-300">
+                                        Strength: <span className="text-white">{response.strength}</span>
+                                      </p>
+                                      <p className="text-[11px] text-gray-300">
+                                        Improvement: <span className="text-white">{response.improvement}</span>
+                                      </p>
+
+                                      {response.createdAt && (
+                                        <p className="text-[10px] text-gray-500">
+                                          Submitted at {new Date(response.createdAt).toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4 lg:sticky lg:top-24 self-start">
@@ -1051,6 +1519,19 @@ export default function GDAdminPage() {
                           <p className="text-xs text-gray-400 mt-0.5">
                             {item.groupId} · {item.submittedCount}/{item.totalParticipants} submitted
                           </p>
+                          {(item.additionalEvaluators || []).length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {item.additionalEvaluators!.map((evaluator) => (
+                                <span
+                                  key={evaluator.id}
+                                  className="inline-flex items-center gap-1 rounded-full border border-amber-400/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-300"
+                                >
+                                  {evaluator.name}
+                                  <span className="uppercase tracking-wide text-[9px]">Eval</span>
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -1147,6 +1628,57 @@ export default function GDAdminPage() {
                         </div>
                       </div>
 
+                      <div className="rounded-lg border border-white/10 bg-white/5 p-3">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <p className="text-xs text-gray-300">Additional Evaluators</p>
+                          <span className="text-[11px] text-gray-400">{editAdditionalEvaluators.length} total</span>
+                        </div>
+
+                        {editAdditionalEvaluators.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {editAdditionalEvaluators.map((name) => (
+                              <span
+                                key={name}
+                                className="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-400/25 text-amber-300 text-xs rounded-lg px-2.5 py-1"
+                              >
+                                {name}
+                                <button
+                                  onClick={() => handleRemoveEditAdditionalEvaluator(name)}
+                                  className="hover:text-white transition-colors"
+                                  aria-label={`Remove ${name}`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <input
+                            value={editAdditionalEvaluatorInput}
+                            onChange={(e) => {
+                              setEditAdditionalEvaluatorInput(e.target.value);
+                              setError(null);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddEditAdditionalEvaluator();
+                              }
+                            }}
+                            placeholder="Add additional evaluator"
+                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4da6ff]/60"
+                          />
+                          <button
+                            onClick={handleAddEditAdditionalEvaluator}
+                            className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs px-3 py-2 rounded-lg"
+                          >
+                            <Plus className="w-3.5 h-3.5" /> Add
+                          </button>
+                        </div>
+                      </div>
+
                       <button
                         onClick={handleUpdateCurrentSession}
                         disabled={isUpdatingSession}
@@ -1186,6 +1718,7 @@ export default function GDAdminPage() {
                       ) : (
                         [...scoreByParticipant]
                           .sort((a, b) => b.average - a.average)
+                          .slice(0, 3)
                           .map((item, index) => (
                           <div key={item.name} className="bg-white/5 border border-white/10 rounded-xl p-3">
                             <div className="flex items-center justify-between text-sm">
@@ -1197,6 +1730,9 @@ export default function GDAdminPage() {
                             <p className="text-xs text-gray-400 mt-1">Based on {item.count} peer evaluations</p>
                           </div>
                         ))
+                      )}
+                      {scoreByParticipant.length > 3 && (
+                        <p className="text-[11px] text-gray-500">Full participant responses are shown in the scoreboard panel.</p>
                       )}
                     </div>
                   )}

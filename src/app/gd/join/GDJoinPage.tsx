@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown, RefreshCw, AlertCircle } from "lucide-react";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
@@ -25,7 +25,7 @@ const RATING_LABELS = [
   "Critical Thinking",
 ];
 
-interface Peer { id: string; name: string; initials: string }
+interface Peer { id: string; name: string; initials: string; isAdditionalEvaluator?: boolean }
 interface PeerEval {
   peerId: string; ratings: number[]; contribution: string;
   teamPlayer: boolean | null; strength: string; improvement: string;
@@ -34,6 +34,8 @@ interface SessionData {
   groupId: string;
   topic: string;
   peers: Peer[];
+  participants?: Peer[];
+  additionalEvaluators?: Peer[];
   date?: string;
   time?: string;
   duration?: string;
@@ -148,12 +150,16 @@ function NameDropdown({ peers, value, onChange, disabled }: {
                 }`}
               >
                 <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
-                  value === p.name ? "bg-[#4da6ff]/20 border border-[#4da6ff]/30 text-[#4da6ff]" : "bg-white/10 border border-white/10 text-gray-400"
+                  value === p.name
+                    ? "bg-[#4da6ff]/20 border border-[#4da6ff]/30 text-[#4da6ff]"
+                    : "bg-white/10 border border-white/10 text-gray-400"
                 }`}>
                   {p.initials}
                 </span>
                 {p.name}
-                {value === p.name && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#4da6ff]" />}
+                {value === p.name && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#4da6ff]" />
+                )}
               </button>
             ))}
           </div>
@@ -166,6 +172,9 @@ function NameDropdown({ peers, value, onChange, disabled }: {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function GDJoinPage() {
+  const peerHeaderRef = useRef<HTMLDivElement | null>(null);
+  const warningRef = useRef<HTMLDivElement | null>(null);
+  const SCROLL_TOP_OFFSET = 220;
   const [nowTick, setNowTick] = useState(Date.now());
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [groupIdInput, setGroupIdInput] = useState("");
@@ -255,13 +264,31 @@ export default function GDJoinPage() {
           return data;
         })
         .then((data) => {
-          const peers = (data.participants || [])
+          const additionalEvaluatorIds = new Set<string>(
+            (data.additionalEvaluatorIds || []).map((id: string) => String(id))
+          );
+          const participants = (data.participants || []).filter(
+            (p: { hasSubmitted?: boolean }) => !p.hasSubmitted
+          );
+          const additionalEvaluators = (data.additionalEvaluators || [])
             .filter((p: { hasSubmitted?: boolean }) => !p.hasSubmitted)
-            .map((p: { id: string; name: string }) => ({
-            id: p.id,
-            name: p.name,
-            initials: p.name.split(" ").map((w) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2),
+            .map((p: { id: string; name: string; isAdditionalEvaluator?: boolean }) => ({
+              id: p.id,
+              name: p.name,
+              initials: p.name.split(" ").map((w) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2),
+              isAdditionalEvaluator: true,
             }));
+
+          const peers = [
+            ...participants.map((p: { id: string; name: string; isAdditionalEvaluator?: boolean }) => ({
+              id: p.id,
+              name: p.name,
+              initials: p.name.split(" ").map((w) => w[0]?.toUpperCase() ?? "").join("").slice(0, 2),
+              isAdditionalEvaluator:
+                Boolean(p.isAdditionalEvaluator) || additionalEvaluatorIds.has(String(p.id)),
+            })),
+            ...additionalEvaluators,
+          ];
           setDropdownPeers(peers);
           setNameInput("");
           if (peers.length === 0) {
@@ -309,6 +336,29 @@ export default function GDJoinPage() {
     updateEval({ ratings: next });
   };
 
+  const scrollToCurrentPeerHeader = () => {
+    window.requestAnimationFrame(() => {
+      const targetTop = peerHeaderRef.current?.getBoundingClientRect().top;
+      if (typeof targetTop !== "number") return;
+      const absoluteTop = window.scrollY + targetTop;
+      window.scrollTo({ top: Math.max(absoluteTop - SCROLL_TOP_OFFSET, 0), behavior: "smooth" });
+    });
+  };
+
+  const scrollToWarning = () => {
+    window.requestAnimationFrame(() => {
+      const targetTop = warningRef.current?.getBoundingClientRect().top;
+      if (typeof targetTop !== "number") return;
+      const absoluteTop = window.scrollY + targetTop;
+      window.scrollTo({ top: Math.max(absoluteTop - SCROLL_TOP_OFFSET, 0), behavior: "smooth" });
+    });
+  };
+
+  useEffect(() => {
+    if (step !== 2 || !error) return;
+    scrollToWarning();
+  }, [error, step]);
+
   const handleJoin = async () => {
     const id = groupIdInput.trim(), name = nameInput.trim();
     if (!id || !name) return;
@@ -354,12 +404,14 @@ export default function GDJoinPage() {
     setError(null);
     if (peerIndex < session.peers.length - 1) {
       setPeerIndex((i) => i + 1);
+      scrollToCurrentPeerHeader();
       return;
     }
 
     const firstPendingIndex = evaluations.findIndex((item) => getMissingFields(item).length > 0);
     if (firstPendingIndex >= 0) {
       setPeerIndex(firstPendingIndex);
+      scrollToCurrentPeerHeader();
     }
   };
 
@@ -376,6 +428,7 @@ export default function GDJoinPage() {
 
     if (missingByPeer.length > 0) {
       setError(missingByPeer);
+      scrollToWarning();
       return;
     }
 
@@ -406,10 +459,17 @@ export default function GDJoinPage() {
       setStep(3);
     } catch (err: any) {
       setError(err.message ?? "Something went wrong. Please try again.");
+      scrollToWarning();
     } finally { setIsSubmitting(false); }
   };
 
-  const handleBack = () => { if (peerIndex > 0) { setPeerIndex((i) => i - 1); setError(null); } };
+  const handleBack = () => {
+    if (peerIndex > 0) {
+      setPeerIndex((i) => i - 1);
+      setError(null);
+      scrollToCurrentPeerHeader();
+    }
+  };
 
   return (
     <>
@@ -433,7 +493,11 @@ export default function GDJoinPage() {
           {step === 1 && (
             <>
               <PageHeader badge="Join Session" title="Join GD Evaluation" subtitle="Enter the Group ID shared by your organiser to begin." />
-              {error && <ErrorBanner message={error} />}
+              {error && (
+                <div ref={warningRef}>
+                  <ErrorBanner message={error} />
+                </div>
+              )}
               <div className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 p-6 sm:p-8 space-y-5">
                 <div>
                   <label className="block text-xs text-gray-400 mb-1.5 tracking-wide">Group ID</label>
@@ -521,12 +585,12 @@ export default function GDJoinPage() {
               <div className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 overflow-hidden">
 
                 {/* Peer header */}
-                <div className="flex items-center gap-3 p-5 border-b border-white/10">
+                <div ref={peerHeaderRef} className="flex items-center gap-3 p-5 border-b border-white/10">
                   <div className="w-10 h-10 rounded-full bg-[#4da6ff]/20 border border-[#4da6ff]/30 flex items-center justify-center text-sm font-bold text-[#4da6ff] flex-shrink-0">
                     {currentPeer.initials}
                   </div>
                   <div>
-                    <p className="text-white font-semibold">{currentPeer.name}</p>
+                    <p className="text-lg sm:text-xl text-white font-bold leading-tight">{currentPeer.name}</p>
                     <p className="text-gray-400 text-xs">Peer {peerIndex + 1} of {session.peers.length}</p>
                   </div>
                 </div>

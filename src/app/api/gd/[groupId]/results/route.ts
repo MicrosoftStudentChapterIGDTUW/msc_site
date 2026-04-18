@@ -40,6 +40,20 @@ export async function GET(
     }
 
     const evaluations = await GDEvaluation.find({ groupId }).lean();
+    const additionalFromArray = group.additionalEvaluators || [];
+    const additionalEvaluatorIdsSet = new Set<string>([
+      ...(group.additionalEvaluatorIds || []).map((id) => String(id)),
+      ...additionalFromArray.map((participant) => String(participant.id)),
+    ]);
+    const additionalFromParticipants = (group.participants || []).filter(
+      (participant) =>
+        participant.isAdditionalEvaluator || additionalEvaluatorIdsSet.has(String(participant.id))
+    );
+    const coreParticipants = (group.participants || []).filter(
+      (participant) =>
+        !participant.isAdditionalEvaluator && !additionalEvaluatorIdsSet.has(String(participant.id))
+    );
+    const mergedAdditional = additionalFromArray.length > 0 ? additionalFromArray : additionalFromParticipants;
 
     await logAdminActivity({
       adminId: admin.id,
@@ -54,7 +68,9 @@ export async function GET(
         success: true,
         groupId: group.groupId,
         status: group.status,
-        participants: group.participants,
+        participants: coreParticipants,
+        additionalEvaluatorIds: mergedAdditional.map((participant) => String(participant.id)),
+        additionalEvaluators: mergedAdditional,
         evaluations,
       },
       { status: 200 }
