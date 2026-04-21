@@ -21,7 +21,7 @@ interface Event {
   venue: string;
   image: string;
   link: string;
-  category: "upcoming" | "seminar" | "hackathon" | "bootcamp";
+  category: "upcoming" | "seminar" | "competitions" | "bootcamp";
   time?: string;
   description?: string;
 }
@@ -41,13 +41,119 @@ const events: Event[] = [
   {
     id: 7,
     name: "Think-Tank",
-    date: "April 2026",
+    date: "18th April 2026",
     venue: "Online",
     image: "/images/think_tank.jpeg",
     link: "/gd",
-    category: "upcoming",
-    time: "TBD",
-    
+    category: "competitions",
+  },
+  {
+    id: 12,
+    name: "Mind Matrix",
+    date: "18th March 2026",
+    venue: "IGDTUW",
+    image: "/images/Mind-matrix.png",
+    link: "upevent",
+    category: "competitions",
+  },
+  {
+    id: 11,
+    name: "Ideate-it-Up 2026",
+    date: "18th March 2026",
+    venue: "IGDTUW",
+    image: "/images/Ideate-it-up.png",
+    link: "upevent",
+    category: "competitions",
+    description: "Think. Create. Elevate.",
+  },
+  {
+    id: 10,
+    name: "Insider Series 3.0 - Ep 03",
+    date: "11th February 2026",
+    venue: "Online",
+    image: "/images/Insider-series(3).png",
+    link: "upevent",
+    category: "seminar",
+    time: "08:00 PM - 09:00 PM",
+    description:
+      "Tech Roles Explained: ctc vs in-hand with Radhika Bansal, Software Developer @ Uber.",
+  },
+  {
+    id: 9,
+    name: "Insider Series 3.0 - Ep 02",
+    date: "10th February 2026",
+    venue: "Online",
+    image: "/images/Insider-series(2).png",
+    link: "upevent",
+    category: "seminar",
+    time: "09:00 PM - 10:00 PM",
+    description: "How to secure a DRDO Intern with Anusha Mahajan, Product @ Fabric.",
+  },
+  {
+    id: 8,
+    name: "Insider Series 3.0 - Ep 01",
+    date: "9th February 2026",
+    venue: "Online",
+    image: "/images/Insider-series(1).png",
+    link: "upevent",
+    category: "seminar",
+    time: "08:00 PM - 09:00 PM",
+    description:
+      "Resume and LinkedIn optimisation with Sripriya Aggarwal, Founder @TechNeeds.",
+  },
+  {
+    id: 6,
+    name: "Hack-it-up",
+    date: "18th February, 2025",
+    venue: "Seminar Hall, IGDTUW",
+    image: "/images/HACK-IT-UP-HomePage.jpg",
+    link: "hackitup",
+    category: "competitions",
+    time: "9:00 AM",
+  },
+  {
+    id: 16,
+    name: "Insider Series 2.0 - Ep 04",
+    date: "18th November 2024",
+    venue: "Online",
+    image: "/images/Insider-series 2.0 (4).png",
+    link: "upevent",
+    category: "seminar",
+    time: "07:00 PM - 08:00 PM",
+    description: "Guide to the FFE Scholarship & Amazon Internship with Tanisha Bansal.",
+  },
+  {
+    id: 15,
+    name: "Insider Series 2.0 - Ep 03",
+    date: "17th November 2024",
+    venue: "Online",
+    image: "/images/Insider-series 2.0 (3).png",
+    link: "upevent",
+    category: "seminar",
+    time: "08:00 PM - 09:00 PM",
+    description: "Living the Google Dream: The Path to Google STEP with Rishita Makde and Ayushi Arora.",
+  },
+  {
+    id: 14,
+    name: "Insider Series 2.0 - Ep 02",
+    date: "16th November 2024",
+    venue: "Online",
+    image: "/images/Insider-series 2.0 (2).png",
+    link: "upevent",
+    category: "seminar",
+    time: "07:00 PM - 08:00 PM",
+    description: "Cracking Uber She++ and UberSTAR Internship with Prakriti Rai and Payal Narwal.",
+  },
+  {
+    id: 13,
+    name: "Insider Series 2.0 - Ep 01",
+    date: "15th November 2024",
+    venue: "Online",
+    image: "/images/Insider-series 2.0 (1).png",
+    link: "upevent",
+    category: "seminar",
+    time: "07:00 PM - 08:00 PM",
+    description: "The Tech Tea: Google WE Scholar Experience with Navya Verma and Devika Jain.",
   },
   {
     id: 1,
@@ -59,16 +165,6 @@ const events: Event[] = [
     link: "bootcamp24",
     category: "bootcamp",
     time: "10:00 AM",
-  },
-  {
-    id: 6,
-    name: "Hack-it-up",
-    date: "18th February, 2025",
-    venue: "Seminar Hall, IGDTUW",
-    image: "/images/HACK-IT-UP-HomePage.jpg",
-    link: "hackitup",
-    category: "hackathon",
-    time: "9:00 AM",
   },
   {
     id: 2,
@@ -113,15 +209,26 @@ const events: Event[] = [
     link: "bootcamp",
     category: "bootcamp",
     time: "9:00 AM",
-  },
+  }
 ];
 
 const calendarEvents: CalendarEvent[] = [
-  { id: 4, title: "Insider Series 1", date: "June 20, 2023" },
-  { id: 3, title: "Insider Series 2", date: "July 23, 2023" },
-  { id: 5, title: "Bootcamp Start", date: "June 5, 2023" },
-  { id: 2, title: "Insider 3", date: "August 18, 2023" },
+  { id: 7, title: "Think-Tank", date: "April 18, 2026" },
+  { id: 1, title: "Bootcamp'24", date: "August 1, 2024" },
+  { id: 12, title: "Mind Matrix", date: "March 18, 2026" },
+  { id: 11, title: "Ideate-it-Up 2026", date: "March 18, 2026" },
+  { id: 10, title: "Insider Series 3.0 (E03)", date: "February 11, 2026" },
+  { id: 9, title: "Insider Series 3.0 (E02)", date: "February 10, 2026" },
+  { id: 8, title: "Insider Series 3.0 (E01)", date: "February 9, 2026" },
   { id: 6, title: "Hack-it-up", date: "February 18, 2025" },
+  { id: 16, title: "Insider Series 2.0 (E04)", date: "November 18, 2024" },
+  { id: 15, title: "Insider Series 2.0 (E03)", date: "November 17, 2024" },
+  { id: 14, title: "Insider Series 2.0 (E02)", date: "November 16, 2024" },
+  { id: 13, title: "Insider Series 2.0 (E01)", date: "November 15, 2024" },
+  { id: 2, title: "Insider 3", date: "August 18, 2023" },
+  { id: 3, title: "Insider Series 2", date: "July 23, 2023" },
+  { id: 4, title: "Insider Series 1", date: "June 20, 2023" },
+  { id: 5, title: "Bootcamp Start", date: "June 5, 2023" }
 ];
 
 export default function EventsPage() {
@@ -130,7 +237,7 @@ export default function EventsPage() {
   const [selectedDate, setSelectedDate] = useState<number | null>(
     today.getDate()
   );
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [selectedEventIds, setSelectedEventIds] = useState<number[]>([]);
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
@@ -151,12 +258,12 @@ export default function EventsPage() {
     "December",
   ];
 
-  const handleDateClick = (day: number, event: CalendarEvent | undefined) => {
+  const handleDateClick = (day: number, dateEvents: CalendarEvent[]) => {
     setSelectedDate(day);
-    if (event) {
-      setSelectedEventId(event.id);
+    if (dateEvents.length > 0) {
+      setSelectedEventIds(dateEvents.map((e) => e.id));
     } else {
-      setSelectedEventId(null);
+      setSelectedEventIds([]);
     }
   };
 
@@ -170,7 +277,7 @@ export default function EventsPage() {
     return { daysInMonth, startingDayOfWeek };
   };
 
-  const getEventForDate = (day: number) => {
+  const getEventsForDate = (day: number) => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const dateStr = new Date(year, month, day).toLocaleDateString("en-US", {
@@ -178,7 +285,7 @@ export default function EventsPage() {
       day: "numeric",
       year: "numeric",
     });
-    return calendarEvents.find((event) => {
+    return calendarEvents.filter((event) => {
       const eventDate = new Date(event.date).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
@@ -207,7 +314,7 @@ export default function EventsPage() {
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
     );
     setSelectedDate(null);
-    setSelectedEventId(null);
+    setSelectedEventIds([]);
   };
 
   const nextMonth = () => {
@@ -215,7 +322,7 @@ export default function EventsPage() {
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
     );
     setSelectedDate(null);
-    setSelectedEventId(null);
+    setSelectedEventIds([]);
   };
 
   const changeYear = (offset: number) => {
@@ -228,27 +335,26 @@ export default function EventsPage() {
     setCurrentDate(new Date(currentDate.getFullYear(), monthIndex, 1));
     setShowMonthPicker(false);
     setSelectedDate(null);
-    setSelectedEventId(null);
+    setSelectedEventIds([]);
   };
 
-  const selectedEvent = selectedEventId
-    ? events.find((e) => e.id === selectedEventId)
-    : null;
+  const selectedEvents = selectedEventIds.length > 0
+    ? events.filter((e) => selectedEventIds.includes(e.id))
+    : [];
 
-  const categorizedEvents = {
-    upcoming: events.filter((e) => e.category === "upcoming"),
-    seminar: events.filter((e) => e.category === "seminar"),
-    hackathon: events.filter((e) => e.category === "hackathon"),
-    bootcamp: events.filter((e) => e.category === "bootcamp"),
-  };
+  const orderedCategories = Array.from(new Set(events.map((e) => e.category)));
+  const categorizedEvents = orderedCategories.reduce((acc, category) => {
+    acc[category] = events.filter((e) => e.category === category);
+    return acc;
+  }, {} as Record<string, Event[]>);
 
-  const categoryConfig = {
+  const categoryConfig: Record<string, { title: string; color: string }> = {
     upcoming: { title: "Upcoming Events", color: "from-blue-500 to-cyan-500" },
-    seminar: { title: "Seminars", color: "from-orange-500 to-red-500" },
-    hackathon: {
-      title: "Hackathons",
+    competitions: {
+      title: "Competitions",
       color: "from-green-500 to-emerald-500",
     },
+    seminar: { title: "Seminars", color: "from-orange-500 to-red-500" },
     bootcamp: { title: "Bootcamps", color: "from-purple-500 to-pink-500" },
   };
 
@@ -292,7 +398,7 @@ export default function EventsPage() {
           {/* Header */}
           <div className="text-center mb-12">
             <p className="text-gray-300 text-lg">
-              Explore our workshops, seminars, and hackathons
+              Explore our workshops, seminars, and competitions
             </p>
           </div>
 
@@ -370,18 +476,18 @@ export default function EventsPage() {
 
                   {Array.from({ length: daysInMonth }).map((_, i) => {
                     const day = i + 1;
-                    const event = getEventForDate(day);
+                    const dayEvents = getEventsForDate(day);
                     const isSelected = selectedDate === day;
                     const todayCell = isToday(day);
 
                     return (
                       <button
                         key={day}
-                        onClick={() => handleDateClick(day, event)}
+                        onClick={() => handleDateClick(day, dayEvents)}
                         className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm transition-all duration-200 ${
                           isSelected
                             ? "bg-[#4da6ff] text-white scale-105 shadow-lg"
-                            : event
+                            : dayEvents.length > 0
                             ? "bg-gradient-to-br from-[#5d3b88] to-[#4da6ff] hover:scale-105"
                             : todayCell
                             ? "bg-white/15 ring-2 ring-[#4da6ff] hover:bg-white/20"
@@ -395,8 +501,15 @@ export default function EventsPage() {
                         >
                           {day}
                         </span>
-                        {event && !isSelected && (
-                          <div className="w-1 h-1 bg-white rounded-full mt-0.5" />
+                        {dayEvents.length > 0 && !isSelected && (
+                          <div className="flex gap-0.5 mt-0.5">
+                            {dayEvents.map((_, idx) => (
+                              <div
+                                key={idx}
+                                className="w-1 h-1 bg-white rounded-full"
+                              />
+                            ))}
+                          </div>
                         )}
                         {todayCell && !isSelected && !event && (
                           <div className="w-1 h-1 bg-[#4da6ff] rounded-full mt-0.5" />
@@ -409,44 +522,48 @@ export default function EventsPage() {
             </div>
 
             {/* Event Details - Right Side */}
-            <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/10">
-              {selectedEvent ? (
-                <div className="h-full flex flex-col">
+            <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/10 overflow-y-auto max-h-[600px] custom-scrollbar">
+              {selectedEvents.length > 0 ? (
+                <div className="space-y-8">
                   <h3 className="text-2xl font-bold mb-4 text-[#4da6ff]">
                     Event Details
                   </h3>
-
-                  <div className="relative overflow-hidden rounded-xl mb-4 flex-shrink-0">
-                    <img
-                      src={selectedEvent.image}
-                      alt={selectedEvent.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute top-3 right-3 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs font-semibold">
-                      {categoryConfig[selectedEvent.category].title}
-                    </div>
-                  </div>
-
-                  <h4 className="text-2xl font-bold mb-4">
-                    {selectedEvent.name}
-                  </h4>
-
-                  <div className="space-y-3 mb-6 flex-grow">
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <Calendar className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
-                      <span>{selectedEvent.date}</span>
-                    </div>
-                    {selectedEvent.time && (
-                      <div className="flex items-center gap-3 text-gray-300">
-                        <Clock className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
-                        <span>{selectedEvent.time}</span>
+                  {selectedEvents.map((event, index) => (
+                    <div
+                      key={event.id}
+                      className={index > 0 ? "pt-8 border-t border-white/10" : ""}
+                    >
+                      <div className="relative overflow-hidden rounded-xl mb-4 flex-shrink-0 bg-black/40">
+                        <img
+                          src={event.image}
+                          alt={event.name}
+                          className="w-full h-80 object-contain"
+                        />
+                        <div className="absolute top-3 right-3 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs font-semibold">
+                          {categoryConfig[event.category].title}
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-center gap-3 text-gray-300">
-                      <MapPin className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
-                      <span>{selectedEvent.venue}</span>
+
+                      <h4 className="text-2xl font-bold mb-4">{event.name}</h4>
+
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-3 text-gray-300">
+                          <Calendar className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
+                          <span>{event.date}</span>
+                        </div>
+                        {event.time && (
+                          <div className="flex items-center gap-3 text-gray-300">
+                            <Clock className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
+                            <span>{event.time}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 text-gray-300">
+                          <MapPin className="w-5 h-5 text-[#4da6ff] flex-shrink-0" />
+                          <span>{event.venue}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center">
