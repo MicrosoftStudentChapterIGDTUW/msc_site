@@ -14,7 +14,7 @@ export const blogPosts: BlogPost[] = [
   excerpt:
     "A discussion on whether developers will still be coding in the next decade as AI continues to evolve.",
   cover: "/blog/blog1img1.webp",
-  date: "2024-01-12",
+  date: "2026-03-03",
   content: `
 ### The Future of Programming: Will Developers Still Code in 10 Years?
                                            -Aneshya Das
@@ -55,7 +55,7 @@ In the end, AI won't replace developers. But a developer who knows how to orches
   excerpt:
     "Digital Divide 2.0 explores how access to AI is no longer just about internet, but about capability, cost, and control.",
   cover: "/blog/blog2img1.webp",
-  date: "2024-02-10",
+  date: "2026-02-28",
   content: `
 ### Digital Divide 2.0: Who Gets Access to AI; and Who Doesn’t?  
 -Arni Goyal
@@ -97,7 +97,7 @@ Image Source: gemini.google.com
   excerpt:
     "A clear, data-driven comparison of cloud vs on-prem infrastructure costs and when each makes financial sense.",
   cover: "/blog/blog3img1.webp",
-  date: "2024-03-01",
+  date: "2026-02-25",
   content: `
 ### Is the Cloud Really Cheaper? A Data-Driven Cost Comparison
 
@@ -347,7 +347,7 @@ It’s about financial alignment with business goals.
   excerpt:
     "An exploration of how constant digital engagement is affecting student focus, productivity, and mental energy.",
   cover: "/blog/blog4img1.webp",
-  date: "2024-03-15",
+  date: "2026-02-28",
   content: `
 ### The Rise of Digital Burnout: Is Technology Making Students Less Productive?
 
