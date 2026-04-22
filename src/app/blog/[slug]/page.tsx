@@ -1,22 +1,27 @@
-"use client";
-
 import React from "react";
+import ReactMarkdown from "react-markdown";
 import { notFound } from "next/navigation";
 import Aurora from "@/components/Aurora";
 import PillNav from "@/components/PillNav";
 import { blogPosts } from "@/lib/blogs";
-import { motion } from "framer-motion";
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return notFound();
 
   return (
     <div className="relative min-h-screen w-full text-white overflow-hidden">
 
+      {/* Background */}
       <div className="background-with-svg absolute inset-0 -z-30" />
 
-      {/* Aurora wrapper */}
+      {/* Aurora */}
       <div className="absolute inset-0 -z-20 pointer-events-none">
         <Aurora
           colorStops={["#AABFFF", "#1A2B5C", "#496DFD"]}
@@ -26,6 +31,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         />
       </div>
 
+      {/* Navbar */}
       <div className="relative z-40">
         <PillNav
           logo="/logo.png"
@@ -43,30 +49,47 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         />
       </div>
 
+      {/* Content */}
       <div className="relative z-20 max-w-3xl mx-auto px-6 py-32">
 
+        {/* Cover */}
         <img
           src={post.cover}
           alt={post.title}
           className="w-full max-h-[400px] object-cover rounded-3xl mb-10"
         />
 
-        <motion.h1
-          className="text-4xl font-bold mb-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+        {/* Title */}
+        <h1 className="text-4xl font-bold mb-4">
           {post.title}
-        </motion.h1>
+        </h1>
 
+        {/* Date */}
         <p className="text-gray-400 mb-10">{post.date}</p>
 
+        {/* ✅ FINAL FIX APPLIED HERE */}
         <div
-          className="prose prose-invert text-gray-200"
-          dangerouslySetInnerHTML={{
-            __html: post.content.replace(/\n/g, "<br/>"),
-          }}
-        />
+          className="
+            prose 
+            prose-invert 
+            prose-lg
+            max-w-none 
+            text-gray-200
+
+            prose-p:mb-6
+            prose-p:leading-7
+
+            prose-headings:mt-8
+            prose-headings:mb-4
+
+            prose-img:my-8
+          "
+        >
+          <ReactMarkdown>
+            {post.content}
+          </ReactMarkdown>
+        </div>
+
       </div>
     </div>
   );
