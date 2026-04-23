@@ -6,13 +6,16 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { motion } from 'motion/react';
 import './AboutUs.css';
+import { title } from 'process';
 
 const galleryItems = [
   { title: 'Engaging Sessions', image: '/images/gallery-auditorium.jpg' },
-  { title: 'Core Team', image: '/images/gallery-team.jpg' },
-  { title: 'Hack-It-Up 2025', image: '/images/gallery-hackitup.jpg' },
-  { title: 'Workshops & Talks', image: '/images/gallery-auditorium.jpg' },
-  { title: 'Networking Nights', image: '/images/gallery-team.jpg' },
+  { title: 'Core Team', image: '/gallery/msc_team.jpg' },
+  { title: 'Ideate-It-Up 2026', image: '/gallery/IMG_0421.jpg' },
+  { title: 'Mind Matrix', image: '/gallery/20260317_145735.jpg' },
+  { title: 'Insider Sessions', image: '/gallery/insider.png' },
+  { title: 'Workshops & Talks', image: '/gallery/20260317_151731.jpg' },
+  { title: 'Networking Nights', image: '/gallery/team.jpg' },
 ];
 
 const AboutUs: React.FC = () => {

@@ -15,9 +15,9 @@ const RecentEvents: React.FC = () => {
     },
     {
       id: 2,
-      title: 'HACK-IT-UP 2025',
-      description: 'IGDTUW-Hackathon - The hackathon for 2025.',
-      image: '/images/gallery-hackitup.jpg',
+      title: 'IDEATE-IT-UP 2026',
+      description: 'IGDTUW-Hackathon - The hackathon for 2026.',
+      image: '/images/Ideate-it-up.png',
     },
   ];
 

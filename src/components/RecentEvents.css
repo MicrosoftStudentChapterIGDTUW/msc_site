@@ -1,6 +1,6 @@
 .recent-events-section {
-  min-height: 100vh;
-  padding: 100px 40px;
+  min-height: auto;
+  padding: 100px 40px 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,7 +82,7 @@
 }
 
 .recent-events-footer {
-  margin-top: 60px;
+  margin-top: 40px;
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.9rem;
@@ -100,7 +100,7 @@
 
 @media (max-width: 768px) {
   .recent-events-section {
-    padding: 80px 20px;
+    padding: 80px 20px 24px;
   }
 
   .recent-events-title {

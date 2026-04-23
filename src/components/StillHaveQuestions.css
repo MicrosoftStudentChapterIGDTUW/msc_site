@@ -90,8 +90,9 @@
 
 @media (max-width: 640px) {
   .still-have-questions-section {
-    padding: 60px 20px;
-    min-height: 60vh;
+    padding: 32px 16px 28px;
+    min-height: auto;
+    margin-top: -12px;
   }
 
   .still-have-questions-title {

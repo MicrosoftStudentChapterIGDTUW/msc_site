@@ -502,6 +502,14 @@ class App {
     font: string
   ) {
     const defaultItems = [
+      { image: `/gallery/orientation.JPG`, text: '' },
+      { image: `/gallery/team.JPG`, text: '' },
+      { image: `/gallery/20260317_145735.jpg`, text: '' },
+      { image: `/gallery/IMG_0544.jpg`, text: '' },
+      { image: `/gallery/ceremony.JPG`, text: '' },
+      { image: `/gallery/msc_team.JPG`, text: '' },
+      { image: `/gallery/20260317_172958.jpg`, text: '' },
+      
       {
         image: `/gallery/new1.jpg`,
         text: ''

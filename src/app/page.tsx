@@ -11,7 +11,7 @@ import PillNav from '@/components/PillNav';
 import GoalsPage from '@/components/GoalsPage';
 import AboutUs from '@/components/AboutUs';
 import RecentEvents from '@/components/RecentEvents';
-import SponsorsPage from './sponsors/page';
+import SponsorsMarquee from '@/components/SponsorsMarquee';
 import FAQ from '@/components/FAQ';
 import StillHaveQuestions from '@/components/StillHaveQuestions';
 import Footer from '@/components/Footer';
@@ -112,7 +112,7 @@ export default function Home() {
           { label: 'About us', href: '#about' },
           { label: 'Events', href: '/events' },
           { label: 'Blogs', href: '/blog' },
-          { label: 'Sponsors', href: '/sponsors' },
+          { label: 'Sponsors', href: '#sponsors' },
           { label: 'Team', href: '/team' },
           { label: 'Contact us', href: '/contact' },
           { label: 'FAQ', href: '#faq' },
@@ -125,7 +125,7 @@ export default function Home() {
         pillTextColor="#ffffff"
       />
 
-      <div className="font-sans min-h-screen relative overflow-hidden">
+      <div className="hero-shell font-sans min-h-screen relative overflow-hidden">
         {/* Microsoft Learn Student Ambassador Logo */}
         <MicrosoftLogo />
 
@@ -144,7 +144,7 @@ export default function Home() {
         </div>
 
         {/* Circular Gallery */}
-        <div style={{ height: '600px', position: 'relative', width: '100%' }}>
+        <div className="circular-gallery-wrap">
           <CircularGallery bend={0} textColor="#ffffff" borderRadius={0.05} scrollEase={0.02} />
         </div>
 
@@ -172,8 +172,8 @@ export default function Home() {
       {/* Recent Events Section - appears after Still Have Questions */}
       <RecentEvents />
 
-      {/* Sponsors Page Section - appears after Recent Events */}
-      <SponsorsPage />
+      {/* Sponsors Section - appears after Recent Events */}
+      <SponsorsMarquee />
 
       {/* Footer */}
       <Footer />

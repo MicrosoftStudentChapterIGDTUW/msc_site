@@ -79,19 +79,37 @@
 
 @media (max-width: 640px) {
   .about-us-section {
-    padding: 120px 20px 60px;
+    min-height: auto;
+    padding: 64px 16px 32px;
+    margin-top: 0;
   }
 
   .about-title {
-    font-size: 2.5rem;
+    font-size: 2.1rem;
+    letter-spacing: 0.1em;
   }
 
   .about-subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+
+  .about-gallery {
+    margin: 28px 0 32px;
+  }
+
+  .about-gallery .slick-slide {
+    padding: 6px;
+  }
+
+  .about-gallery img {
+    height: 220px;
   }
 
   .about-description {
-    font-size: 1rem;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    margin-top: 32px;
   }
 }
 
