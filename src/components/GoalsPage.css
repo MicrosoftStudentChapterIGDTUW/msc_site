@@ -11,6 +11,8 @@
   width: min(1180px, 100%);
   margin: 0 auto;
   min-height: clamp(560px, 62vw, 760px);
+  --goals-card-width: min(42%, 500px);
+  --goals-arrow-width: min(34%, 400px);
 }
 
 .goals-title-container {
@@ -33,24 +35,27 @@
 
 .goal-1-container {
   position: absolute;
-  right: 2%;
+  right: 3%;
   top: 24%;
+  width: var(--goals-card-width);
 }
 
 .goal-2-container {
   position: absolute;
-  right: 2%;
+  right: 3%;
   top: 62%;
+  width: var(--goals-card-width);
 }
 
 .goal-3-container {
   position: absolute;
-  left: 6%;
+  left:11%;
   top: 43%;
+  width: var(--goals-card-width);
 }
 
 .goal-svg {
-  width: clamp(260px, 42vw, 500px);
+  width: 100%;
   height: auto;
   max-width: 100%;
   transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -67,7 +72,7 @@
   left: 56%;
   top: 58%;
   transform: translate(-50%, -50%);
-  width: min(40vw, 400px);
+  width: var(--goals-arrow-width);
   z-index: 1;
 }
 
@@ -80,10 +85,13 @@
 @media (max-width: 1200px) {
   .goals-stage {
     min-height: clamp(520px, 70vw, 700px);
+    --goals-card-width: min(40%, 420px);
+    --goals-arrow-width: min(32%, 340px);
   }
 
-  .goal-svg {
-    width: clamp(230px, 40vw, 420px);
+  .goal-1-container,
+  .goal-2-container {
+    right: 18%;
   }
 
   .goal-2-container {
@@ -99,67 +107,105 @@
 @media (max-width: 900px) {
   .goals-page {
     min-height: auto;
-    padding-inline: 14px;
+    margin-top: 0;
+    padding: 0 12px 0;
   }
 
   .goals-stage {
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding-top: 96px;
+    width: min(100%, 360px);
+    min-height: 400px;
+    --goals-card-width: min(42vw, 140px);
+    --goals-arrow-width: min(21vw, 84px);
   }
 
   .goals-title-container {
-    left: 50%;
     top: 0;
+    left: 50%;
     transform: translateX(-50%);
   }
 
   .goals-page-title {
-    letter-spacing: 0.1em;
-    text-align: center;
-  }
-
-  .goals-arrow-container {
-    position: relative;
-    left: auto;
-    top: auto;
-    transform: none;
-    width: min(300px, 82vw);
-    order: 1;
-    margin-bottom: 2px;
+    font-size: clamp(1.05rem, 6.4vw, 1.45rem);
+    letter-spacing: 0.045em;
+    white-space: nowrap;
   }
 
   .goal-1-container {
-    position: relative;
-    right: auto;
-    top: auto;
-    order: 2;
-  }
-
-  .goal-3-container {
-    position: relative;
-    left: auto;
-    top: auto;
-    order: 3;
+    right: 6%;
+    top: 23%;
   }
 
   .goal-2-container {
-    position: relative;
-    right: auto;
-    top: auto;
-    order: 4;
+    right: 6%;
+    top: 59%;
   }
 
+  .goal-3-container {
+    left: 8%;
+    top: 42%;
+  }
+
+  .goals-arrow-container {
+    left: 52%;
+    top: 53%;
+  }
+}
+
+@media (max-width: 640px) {
+  .goals-page {
+    min-height: auto;
+    margin-top: 0;
+    padding: 12px 12px 0;
+  }
+
+  .goals-stage {
+    width: 100%;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    --goals-card-width: min(92vw, 300px);
+    --goals-arrow-width: 0;
+  }
+
+  .goals-page-title {
+    font-size: clamp(0.98rem, 6.1vw, 1.28rem);
+  }
+
+  .goals-title-container,
   .goal-1-container,
   .goal-2-container,
   .goal-3-container {
-    width: min(92vw, 520px);
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    max-width: 300px;
+    margin: 0;
   }
 
-  .goal-svg {
-    width: 100%;
+  .goals-title-container {
+    order: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .goal-1-container {
+    order: 2;
+  }
+
+  .goal-2-container {
+    order: 4;
+  }
+
+  .goal-3-container {
+    order: 3;
+  }
+
+  .goals-arrow-container {
+    display: none;
   }
 }

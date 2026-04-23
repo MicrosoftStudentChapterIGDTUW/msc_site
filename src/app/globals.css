@@ -28,6 +28,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  overflow-x: clip;
+}
+
 img,
 video,
 canvas,
@@ -167,10 +171,7 @@ svg {
     linear-gradient(135deg, #050505 0%, #0f0f1a 50%, #0a0f1a 100%);
   background-blend-mode: overlay;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: -10;
   pointer-events: none;
 }
@@ -277,6 +278,7 @@ svg {
   text-align: center;
   padding: 20px 40px;
   position: relative;
+  width: min(100%, 1200px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -381,6 +383,109 @@ svg {
 
 .journey-typing {
   display: inline-block;
+}
+
+.circular-gallery-wrap {
+  height: 600px;
+  position: relative;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .hero-shell {
+    min-height: auto;
+    overflow: visible;
+    padding-top: 124px;
+    padding-bottom: 0;
+  }
+
+  .microsoft-logo {
+    position: static;
+    transform: none;
+    width: 72px;
+    height: auto;
+    margin: 0 auto 12px;
+    z-index: 12;
+  }
+
+  .microsoft-logo .logo-image {
+    width: 72px;
+    height: auto;
+  }
+
+  .main-title {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(88vw, 390px);
+    padding: 0 6px;
+    margin: 4px auto 0;
+  }
+
+  .main-title .shiny-title {
+    font-size: clamp(1.05rem, 6.1vw, 1.55rem);
+    letter-spacing: 0.028em;
+    line-height: 1.05;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .main-title .subtitle {
+    font-size: clamp(0.62rem, 2.6vw, 0.8rem);
+    letter-spacing: 0.14em;
+    margin-top: 4px;
+    white-space: normal;
+  }
+
+  .circular-gallery {
+    position: relative;
+    left: auto;
+    top: 4px;
+    transform: none;
+    height: 190px;
+    width: 100%;
+  }
+
+  .circular-gallery-wrap {
+    height: 250px;
+    margin-top: 8px;
+  }
+
+  .journey-text-container {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    margin: 10px auto 0;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 0.82rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .journey-prefix {
+    margin-right: 0;
+  }
+
+  .journey-typing-wrapper {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-shell {
+    padding-top: 176px;
+  }
+
+  .circular-gallery-wrap {
+    height: 220px;
+  }
+
+  .main-title {
+    margin-top: 14px;
+  }
 }
 
 /* Sticky Navbar - no container needed */

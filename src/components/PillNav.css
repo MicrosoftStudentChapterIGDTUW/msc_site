@@ -168,4 +168,52 @@
   z-index: 4;
 }
 
+@media (max-width: 768px) {
+  .pill-nav {
+    --nav-h: 48px;
+    --logo: 32px;
+    --pill-pad-x: 12px;
+    --pill-gap: 4px;
+    padding: 8px 0;
+  }
+
+  .pill-nav-content {
+    padding: 0 8px;
+    padding-top: 10px;
+  }
+
+  .pill-nav-wrapper {
+    gap: 8px;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .pill-logo {
+    width: 32px;
+  }
+
+  .pill-nav-items {
+    width: min(100%, calc(100vw - 16px));
+    max-width: none;
+    min-height: 44px;
+    padding: 4px 8px;
+    overflow: visible;
+    justify-content: center;
+  }
+
+  .pill-list {
+    gap: 4px;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pill {
+    height: 30px;
+    padding: 0 9px;
+    font-size: 10px;
+    letter-spacing: 0.15px;
+  }
+}
+
 

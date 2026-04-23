@@ -1,0 +1,151 @@
+.section {
+  position: relative;
+  padding: clamp(48px, 8vw, 96px) 0 clamp(24px, 5vw, 64px);
+  overflow: hidden;
+}
+
+.inner {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+  padding: 0 clamp(12px, 3vw, 32px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: clamp(20px, 4vw, 36px);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: clamp(0.92rem, 1.8vw, 1.05rem);
+}
+
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  width: max-content;
+  animation: sponsors-marquee 42s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .track {
+  animation-play-state: paused;
+}
+
+.card {
+  position: relative;
+  width: clamp(220px, 26vw, 300px);
+  flex: 0 0 auto;
+  border-radius: 28px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  transition: transform 180ms ease;
+}
+
+.logoBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 170px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.logoGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--glow) 35%, white) 0%, transparent 70%);
+  opacity: 0.5;
+  filter: blur(18px);
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  max-width: 78%;
+  max-height: 90px;
+  object-fit: contain;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.cardText {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@keyframes sponsors-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: clamp(36px, 10vw, 56px) 0 clamp(18px, 5vw, 30px);
+  }
+
+  .track {
+    gap: 12px;
+    animation-duration: 30s;
+  }
+
+  .card {
+    width: clamp(180px, 68vw, 240px);
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .logoBox {
+    min-height: 130px;
+    margin-bottom: 12px;
+  }
+
+  .logo {
+    max-height: 72px;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .cardText {
+    font-size: 0.82rem;
+  }
+}
