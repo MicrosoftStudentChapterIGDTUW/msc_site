@@ -10,12 +10,12 @@ import { title } from 'process';
 
 const galleryItems = [
   { title: 'Engaging Sessions', image: '/images/gallery-auditorium.jpg' },
-  { title: 'Core Team', image: '/gallery/msc_team.jpg' },
+  { title: 'Core Team', image: '/gallery/msc_team.JPG' },
   { title: 'Ideate-It-Up 2026', image: '/gallery/IMG_0421.jpg' },
   { title: 'Mind Matrix', image: '/gallery/20260317_145735.jpg' },
   { title: 'Insider Sessions', image: '/gallery/insider.png' },
   { title: 'Workshops & Talks', image: '/gallery/20260317_151731.jpg' },
-  { title: 'Networking Nights', image: '/gallery/team.jpg' },
+  { title: 'Networking Nights', image: '/gallery/team.JPG' },
 ];
 
 const AboutUs: React.FC = () => {
