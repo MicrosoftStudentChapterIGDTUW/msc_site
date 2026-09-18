@@ -395,7 +395,7 @@ svg {
   .hero-shell {
     min-height: auto;
     overflow: visible;
-    padding-top: 124px;
+    padding-top: 24px;
     padding-bottom: 0;
   }
 
@@ -476,7 +476,7 @@ svg {
 
 @media (max-width: 480px) {
   .hero-shell {
-    padding-top: 176px;
+    padding-top: 28px;
   }
 
   .circular-gallery-wrap {

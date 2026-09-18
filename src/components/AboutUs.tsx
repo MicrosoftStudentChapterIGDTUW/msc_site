@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { motion } from 'motion/react';
 import './AboutUs.css';
-import { title } from 'process';
 
 const galleryItems = [
   { title: 'Engaging Sessions', image: '/images/gallery-auditorium.jpg' },
@@ -31,11 +30,24 @@ const AboutUs: React.FC = () => {
     centerMode: true,
     centerPadding: '20px',
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          centerMode: false,
+          centerPadding: '0px',
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          centerMode: false,
+          centerPadding: '0px',
+        },
+      },
     ],
   };
-
   return (
     <section className="about-us-section" id="about">
       <div className="about-content">
@@ -50,7 +62,7 @@ const AboutUs: React.FC = () => {
           >
             ABOUT US
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="about-subtitle"
             initial={{ opacity: 0, y: -50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -62,7 +74,7 @@ const AboutUs: React.FC = () => {
         </div>
 
         {/* Sliding Gallery */}
-        <motion.section 
+        <motion.section
           className="about-gallery"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +106,7 @@ const AboutUs: React.FC = () => {
         </motion.section>
 
         {/* Description Section */}
-        <motion.div 
+        <motion.div
           className="about-description"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -114,4 +126,3 @@ const AboutUs: React.FC = () => {
 };
 
 export default AboutUs;
-

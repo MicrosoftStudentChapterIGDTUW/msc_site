@@ -69,7 +69,6 @@
   box-shadow: 0 0 25px rgba(96, 165, 250, 0.08), 0 0 40px rgba(96, 165, 250, 0.04);
 }
 
-
 .pill-list {
   list-style: none;
   display: flex;
@@ -168,23 +167,74 @@
   z-index: 4;
 }
 
+/* Hamburger toggle: hidden on desktop/tablet */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 1001;
+}
+
+.mobile-menu-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.mobile-menu-toggle.is-open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.mobile-menu-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+.mobile-menu-toggle.is-open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile drawer: hidden on desktop/tablet */
+.mobile-drawer {
+  display: none;
+}
+
+.mobile-drawer-overlay {
+  display: none;
+}
+
+/* Spacer: only takes up space on mobile, see media query below */
+.pill-nav-spacer {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .pill-nav {
     --nav-h: 48px;
     --logo: 32px;
-    --pill-pad-x: 12px;
-    --pill-gap: 4px;
     padding: 8px 0;
   }
 
   .pill-nav-content {
-    padding: 0 8px;
+    padding: 0 16px;
     padding-top: 10px;
   }
 
   .pill-nav-wrapper {
     gap: 8px;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
   }
 
@@ -192,28 +242,75 @@
     width: 32px;
   }
 
+  /* Hide the desktop pill list; the drawer replaces it */
   .pill-nav-items {
-    width: min(100%, calc(100vw - 16px));
-    max-width: none;
-    min-height: 44px;
-    padding: 4px 8px;
-    overflow: visible;
-    justify-content: center;
+    display: none;
   }
 
-  .pill-list {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .mobile-drawer {
+    display: block;
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    max-height: 0;
+    overflow: hidden;
+    background: rgba(8, 10, 20, 0.97);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease;
+    z-index: 1000;
+  }
+
+  .mobile-drawer.open {
+    max-height: 80vh;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mobile-drawer ul {
+    list-style: none;
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
     gap: 4px;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
-  .pill {
-    height: 30px;
-    padding: 0 9px;
-    font-size: 10px;
-    letter-spacing: 0.15px;
+  .mobile-drawer a {
+    display: block;
+    padding: 12px 16px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobile-drawer a:hover,
+  .mobile-drawer a.is-active {
+    background: #0066cc;
+  }
+
+  .mobile-drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+
+  /* Reserve space so fixed nav never overlaps hero content */
+  .pill-nav-spacer {
+    display: block;
+    height: 64px;
   }
 }
-
-

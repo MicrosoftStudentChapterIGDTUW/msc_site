@@ -44,6 +44,7 @@ const PillNav: React.FC<PillNavProps> = ({
   const resolvedPillTextColor = pillTextColor ?? baseColor;
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const circleRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const tlRefs = useRef<Array<gsap.core.Timeline | null>>([]);
   const activeTweenRefs = useRef<Array<gsap.core.Tween | null>>([]);
@@ -68,6 +69,23 @@ const PillNav: React.FC<PillNavProps> = ({
     };
   }, []);
 
+  // Close the mobile drawer whenever the route changes
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll while the mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   useEffect(() => {
     let resizeTimeout: NodeJS.Timeout;
     
@@ -78,6 +96,7 @@ const PillNav: React.FC<PillNavProps> = ({
         const pill = circle.parentElement as HTMLElement;
         const rect = pill.getBoundingClientRect();
         const { width: w, height: h } = rect;
+        if (w === 0 || h === 0) return; // skip when pill is hidden (e.g. mobile)
         const R = ((w * w) / 4 + h * h) / (2 * h);
         const D = Math.ceil(2 * R) + 2;
         const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
@@ -227,6 +246,7 @@ const PillNav: React.FC<PillNavProps> = ({
         }
       }
     }
+    setMobileOpen(false);
   }, [pathname, router]);
 
   const handleLogoHover = useCallback(() => {
@@ -264,88 +284,151 @@ const PillNav: React.FC<PillNavProps> = ({
           zIndex: 998
         }}
       />
-      
+
       <div className={`pill-nav-container ${isScrolled ? 'scrolled' : ''}`}>
         <nav className={`pill-nav ${className}`} aria-label="Primary" style={cssVars}>
-        <div className="pill-nav-content mx-auto max-w-7xl w-full flex items-center justify-center">
-          <div className="pill-nav-wrapper flex items-center gap-4">
-            <Link
-              className="pill-logo"
-              href="/"
-              aria-label="Home"
-              ref={el => {
-                logoRef.current = el as any;
-              }}
-              onMouseEnter={handleLogoHover}
-            >
-              <img src={logo} alt={logoAlt} ref={logoImgRef} />
-            </Link>
+          <div className="pill-nav-content mx-auto max-w-7xl w-full flex items-center justify-center">
+            <div className="pill-nav-wrapper flex items-center gap-4">
+              <Link
+                className="pill-logo"
+                href="/"
+                aria-label="Home"
+                ref={el => {
+                  logoRef.current = el as any;
+                }}
+                onMouseEnter={handleLogoHover}
+              >
+                <img src={logo} alt={logoAlt} ref={logoImgRef} />
+              </Link>
 
-            <div className="pill-nav-items bg-black/10 backdrop-blur-md" style={{ border: '1px solid rgba(96, 165, 250, 0.3)' }} ref={navItemsRef}>
-          <ul className="pill-list" role="menubar">
-            {items.map((item, i) => (
-              <li key={item.href} role="none">
-                {isRouterLink(item.href) ? (
+              {/* Desktop / tablet pill list */}
+              <div className="pill-nav-items bg-black/10 backdrop-blur-md" style={{ border: '1px solid rgba(96, 165, 250, 0.3)' }} ref={navItemsRef}>
+                <ul className="pill-list" role="menubar">
+                  {items.map((item, i) => (
+                    <li key={item.href} role="none">
+                      {isRouterLink(item.href) ? (
+                        <Link
+                          role="menuitem"
+                          href={item.href}
+                          prefetch={true}
+                          className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                          aria-label={item.ariaLabel || item.label}
+                          onMouseEnter={() => handleEnter(i)}
+                          onMouseLeave={() => handleLeave(i)}
+                        >
+                          <span
+                            className="hover-circle"
+                            aria-hidden="true"
+                            ref={el => {
+                              circleRefs.current[i] = el;
+                            }}
+                          />
+                          <span className="label-stack">
+                            <span className="pill-label">{item.label}</span>
+                            <span className="pill-label-hover" aria-hidden="true">
+                              {item.label}
+                            </span>
+                          </span>
+                        </Link>
+                      ) : (
+                        <a
+                          role="menuitem"
+                          href={item.href}
+                          className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                          aria-label={item.ariaLabel || item.label}
+                          onMouseEnter={() => handleEnter(i)}
+                          onMouseLeave={() => handleLeave(i)}
+                          onClick={(e) => handleHashClick(e, item.href)}
+                        >
+                          <span
+                            className="hover-circle"
+                            aria-hidden="true"
+                            ref={el => {
+                              circleRefs.current[i] = el;
+                            }}
+                          />
+                          <span className="label-stack">
+                            <span className="pill-label">{item.label}</span>
+                            <span className="pill-label-hover" aria-hidden="true">
+                              {item.label}
+                            </span>
+                          </span>
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Mobile hamburger toggle */}
+              <button
+                type="button"
+                className={`mobile-menu-toggle${mobileOpen ? ' is-open' : ''}`}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-nav-drawer"
+                onClick={() => setMobileOpen(o => !o)}
+              >
+                <span />
+                <span />
+                <span />
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        {/* Mobile drawer */}
+        <div
+          id="mobile-nav-drawer"
+          className={`mobile-drawer${mobileOpen ? ' open' : ''}`}
+          role="menu"
+        >
+          <ul>
+            {items.map(item =>
+              isRouterLink(item.href) ? (
+                <li key={item.href} role="none">
                   <Link
                     role="menuitem"
                     href={item.href}
-                    prefetch={true}
-                    className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                    className={activeHref === item.href ? 'is-active' : ''}
                     aria-label={item.ariaLabel || item.label}
-                    onMouseEnter={() => handleEnter(i)}
-                    onMouseLeave={() => handleLeave(i)}
+                    onClick={() => setMobileOpen(false)}
                   >
-                    <span
-                      className="hover-circle"
-                      aria-hidden="true"
-                      ref={el => {
-                        circleRefs.current[i] = el;
-                      }}
-                    />
-                    <span className="label-stack">
-                      <span className="pill-label">{item.label}</span>
-                      <span className="pill-label-hover" aria-hidden="true">
-                        {item.label}
-                      </span>
-                    </span>
+                    {item.label}
                   </Link>
-                ) : (
+                </li>
+              ) : (
+                <li key={item.href} role="none">
                   <a
                     role="menuitem"
                     href={item.href}
-                    className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                    className={activeHref === item.href ? 'is-active' : ''}
                     aria-label={item.ariaLabel || item.label}
-                    onMouseEnter={() => handleEnter(i)}
-                    onMouseLeave={() => handleLeave(i)}
                     onClick={(e) => handleHashClick(e, item.href)}
                   >
-                    <span
-                      className="hover-circle"
-                      aria-hidden="true"
-                      ref={el => {
-                        circleRefs.current[i] = el;
-                      }}
-                    />
-                    <span className="label-stack">
-                      <span className="pill-label">{item.label}</span>
-                      <span className="pill-label-hover" aria-hidden="true">
-                        {item.label}
-                      </span>
-                    </span>
+                    {item.label}
                   </a>
-                )}
-              </li>
-            ))}
+                </li>
+              )
+            )}
           </ul>
-            </div>
-          </div>
         </div>
-      </nav>
-    </div>
+
+        {/* Click-outside overlay for the drawer */}
+        {mobileOpen && (
+          <div
+            className="mobile-drawer-overlay"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+      </div>
+
+      {/* Reserves space in normal document flow so the fixed navbar
+          never overlaps hero content on mobile */}
+      <div className="pill-nav-spacer" aria-hidden="true" />
     </>
   );
 };
 
 export default PillNav;
-
-
