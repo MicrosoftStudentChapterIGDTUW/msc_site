@@ -17,8 +17,10 @@ const galleryItems = [
   { title: 'Networking Nights', image: '/gallery/team.JPG' },
 ];
 
+// Duplicated once so the marquee track can loop seamlessly at -50%
+const marqueeItems = [...galleryItems, ...galleryItems];
+
 const AboutUs: React.FC = () => {
-  // slick slider settings
   const settings = {
     dots: true,
     infinite: true,
@@ -48,6 +50,13 @@ const AboutUs: React.FC = () => {
       },
     ],
   };
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null;
+    target.src = 'https://placehold.co/600x400/0f172a/ffffff?text=Gallery+Image';
+  };
+
   return (
     <section className="about-us-section" id="about">
       <div className="about-content">
@@ -73,9 +82,9 @@ const AboutUs: React.FC = () => {
           </motion.p>
         </div>
 
-        {/* Sliding Gallery */}
+        {/* Desktop / tablet: slick carousel (hidden on phones) */}
         <motion.section
-          className="about-gallery"
+          className="about-gallery about-gallery-desktop"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -89,12 +98,7 @@ const AboutUs: React.FC = () => {
                     src={item.image}
                     alt={item.title}
                     className="w-full h-64 object-cover rounded-3xl"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null;
-                      target.src =
-                        'https://placehold.co/600x400/0f172a/ffffff?text=Gallery+Image';
-                    }}
+                    onError={handleImgError}
                   />
                   <p className="py-3 text-blue-300 font-semibold bg-black/40 backdrop-blur-sm">
                     {item.title}
@@ -103,6 +107,24 @@ const AboutUs: React.FC = () => {
               </div>
             ))}
           </Slider>
+        </motion.section>
+
+        {/* Mobile only: auto-scrolling marquee (same pattern as SponsorsMarquee) */}
+        <motion.section
+          className="about-gallery-mobile-marquee"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false }}
+        >
+          <div className="about-marquee-track">
+            {marqueeItems.map((item, index) => (
+              <div className="about-marquee-card" key={`${item.title}-${index}`}>
+                <img src={item.image} alt={item.title} onError={handleImgError} />
+                <p>{item.title}</p>
+              </div>
+            ))}
+          </div>
         </motion.section>
 
         {/* Description Section */}
