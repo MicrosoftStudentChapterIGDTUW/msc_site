@@ -113,3 +113,71 @@
   }
 }
 
+/* Mobile marquee is hidden by default (desktop/tablet use the slick carousel) */
+.about-gallery-mobile-marquee {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Swap: hide the slick carousel, show the marquee */
+  .about-gallery-desktop {
+    display: none;
+  }
+
+  .about-gallery-mobile-marquee {
+    display: block;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  }
+
+  .about-marquee-track {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    width: max-content;
+    animation: about-marquee-scroll 26s linear infinite;
+    will-change: transform;
+  }
+
+  .about-marquee-track:active {
+    animation-play-state: paused;
+  }
+
+  .about-marquee-card {
+    flex: 0 0 auto;
+    width: 68vw;
+    max-width: 260px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .about-marquee-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-marquee-card p {
+    margin: 0;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #93c5fd;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+  }
+
+  @keyframes about-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
