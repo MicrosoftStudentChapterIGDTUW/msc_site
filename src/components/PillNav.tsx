@@ -74,15 +74,14 @@ const PillNav: React.FC<PillNavProps> = ({
     setMobileOpen(false);
   }, [pathname]);
 
-  // Lock body scroll while the mobile drawer is open
+  // Lock body + html scroll while the mobile drawer is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    document.documentElement.style.overflow = mobileOpen ? 'hidden' : '';
+
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [mobileOpen]);
 
