@@ -114,6 +114,7 @@
   .footer-content {
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+    padding: 0;
   }
 
   .footer-logo {
@@ -131,11 +132,27 @@
   .footer-content {
     grid-template-columns: 1fr;
     gap: 30px;
+    padding: 0;
+    justify-content: center;
+    justify-items: center;
+    text-align: center;
   }
 
   .footer-logo {
     grid-column: 1;
     margin-bottom: 0;
   }
-}
 
+  .footer-links,
+  .footer-address,
+  .footer-social {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-social-icons {
+    justify-content: center;
+  }
+}
