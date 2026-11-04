@@ -6,7 +6,7 @@ export default function EventCard({ event }: { event: EventItem }) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0c1530]/70 shadow-lg shadow-black/20 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-blue-400/40 hover:shadow-blue-500/10">
       <div className="relative h-56 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+       
         <img
           src={event.image}
           alt={event.title}

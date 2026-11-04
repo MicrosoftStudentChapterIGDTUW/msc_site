@@ -1,9 +1,8 @@
-import { firstHalfEvents } from "./first_half";
-import { secondHalfEvents } from "./second_half";
+import { eventsData } from "./eventsData";
 import type { EventItem } from "./types";
 
-export const allEvents: EventItem[] = [...secondHalfEvents, ...firstHalfEvents].sort(
-  (a, b) => b.date.localeCompare(a.date)
+export const allEvents: EventItem[] = [...eventsData].sort((a, b) =>
+  b.date.localeCompare(a.date)
 );
 
 export const getEventBySlug = (slug: string) =>

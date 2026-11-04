@@ -62,7 +62,7 @@ export default async function EventDetailPage({ params }: Props) {
 
         {/* Hero */}
         <section className="relative overflow-hidden rounded-3xl border border-white/10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          
           <img
             src={event.image}
             alt={event.title}
