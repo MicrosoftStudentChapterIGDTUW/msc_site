@@ -557,4 +557,123 @@ export const eventsData: EventItem[] = [
     ],
     tags: ["bootcamp", "summer", "mentorship", "learning"],
   },
+  // ───────────────────────── Tenure 2026-27 ─────────────────────────
+  {
+    slug: "kickstart-101-resume-linkedin",
+    title: "Kickstart 101 - Resume to LinkedIn Workshop",
+    category: "Seminar",
+    date: "2026-09-27",
+    displayDate: "27th September 2026",
+    time: "07:00 PM",
+    mode: "Online",
+    venue: "Google Meet",
+    image: "/images/kickstart-101-resume-linkedin.jpg",
+    tagline: "Build a resume and LinkedIn profile that work for you",
+    summary:
+      "Resume and LinkedIn guidance with Sneha Roychowdhury (38k+ LinkedIn followers).",
+    about: [
+      "Your resume and LinkedIn profile play a major role in how recruiters discover and evaluate you. In this Kickstart 101 session, Sneha Roychowdhury walked students through what to highlight, what to improve and how to present their experience effectively.",
+      "The session covered SWE resume structure, ATS scores and LinkedIn visibility, so students could build a professional resume and a profile that gets noticed.",
+      "Kickstart 101 is MSC IGDTUW's workshop series that gives students a practical start on the tools and skills every tech career needs.",
+    ],
+    highlights: [
+      "Part of the Kickstart 101 series",
+      "Speaker: Sneha Roychowdhury, 3x ICPC Asia-West Regionalist and SIH'24 Winner",
+      "Online session on Google Meet, 7:00 PM",
+    ],
+    takeaways: [
+      "How to structure an SWE resume that recruiters can scan quickly",
+      "What ATS scores are and how to make your resume ATS-friendly",
+      "How to improve your LinkedIn profile's visibility to recruiters",
+    ],
+    whoFor: [
+      "Students building their first resume for internships",
+      "Anyone who wants their LinkedIn profile to work harder for them",
+    ],
+    speakers: [
+      {
+        name: "Sneha Roychowdhury",
+        role: "3x ICPC Asia-West Regionalist · SIH'24 Winner · Chairperson @ TEDxIGDTU",
+      },
+    ],
+    tags: ["kickstart 101", "resume", "linkedin", "ats", "workshop", "career"],
+  },
+  {
+    slug: "kickstart-101-github",
+    title: "Kickstart 101 - GitHub Workshop",
+    category: "Seminar",
+    date: "2026-09-26",
+    displayDate: "26th September 2026",
+    time: "12:00 PM - 12:45 PM",
+    mode: "Online",
+    venue: "Google Meet",
+    image: "/images/kickstart-101-github.jpg",
+    tagline: "Still figuring out GitHub? Let's change that.",
+    summary:
+      "A practical introduction to GitHub with Kamal Walia, Senior Software Engineer @ American Express.",
+    about: [
+      "From professional technical workspaces to open source projects, GitHub is the digital workspace for building, sharing and collaborating. In this Kickstart 101 session, Kamal Walia, a Senior Software Engineer at American Express, gave students a practical introduction to it.",
+      "The workshop went from creating your first repository to commits, branches and finally collaboration.",
+      "Kickstart 101 is MSC IGDTUW's workshop series that gives students a practical start on the tools and skills every tech career needs.",
+    ],
+    highlights: [
+      "Part of the Kickstart 101 series",
+      "Speaker: Kamal Walia, Senior Software Engineer @ American Express",
+      "Online session on Google Meet, 12:00 PM – 12:45 PM",
+    ],
+    takeaways: [
+      "Creating a repository and making your first commits",
+      "Working with branches",
+      "How collaboration works on GitHub, from team projects to open source",
+    ],
+    whoFor: [
+      "Beginners who haven't used Git or GitHub yet",
+      "Students who want to start contributing to team projects or open source",
+    ],
+    speakers: [
+      {
+        name: "Kamal Walia",
+        role: "Senior Software Engineer @ American Express",
+      },
+    ],
+    tags: ["kickstart 101", "github", "git", "open source", "american express", "workshop"],
+  },
+  {
+    slug: "sih-and-beyond-hackathons-decoded",
+    title: "SIH and Beyond: Hackathons Decoded",
+    category: "Seminar",
+    date: "2026-08-30",
+    displayDate: "30th August 2026",
+    time: "08:00 PM",
+    mode: "Online",
+    venue: "Google Meet",
+    image: "/images/sih-and-beyond.jpg",
+    tagline: "Straight from the winners' table",
+    summary:
+      "PS selection, team-building and more, straight from the SIH 2025 winners.",
+    about: [
+      "SIH and Beyond: Hackathons Decoded was a live and unfiltered session by Smart India Hackathon 2025 winners Sakshi Aggarwal, Suhaani Agarwal and Shivangi Bisht.",
+      "Straight from the winners' table, the speakers shared how they picked their problem statement, built their team, and everything else hackathons don't tell you.",
+    ],
+    highlights: [
+      "Session by SIH 2025 winners",
+      "Speakers: Sakshi Aggarwal, Suhaani Agarwal and Shivangi Bisht (CSE-AI'28)",
+      "Online session, 8:00 PM onwards",
+    ],
+    takeaways: [
+      "How to choose the right problem statement for SIH",
+      "How to build a balanced hackathon team",
+      "The things about hackathons that no one tells you upfront",
+    ],
+    whoFor: [
+      "Students planning to participate in SIH or other hackathons",
+      "First-time hackathon participants looking for a head start",
+    ],
+    speakers: [
+      { name: "Sakshi Aggarwal", role: "SIH 2025 Winner, CSE-AI'28" },
+      { name: "Suhaani Agarwal", role: "SIH 2025 Winner, CSE-AI'28" },
+      { name: "Shivangi Bisht", role: "SIH 2025 Winner, CSE-AI'28" },
+    ],
+    tags: ["sih", "smart india hackathon", "hackathon", "team-building", "problem statement"],
+  },
 ];
